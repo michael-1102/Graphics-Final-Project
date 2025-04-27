@@ -3,7 +3,7 @@
 #include <GLES3/gl3.h>
 #include <GL/glew.h>
 #include "drawing.hpp"
-#include "multishape_2d.hpp"
+#include "styled_multishape_2d.hpp"
 #include "drw_file.hpp"
 
 
@@ -65,25 +65,29 @@ void create_window(drw_file& drw, const std::string& title, int width, int heigh
 }
 
 int main(int argc, char* argv[]) {
-  drw_file drw(300, 100);
-  drw.add_color(glm::vec4(1.f, 0.f, 0.f, 1.f));  
-  drw.add_color(glm::vec4(0.f, 1.f, 0.f, 1.f));
+  drw_file drw(300, 150);
+  drw.set_bg_color_index(0);
+  drw.add_color(glm::vec4(1.f, 1.f, 1.f, 1.f));  // white (0)
+  drw.add_color(glm::vec4(1.f, 0.f, 0.f, 1.f)); // red (1)
+  drw.add_color(glm::vec4(0.f, 1.f, 0.f, 1.f)); // green (2)
+  drw.add_color(glm::vec4(0.f, 0.f, 1.f, 1.f)); // blue (3)
+
   drw.add_transform(glm::mat4(1.f));
   drawing main = drawing();
-  view vw = view(0, 0, 800, 100);
+  view vw = view(0, 0, 300, 200);
   main.set_view(vw);
-  multishape_2d shapes = multishape_2d(1, 1, 0);
-  shapes.add_fill_circle(50, 50, 40, 20);
-  shapes.add_fill_circle(150, 50, 40, 20);
-  shapes.add_fill_circle(250, 50, 40, 20);
+  styled_multishape_2d shapes = styled_multishape_2d(drw, 1, 0);
+  shapes.add_fill_circle(50, 50, 40, 20, 1);
+  shapes.add_fill_circle(150, 50, 40, 20, 2);
+  shapes.add_fill_circle(250, 50, 40, 20, 3);
 
   drawing child = drawing();
-  view vw2 = view(-500, 0, 800, 100);
+  view vw2 = view(0, 0, 100, 200);
   child.set_view(vw2);
-  child.add_shape(&shapes);
+  //child.add_shape(&shapes);
 
   main.add_shape(&shapes);
-  main.add_shape(&child);
+  //main.add_shape(&child);
   drw.set_main_drawing(main);
 
   try {

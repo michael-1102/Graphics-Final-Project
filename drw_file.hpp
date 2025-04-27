@@ -49,7 +49,9 @@ class drw_file {
 
     inline void set_bg_color_index(uint32_t i) { bg_color_index = i; }
 
-    inline glm::vec4& get_bg_color() { return get_color(bg_color_index); }
+    inline glm::vec4& get_bg_color() {
+      return get_color(bg_color_index);
+    }
 
     inline shader& get_shader(shader_id sid) {
       if (shaders.find(sid) == shaders.end()) {

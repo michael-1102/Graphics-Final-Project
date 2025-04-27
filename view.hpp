@@ -12,6 +12,7 @@ struct view {
   glm::mat4 matrix;
 
   view(float x, float y, float width, float height) : x(x), y(y), width(width), height(height) {
+    //TODO: matrix becomes incorrect when width/height is larger than overall width/height
     if (width > height)
       matrix = glm::scale(glm::mat4(1.f), glm::vec3(1.f, height/width, 1.f)) * glm::ortho(x, x + width, y + height, y);
     else

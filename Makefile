@@ -10,7 +10,7 @@ CXX         := g++
 COMP        := $(CXX) $(CXXFLAGS) -c
 
 # Define object files
-OBJ    := window.o drawing.o shader.o multishape.o multishape_2d.o
+OBJ    := window.o drawing.o shader.o multishape.o multishape_2d.o styled_multishape_2d.o
 
 # Define target
 TARGET := drawing
@@ -29,6 +29,9 @@ multishape.o: multishape.cpp multishape.hpp shader.cpp shader.hpp shape.hpp
 	$(COMP) $<
 
 multishape_2d.o: multishape_2d.cpp multishape_2d.hpp multishape.cpp multishape.hpp shader.cpp shader.hpp shape.hpp
+	$(COMP) $<
+
+styled_multishape_2d.o: styled_multishape_2d.cpp styled_multishape_2d.hpp multishape_2d.cpp multishape_2d.hpp multishape.cpp multishape.hpp shader.cpp shader.hpp shape.hpp
 	$(COMP) $<
 
 drawing.o: drawing.cpp drawing.hpp view.hpp
