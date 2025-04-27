@@ -38,10 +38,12 @@ const char* const vert_fixed_color = 1 + R"GLSL(
 
   uniform vec4 color;
   uniform mat4 transform;
+  uniform mat4 view;
+  uniform mat4 scale;
 
   out vec4 rgba;
   void main(){
-    gl_Position = transform*vec4(pos, 1.0);
+    gl_Position = transform*scale*view*vec4(pos, 1.0);
     rgba = color;
   }
 )GLSL";
@@ -71,10 +73,12 @@ const char* const vert_per_vertex = 1 + R"GLSL(
   layout(location = 1) in vec4 color;
 
   uniform mat4 transform;
+  uniform mat4 view;
+  uniform mat4 scale;
 
   out vec4 rgba;
   void main(){
-    gl_Position = transform*vec4(pos, 1.0);
+    gl_Position = transform*scale*view*vec4(pos, 1.0);
     rgba = color;
   }
 )GLSL";

@@ -10,6 +10,13 @@ class drawing : public shape {
     std::vector<shape*> shapes;
 
   public:
+    drawing() {}
     void init() override;
-    void render(view& view) override;
+    void update() override;
+    void render(drw_file& drw, view& view) override;
+    void render(drw_file& drw);
+
+    void add_shape(shape* shape);
+    
+    inline void set_view(view& v) { my_view = v; }
 };

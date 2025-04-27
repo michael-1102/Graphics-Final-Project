@@ -8,10 +8,10 @@
 
 class multishape : public shape {
  public:
-  multishape(float line_width, uint32_t transform_index, shader_id shader_id = shader_id::FIXED_COLOR, uint32_t vertCount = 1024,
+  multishape(float line_width, uint32_t transform_index, shader_id sid = shader_id::FIXED_COLOR, uint32_t vertCount = 1024,
              uint32_t solidIndCount = 1024, uint32_t lineIndCount = 1024,
              uint32_t pointIndCount = 1024, uint32_t elemPerVert = 2)
-      : line_width(line_width), elemPerVert(elemPerVert), shader_id(shader_id), shape() {
+      : line_width(line_width), elemPerVert(elemPerVert), transform_index(transform_index), sid(sid), shape() {
     vertices.reserve(vertCount * elemPerVert);
     solidIndices.reserve(solidIndCount);
     lineIndices.reserve(lineIndCount);
@@ -55,7 +55,8 @@ class multishape : public shape {
   std::vector<uint32_t> lineIndices;
   std::vector<uint32_t> pointIndices;
   std::vector<uint32_t> solidsInFrontIndices;
-  shader_id shader_id;
+  shader_id sid;
+  uint32_t transform_index;
   const uint32_t elemPerVert;
   float line_width;
 

@@ -2,9 +2,12 @@
 #include <SDL2/SDL.h>
 #include <GLES3/gl3.h>
 #include <GL/glew.h>
+#include "drawing.hpp"
+#include "multishape_2d.hpp"
+#include "drw_file.hpp"
 
 
-void create_window(const std::string& title, int width, int height) {
+void create_window(drw_file& drw, const std::string& title, int width, int height) {
   // Initialize SDL
   if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER) < 0) {
     throw "Failed to initialize SDL";
@@ -30,6 +33,18 @@ void create_window(const std::string& title, int width, int height) {
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+  drw.init();
+
+  // Set background color
+  glm::vec4& bg_color = drw.get_bg_color();
+  glClearColor(bg_color.r, bg_color.g, bg_color.b, bg_color.a);
+
+  // Clear the screen
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+  drw.render();
+
+  SDL_GL_SwapWindow(window);
   bool quit = false;
   SDL_Event event;
   while (!quit) {
@@ -44,18 +59,38 @@ void create_window(const std::string& title, int width, int height) {
     }
   }
 
-  
-  // Clean-up code
+    // Clean-up code
   SDL_DestroyWindow(window);
   SDL_Quit();
 }
 
 int main(int argc, char* argv[]) {
+  drw_file drw(300, 100);
+  drw.add_color(glm::vec4(1.f, 0.f, 0.f, 1.f));  
+  drw.add_color(glm::vec4(0.f, 1.f, 0.f, 1.f));
+  drw.add_transform(glm::mat4(1.f));
+  drawing main = drawing();
+  view vw = view(0, 0, 800, 100);
+  main.set_view(vw);
+  multishape_2d shapes = multishape_2d(1, 1, 0);
+  shapes.add_fill_circle(50, 50, 40, 20);
+  shapes.add_fill_circle(150, 50, 40, 20);
+  shapes.add_fill_circle(250, 50, 40, 20);
+
+  drawing child = drawing();
+  view vw2 = view(-500, 0, 800, 100);
+  child.set_view(vw2);
+  child.add_shape(&shapes);
+
+  main.add_shape(&shapes);
+  main.add_shape(&child);
+  drw.set_main_drawing(main);
+
   try {
     std::cerr << "Creating window..." << std::endl;
-    create_window("Drawing", 500, 500);
+    create_window(drw, "Drawing", drw.get_width(), drw.get_height());
     std::cerr << "Application exited normally." << std::endl;
-  } catch (std::string ex) {
+  } catch (char const* ex) {
     std::cerr << ex << std::endl;
   }
 }
