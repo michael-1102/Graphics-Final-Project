@@ -8,7 +8,7 @@
 
 class shape_2d {
   public:
-    enum type {
+    enum class type {
       LINE,
       POLYLINE,
       POLYGON,

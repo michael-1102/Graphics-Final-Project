@@ -4,6 +4,7 @@
 #include "drawing.hpp"
 #include "lighting.hpp"
 #include "camera.hpp"
+#include "colors.hpp"
 
 
 class drw_file {
@@ -14,7 +15,7 @@ class drw_file {
 
     drawing main_drawing; // parent drawing of all shapes
 
-    std::vector<glm::vec4> colors;  // a list of rgba colors
+    colors clrs;  // a list of rgba colors
     std::vector<material> materials; // a list of materials for lighting
     std::vector<spot_light> spot_lights; // a list of spot lights
     std::vector<dir_light> dir_lights; // a list of directional lights
@@ -61,7 +62,7 @@ class drw_file {
       return shaders[sid]; 
     }
 
-    inline void add_color(glm::vec4 color) { colors.push_back(color); }
+    inline void add_color(glm::vec4 color) { clrs.add_color(color); }
 
     inline void add_material(material& material) {
       materials.push_back(material);
@@ -87,9 +88,12 @@ class drw_file {
       transforms.push_back(transform);
     }
 
-    inline glm::vec4& get_color(uint32_t i) {
-      if (i >= colors.size()) throw "Color index out of bounds";
-      return colors[i];
+    glm::vec4& get_color(uint32_t i) {
+      return clrs.get_color(i);
+    }
+
+    uint32_t get_color_index(std::string name) {
+      return clrs.get_color_index(name);
     }
 
     inline material& get_material(uint32_t i) {

@@ -67,11 +67,7 @@ void create_window(drw_file& drw, const std::string& title, int width, int heigh
 
 int main(int argc, char* argv[]) {
   drw_file drw(500, 500);
-  drw.set_bg_color_index(0);
-  drw.add_color(glm::vec4(1.f, 1.f, 1.f, 1.f));  // white (0)
-  drw.add_color(glm::vec4(1.f, 0.f, 0.f, 1.f)); // red (1)
-  drw.add_color(glm::vec4(0.f, 1.f, 0.f, 1.f)); // green (2)
-  drw.add_color(glm::vec4(0.f, 0.f, 1.f, 1.f)); // blue (3)
+  drw.set_bg_color_index(drw.get_color_index("white"));
 
   camera cam = camera(1);
   camera cam1 = camera(0, 0, 400, 100);
@@ -96,11 +92,11 @@ int main(int argc, char* argv[]) {
   view vw = view(0, 0, 400, 100);
   main.set_view(vw);
   styled_multishape_2d shapes = styled_multishape_2d(drw, 1, 0);
-  shapes.add_fill_circle(50, 50, 40, 20, 1);
-  shapes.add_draw_rectangle(0, 0, 400, 100, 1);
-  shapes.add_fill_circle(150, 50, 40, 20, 2);
-  shapes.add_fill_circle(250, 50, 40, 20, 3);
-  multishape_3d wireframes = multishape_3d(1, 3, 1, 0);
+  shapes.add_fill_circle(50, 50, 40, 20, drw.get_color_index("red"));
+  shapes.add_draw_rectangle(0, 0, 400, 100, drw.get_color_index("red"));
+  shapes.add_fill_circle(150, 50, 40, 20, drw.get_color_index("green"));
+  shapes.add_fill_circle(250, 50, 40, 20, drw.get_color_index("blue"));
+  multishape_3d wireframes = multishape_3d(1, drw.get_color_index("blue"), 1, 0);
   wireframes.add_draw_sphere(50, 50, 0, 40, 32, 18);
   wireframes.add_draw_rect_prism(0, 0, 0, 400, 100, 400);
   lit_multishape_3d lit_shapes = lit_multishape_3d(1, 0, 0, {0}, {0}, {0}, 1);

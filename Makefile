@@ -22,25 +22,25 @@ drawing: $(OBJ)
 	$(CXX) -o drawing $(OBJ) $(LIBS) -no-pie -fno-PIE -fno-pic
 
 # Compile object files
-window.o: window.cpp drw_file.hpp drawing.cpp drawing.hpp view.hpp camera.hpp
+window.o: window.cpp drw_file.hpp drawing.cpp drawing.hpp view.hpp camera.hpp colors.hpp
 	$(COMP) $<
 
-multishape.o: multishape.cpp multishape.hpp shader.cpp shader.hpp shape.hpp
+multishape.o: multishape.cpp multishape.hpp shader.cpp shader.hpp shape.hpp drw_file.hpp colors.hpp
 	$(COMP) $<
 
-multishape_2d.o: multishape_2d.cpp multishape_2d.hpp multishape.cpp multishape.hpp shader.cpp shader.hpp shape.hpp
+multishape_2d.o: multishape_2d.cpp multishape_2d.hpp multishape.cpp multishape.hpp shader.cpp shader.hpp shape.hpp drw_file.hpp colors.hpp
 	$(COMP) $<
 
-styled_multishape_2d.o: styled_multishape_2d.cpp styled_multishape_2d.hpp multishape_2d.cpp multishape_2d.hpp multishape.cpp multishape.hpp shader.cpp shader.hpp shape.hpp
+styled_multishape_2d.o: styled_multishape_2d.cpp styled_multishape_2d.hpp multishape_2d.cpp multishape_2d.hpp multishape.cpp multishape.hpp shader.cpp shader.hpp shape.hpp drw_file.hpp colors.hpp
 	$(COMP) $<
 
-multishape_3d.o: multishape_3d.cpp multishape_3d.hpp camera.hpp shape_2d.hpp multishape.cpp multishape.hpp shader.cpp shader.hpp shape.hpp
+multishape_3d.o: multishape_3d.cpp multishape_3d.hpp camera.hpp shape_2d.hpp multishape.cpp multishape.hpp shader.cpp shader.hpp shape.hpp drw_file.hpp colors.hpp
 	$(COMP) $<
 
-lit_multishape_3d.o: lit_multishape_3d.cpp lit_multishape_3d.hpp multishape_3d.cpp multishape_3d.hpp camera.hpp lighting.hpp shape_2d.hpp multishape.cpp multishape.hpp shader.cpp shader.hpp shape.hpp
+lit_multishape_3d.o: lit_multishape_3d.cpp lit_multishape_3d.hpp multishape_3d.cpp multishape_3d.hpp camera.hpp lighting.hpp shape_2d.hpp multishape.cpp multishape.hpp shader.cpp shader.hpp shape.hpp drw_file.hpp colors.hpp
 	$(COMP) $<
 
-drawing.o: drawing.cpp drawing.hpp view.hpp
+drawing.o: drawing.cpp drawing.hpp view.hpp drw_file.hpp colors.hpp
 	$(COMP) $<
 
 shader.o: shader.cpp shader.hpp
