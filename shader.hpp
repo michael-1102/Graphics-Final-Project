@@ -43,7 +43,7 @@ const char* const vert_fixed_color = 1 + R"GLSL(
 
   out vec4 rgba;
   void main(){
-    gl_Position = transform*scale*view*vec4(pos, 1.0);
+    gl_Position = scale*view*transform*vec4(pos, 1.0);
     rgba = color;
   }
 )GLSL";
@@ -55,12 +55,13 @@ const char* const vert_fixed_color_camera = 1 + R"GLSL(
 
   uniform vec4 color;
   uniform mat4 transform;
+  uniform mat4 scale;
   uniform mat4 view;
   uniform mat4 projection;
 
   out vec4 rgba;
   void main(){
-    gl_Position = projection * view * transform * vec4(pos, 1.0);
+    gl_Position = scale * projection * view * transform * vec4(pos, 1.0);
     rgba = color;
   }
 )GLSL";
@@ -78,7 +79,7 @@ const char* const vert_per_vertex = 1 + R"GLSL(
 
   out vec4 rgba;
   void main(){
-    gl_Position = transform*scale*view*vec4(pos, 1.0);
+    gl_Position = scale*view*transform*vec4(pos, 1.0);
     rgba = color;
   }
 )GLSL";
@@ -253,6 +254,7 @@ out vec3 FragPos;
 out vec3 Normal;
 
 uniform mat4 transform;
+uniform mat4 scale;
 uniform mat4 view;
 uniform mat4 projection;
 
@@ -261,7 +263,7 @@ void main()
   FragPos = vec3(transform * vec4(pos, 1.0));
   Normal = mat3(transpose(inverse(transform))) * normal;  
   
-  gl_Position = projection * view * vec4(FragPos, 1.0);
+  gl_Position = scale * projection * view * vec4(FragPos, 1.0);
 }
 )GLSL";
 
