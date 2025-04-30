@@ -89,7 +89,7 @@ class lit_multishape_3d : public multishape_3d {
     lit_multishape_3d(float line_width, uint32_t camera_index, uint32_t material_index, std::vector<uint32_t> point_light_indices, std::vector<uint32_t> spot_light_indices, std::vector<uint32_t> dir_light_indices, uint32_t transform_index, shader_id sid = shader_id::MATERIAL_MULTILIGHT, uint32_t vertCount = 1024,
       uint32_t solidIndCount = 1024, uint32_t lineIndCount = 1024,
       uint32_t pointIndCount = 1024, uint32_t elemPerVert = 6)
-      : material_index(material_index), point_light_indices(point_light_indices), spot_light_indices(spot_light_indices), dir_light_indices(dir_light_indices), multishape_3d(line_width, 0, camera_index, transform_index, sid, vertCount, solidIndCount, lineIndCount,
+      : material_index(material_index), point_light_indices(point_light_indices), spot_light_indices(spot_light_indices), dir_light_indices(dir_light_indices), multishape_3d(line_width, 0, camera_index, transform_index, 1.f, sid, vertCount, solidIndCount, lineIndCount,
         pointIndCount, elemPerVert) {
           num_point_lights = point_light_indices.size();
           num_spot_lights = spot_light_indices.size();

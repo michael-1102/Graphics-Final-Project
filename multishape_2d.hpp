@@ -17,6 +17,7 @@ enum Marker {
 class multishape_2d : public multishape { 
  protected:
   uint32_t color_index;
+  float alpha;
   // Utility
   void addRectVertices(float x, float y, float w, float h);
   void addTriVertices(float x1, float y1, float x2, float y2, float x3, float y3);
@@ -97,12 +98,12 @@ class multishape_2d : public multishape {
  public:
   void init() override;
   void drawPoint(float x, float y);
-  multishape_2d(float line_width, uint32_t color_index, uint32_t transform_index, shader_id sid = shader_id::FIXED_COLOR, uint32_t vertCount = 1024,
+  multishape_2d(float line_width, uint32_t color_index, uint32_t transform_index, float alpha = 1.f, shader_id sid = shader_id::FIXED_COLOR, uint32_t vertCount = 1024,
                uint32_t solidIndCount = 1024, uint32_t lineIndCount = 1024,
                uint32_t pointIndCount = 1024, uint32_t elemPerVert = 2)
-      : color_index(color_index), multishape(line_width, transform_index, sid, vertCount, solidIndCount, lineIndCount,
+      : alpha(alpha), color_index(color_index), multishape(line_width, transform_index, sid, vertCount, solidIndCount, lineIndCount,
                    pointIndCount, elemPerVert) {
-                    set_start_instr(shape::full_instruction(instruction::START_MULTISHAPE_2D, {}, {}, {}, {line_width}, {color_index, transform_index, (uint32_t) to_underlying(sid)}));
+                    set_start_instr(shape::full_instruction(instruction::START_MULTISHAPE_2D, {}, {}, {}, {line_width, alpha}, {color_index, transform_index, (uint32_t) to_underlying(sid)}));
                     end_instr = instruction::END_MULTISHAPE_2D;
   }
   ~multishape_2d();

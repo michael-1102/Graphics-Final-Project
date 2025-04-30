@@ -5,12 +5,39 @@
 #include "lighting.hpp"
 #include "camera.hpp"
 #include "colors.hpp"
+#include "antlr4-runtime.h"
+#include "styled_multishape_2d.hpp"
+#include "libs/XMLLexer.h"
+#include "libs/XMLParser.h"
+#include "libs/XMLParserBaseVisitor.h"
+
+#define DEFAULT_STROKE_WIDTH 1.f
+#define DEFAULT_OPACITY 1.f
+#define DEFAULT_COLOR_INDEX 0
+#define DEFAULT_TRANSFORM_INDEX 0
+
+using namespace antlr4;
 
 
 class drw_file {
   private:
-    float width;
-    float height;
+    struct group_attributes {
+      uint32_t stroke_width;
+
+      float fill_opacity;
+      float stroke_opacity;
+      uint32_t fill_color_index;
+      uint32_t stroke_color_index;
+
+      group_attributes(uint32_t stroke_width = DEFAULT_STROKE_WIDTH, float fill_opacity = DEFAULT_OPACITY, 
+                       float stroke_opacity = DEFAULT_OPACITY, uint32_t fill_color_index = DEFAULT_COLOR_INDEX, uint32_t stroke_color_index = DEFAULT_COLOR_INDEX) :
+                       stroke_width(stroke_width), fill_opacity(fill_opacity), stroke_opacity(stroke_opacity), fill_color_index(fill_color_index), stroke_color_index(stroke_color_index) {}
+    };
+
+    std::vector<styled_multishape_2d> svg_shapes;
+
+    float width = 300;
+    float height = 100;
     glm::mat4 scale;
 
     drawing main_drawing; // parent drawing of all shapes
@@ -22,16 +49,53 @@ class drw_file {
     std::vector<point_light> point_lights; // a list of point lights
     std::vector<camera> cameras; // a list of cameras
 
-    std::vector<glm::mat4> transforms; // a list of transform matrices
+    std::vector<glm::mat4> transforms = {glm::mat4(1.f)}; // a list of transform matrices
 
-    uint32_t bg_color_index; // index of colors for background color
+    uint32_t bg_color_index = clrs.get_color_index("white"); // index of colors for background color
 
     std::unordered_map<shader_id, shader> shaders; // shader_id, shader key-value pair
+
+
+    void apply_svg_attributes(XMLParser::ElementContext* svg);
+    void add_svg_elements(std::vector<XMLParser::ElementContext*> elements, styled_multishape_2d& shapes, group_attributes attribs);
+
+    void add_circle(XMLParser::ElementContext* element, styled_multishape_2d& shapes, group_attributes attribs);
+
+
+    uint32_t string_to_color_index(std::string str) {
+      if (str.rfind("#", 0) == 0) {
+        std::string red_str = str.substr(1, 2);
+        std::string green_str = str.substr(3, 2);
+        std::string blue_str = str.substr(5, 2);
+        glm::vec3 color = glm::vec3(stoi(red_str, nullptr, 16) / 255.f, stoi(green_str, nullptr, 16) / 255.f, stoi(blue_str, nullptr, 16) / 255.f);
+        return clrs.add_color(color);
+      }
+      return clrs.get_color_index(str);
+    }
+
+    uint32_t string_to_pixels(std::string str) {
+      //TODO: handle px, cm, in, %
+      return stoi(str);
+    }
+
+    uint32_t string_to_float(std::string str) {
+      //TODO: handle %
+      return stof(str);
+    }
+
+    uint32_t get_next_value(std::string& s, std::string delimiter) {
+      uint32_t val = string_to_pixels(s.substr(0, s.find(delimiter)));
+      s.erase(0, s.find(delimiter) + delimiter.length());
+      return val;
+    }
+
 
   public:
     drw_file(float width, float height) : width(width), height(height) {
       scale = glm::scale(glm::mat4(1.f), glm::vec3(1.f, width/height, 1.f));
     }
+
+    drw_file(const char filename[]);
 
     void init() { 
       main_drawing.init(); 
@@ -50,7 +114,7 @@ class drw_file {
 
     inline void set_bg_color_index(uint32_t i) { bg_color_index = i; }
 
-    inline glm::vec4& get_bg_color() {
+    inline glm::vec3& get_bg_color() {
       return get_color(bg_color_index);
     }
 
@@ -62,7 +126,7 @@ class drw_file {
       return shaders[sid]; 
     }
 
-    inline void add_color(glm::vec4 color) { clrs.add_color(color); }
+    inline void add_color(glm::vec3 color) { clrs.add_color(color); }
 
     inline void add_material(material& material) {
       materials.push_back(material);
@@ -88,7 +152,7 @@ class drw_file {
       transforms.push_back(transform);
     }
 
-    glm::vec4& get_color(uint32_t i) {
+    glm::vec3& get_color(uint32_t i) {
       return clrs.get_color(i);
     }
 

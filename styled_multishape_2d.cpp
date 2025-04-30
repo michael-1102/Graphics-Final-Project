@@ -237,14 +237,14 @@ uint32_t styled_multishape_2d::addCubicSplineVertices(std::vector<glm::vec2> poi
 }
 
 // Solid Primitives
-void styled_multishape_2d::fillRectangle(float x, float y, float w, float h, uint32_t color_index) {
-  const glm::vec4& c = drw.get_color(color_index);
+void styled_multishape_2d::fillRectangle(float x, float y, float w, float h, uint32_t color_index, float alpha) {
+  const glm::vec4& c = glm::vec4(drw.get_color(color_index), alpha);
   addRectVertices(x, y, w, h, c);
   sAddQuadIndices();
 }
 
-void styled_multishape_2d::fillSquare(float x, float y, float size, uint32_t color_index) {
-  fillRectangle(x, y, size, size, color_index);
+void styled_multishape_2d::fillSquare(float x, float y, float size, uint32_t color_index, float alpha) {
+  fillRectangle(x, y, size, size, color_index, alpha);
 }
 
 void styled_multishape_2d::fillInFrontRectangle(float x, float y, float w, float h, const glm::vec4& c) {
@@ -253,8 +253,8 @@ void styled_multishape_2d::fillInFrontRectangle(float x, float y, float w, float
 }
 
 void styled_multishape_2d::fillRoundRect(float x, float y, float w, float h, float rx,
-                                 float ry, uint32_t sectors, uint32_t color_index) {
-  const glm::vec4& c = drw.get_color(color_index);
+                                 float ry, uint32_t sectors, uint32_t color_index, float alpha) {
+  const glm::vec4& c = glm::vec4(drw.get_color(color_index), alpha);
   float angle_inc = 90 / sectors;
   uint32_t centerIndex = getPointIndex();
   addStyledPoint(x + w / 2, y + h / 2, c);
@@ -289,8 +289,8 @@ void styled_multishape_2d::fillRoundRect(float x, float y, float w, float h, flo
 }
 
 void styled_multishape_2d::fillTriangle(float x1, float y1, float x2, float y2,
-                                float x3, float y3, uint32_t color_index) {
-  const glm::vec4& c = drw.get_color(color_index);
+                                float x3, float y3, uint32_t color_index, float alpha) {
+  const glm::vec4& c = glm::vec4(drw.get_color(color_index), alpha);
   addTriVertices(x1, y1, x2, y2, x3, y3, c);
   sAddTriIndices();
 }
@@ -301,8 +301,8 @@ void styled_multishape_2d::fillInFrontTriangle(float x1, float y1, float x2, flo
   sAddInFrontTriIndices();
 }
 
-void styled_multishape_2d::fillCircle(float x, float y, float rad, uint32_t sectors, uint32_t color_index) {
-  fillEllipse(x, y, rad, rad, sectors, color_index);
+void styled_multishape_2d::fillCircle(float x, float y, float rad, uint32_t sectors, uint32_t color_index, float alpha) {
+  fillEllipse(x, y, rad, rad, sectors, color_index, alpha);
 }
 
 void styled_multishape_2d::fillInFrontCircle(float x, float y, float rad, uint32_t sectors, const glm::vec4& c) {
@@ -310,8 +310,8 @@ void styled_multishape_2d::fillInFrontCircle(float x, float y, float rad, uint32
 }
 
 void styled_multishape_2d::fillEllipse(float x, float y, float xRad, float yRad,
-                               uint32_t sectors, uint32_t color_index) {
-  const glm::vec4& c = drw.get_color(color_index);
+                               uint32_t sectors, uint32_t color_index, float alpha) {
+  const glm::vec4& c = glm::vec4(drw.get_color(color_index), alpha);
   float angleInc = 360 / sectors;
   uint32_t centerIndex = getPointIndex();
   addStyledPoint(x, y, c);
@@ -329,55 +329,55 @@ void styled_multishape_2d::fillInFrontEllipse(float x, float y, float xRad, floa
   sAddInFrontClosedSectorIndices(centerIndex, toAdd);
 }
 
-void styled_multishape_2d::fillPolygon(std::vector<glm::vec2> points, uint32_t color_index) {
-  const glm::vec4& c = drw.get_color(color_index);
+void styled_multishape_2d::fillPolygon(std::vector<glm::vec2> points, uint32_t color_index, float alpha) {
+  const glm::vec4& c = glm::vec4(drw.get_color(color_index), alpha);
   //TODO: filled in polygon
 }
 
-void styled_multishape_2d::fillGrid(float x0, float y0, float w, float h, uint32_t numCols, uint32_t numRows, uint32_t bg_color_index, uint32_t fg_color_index) {
-  fillRectangle(x0, y0, w, h, bg_color_index);
-  drawGrid(x0, y0, w, h, numCols, numRows, fg_color_index);
+void styled_multishape_2d::fillGrid(float x0, float y0, float w, float h, uint32_t numCols, uint32_t numRows, uint32_t bg_color_index, float bg_alpha, uint32_t fg_color_index, float fg_alpha) {
+  fillRectangle(x0, y0, w, h, bg_color_index, bg_alpha);
+  drawGrid(x0, y0, w, h, numCols, numRows, fg_color_index, fg_alpha);
 }
 
 // Markers for Graphs
-void styled_multishape_2d::fillCircleMarker(float x, float y, float size, uint32_t color_index) {
-  const glm::vec4& c = drw.get_color(color_index);
+void styled_multishape_2d::fillCircleMarker(float x, float y, float size, uint32_t color_index, float alpha) {
+  const glm::vec4& c = glm::vec4(drw.get_color(color_index), alpha);
   fillInFrontCircle(x, y, size, 20, c);
 }
 
-void styled_multishape_2d::fillTriangleMarker(float x, float y, float size, uint32_t color_index) {
-  const glm::vec4& c = drw.get_color(color_index);
+void styled_multishape_2d::fillTriangleMarker(float x, float y, float size, uint32_t color_index, float alpha) {
+  const glm::vec4& c = glm::vec4(drw.get_color(color_index), alpha);
   float y1 = y - (size * 0.5);
   float xOffset = size * 0.5 * sqrt(3);
   fillInFrontTriangle(x, y + size, x - xOffset, y1, x + xOffset, y1, c);
 }
 
-void styled_multishape_2d::fillSquareMarker(float x, float y, float size, uint32_t color_index) {
-  const glm::vec4& c = drw.get_color(color_index);
+void styled_multishape_2d::fillSquareMarker(float x, float y, float size, uint32_t color_index, float alpha) {
+  const glm::vec4& c = glm::vec4(drw.get_color(color_index), alpha);
   float d = size * sqrt(2);
   fillInFrontRectangle(x - d/2, y - d/2, d, d, c);
 }
 
-void styled_multishape_2d::fillHexagonMarker(float x, float y, float size, uint32_t color_index) {
-  const glm::vec4& c = drw.get_color(color_index);
+void styled_multishape_2d::fillHexagonMarker(float x, float y, float size, uint32_t color_index, float alpha) {
+  const glm::vec4& c = glm::vec4(drw.get_color(color_index), alpha);
   fillInFrontEllipse(x, y, size, size, 6, c);
 }
 
 
 // Line Primitives
-void styled_multishape_2d::drawRectangle(float x, float y, float w, float h, uint32_t color_index) {
-  const glm::vec4& c = drw.get_color(color_index);
+void styled_multishape_2d::drawRectangle(float x, float y, float w, float h, uint32_t color_index, float alpha) {
+  const glm::vec4& c = glm::vec4(drw.get_color(color_index), alpha);
   addRectVertices(x, y, w, h, c);
   lAddQuadIndices();
 }
 
-void styled_multishape_2d::drawSquare(float x, float y, float size, uint32_t color_index) {
-  drawRectangle(x, y, size, size, color_index);
+void styled_multishape_2d::drawSquare(float x, float y, float size, uint32_t color_index, float alpha) {
+  drawRectangle(x, y, size, size, color_index, alpha);
 }
 
 void styled_multishape_2d::drawRoundRect(float x, float y, float w, float h, float rx,
-                                 float ry, uint32_t sectors, uint32_t color_index) {
-  const glm::vec4& c = drw.get_color(color_index);
+                                 float ry, uint32_t sectors, uint32_t color_index, float alpha) {
+  const glm::vec4& c = glm::vec4(drw.get_color(color_index), alpha);
   float angle_inc = 90 / sectors;
   uint32_t ind = getPointIndex();
 
@@ -407,19 +407,19 @@ void styled_multishape_2d::drawRoundRect(float x, float y, float w, float h, flo
 }
 
 void styled_multishape_2d::drawTriangle(float x1, float y1, float x2, float y2,
-                                float x3, float y3, uint32_t color_index) {
-  const glm::vec4& c = drw.get_color(color_index);
+                                float x3, float y3, uint32_t color_index, float alpha) {
+  const glm::vec4& c = glm::vec4(drw.get_color(color_index), alpha);
   addTriVertices(x1, y1, x2, y2, x3, y3, c);
   lAddTriIndices();
 }
 
-void styled_multishape_2d::drawCircle(float x, float y, float rad, uint32_t sectors, uint32_t color_index) {
-  drawEllipse(x, y, rad, rad, sectors, color_index);
+void styled_multishape_2d::drawCircle(float x, float y, float rad, uint32_t sectors, uint32_t color_index, float alpha) {
+  drawEllipse(x, y, rad, rad, sectors, color_index, alpha);
 }
 
 void styled_multishape_2d::drawEllipse(float x, float y, float xRad, float yRad,
-                               uint32_t sectors, uint32_t color_index) {
-  const glm::vec4& c = drw.get_color(color_index);
+                               uint32_t sectors, uint32_t color_index, float alpha) {
+  const glm::vec4& c = glm::vec4(drw.get_color(color_index), alpha);
   float angleInc = 360 / sectors;
   uint32_t ind = getPointIndex();
 
@@ -428,8 +428,8 @@ void styled_multishape_2d::drawEllipse(float x, float y, float xRad, float yRad,
 
 }
 
-void styled_multishape_2d::drawLine(float x1, float y1, float x2, float y2, uint32_t color_index) {
-  const glm::vec4& c = drw.get_color(color_index);
+void styled_multishape_2d::drawLine(float x1, float y1, float x2, float y2, uint32_t color_index, float alpha) {
+  const glm::vec4& c = glm::vec4(drw.get_color(color_index), alpha);
   uint32_t ind = getPointIndex();
 
   addStyledPoint(x1, y1, c);
@@ -438,87 +438,87 @@ void styled_multishape_2d::drawLine(float x1, float y1, float x2, float y2, uint
   lineIndices.push_back(ind);
 }
 
-void styled_multishape_2d::drawPolyline(std::vector<glm::vec2> points, uint32_t color_index) {
+void styled_multishape_2d::drawPolyline(std::vector<glm::vec2> points, uint32_t color_index, float alpha) {
   int numPoints = points.size();
   if (numPoints <= 0) return;
   else if (numPoints == 1) {
-    drawPoint(points[0].x, points[0].y, color_index);
+    drawPoint(points[0].x, points[0].y, color_index, alpha);
     return;
   }
   for (int i = 0; i < numPoints - 1; i++) {
-    drawLine(points[i].x, points[i].y, points[i+1].x, points[i+1].y, color_index);
+    drawLine(points[i].x, points[i].y, points[i+1].x, points[i+1].y, color_index, alpha);
   }
 }
 
-void styled_multishape_2d::drawPolylineMarker(std::vector<glm::vec2> points, Marker marker, float markerSize, uint32_t line_color_index, uint32_t marker_color_index) {
+void styled_multishape_2d::drawPolylineMarker(std::vector<glm::vec2> points, Marker marker, float markerSize, uint32_t line_color_index, float line_alpha, uint32_t marker_color_index, float marker_alpha) {
   int numPoints = points.size();
   if (numPoints <= 0) return;
   if (numPoints > 1) 
     for (int i = 0; i < numPoints - 1; i++) {
-      drawLine(points[i].x, points[i].y, points[i+1].x, points[i+1].y, line_color_index);
+      drawLine(points[i].x, points[i].y, points[i+1].x, points[i+1].y, line_color_index, line_alpha);
     }
-  drawMarkers(points, marker, markerSize, marker_color_index);  
+  drawMarkers(points, marker, markerSize, marker_color_index, marker_alpha);  
 }
 
-void styled_multishape_2d::drawPolygon(std::vector<glm::vec2> points, uint32_t color_index) {
+void styled_multishape_2d::drawPolygon(std::vector<glm::vec2> points, uint32_t color_index, float alpha) {
   int numPoints = points.size();
-  drawPolyline(points, color_index);
+  drawPolyline(points, color_index, alpha);
   if (numPoints > 2) {
-    drawLine(points[0].x, points[0].y, points[numPoints - 1].x, points[numPoints - 1].y, color_index);
+    drawLine(points[0].x, points[0].y, points[numPoints - 1].x, points[numPoints - 1].y, color_index, alpha);
   }
 }
 
-void styled_multishape_2d::drawPolygonMarker(std::vector<glm::vec2> points, Marker marker, float markerSize, uint32_t line_color_index, uint32_t marker_color_index) {
+void styled_multishape_2d::drawPolygonMarker(std::vector<glm::vec2> points, Marker marker, float markerSize, uint32_t line_color_index, float line_alpha, uint32_t marker_color_index, float marker_alpha) {
   int numPoints = points.size();
   if (numPoints <= 0) return;
   if (numPoints > 1) 
     for (int i = 0; i < numPoints - 1; i++) {
-      drawLine(points[i].x, points[i].y, points[i+1].x, points[i+1].y, line_color_index);
+      drawLine(points[i].x, points[i].y, points[i+1].x, points[i+1].y, line_color_index, line_alpha);
     }
-  if (numPoints > 2) drawLine(points[numPoints - 1].x, points[numPoints - 1].y, points[0].x, points[0].y, line_color_index);
-  drawMarkers(points, marker, markerSize, marker_color_index);  
+  if (numPoints > 2) drawLine(points[numPoints - 1].x, points[numPoints - 1].y, points[0].x, points[0].y, line_color_index, line_alpha);
+  drawMarkers(points, marker, markerSize, marker_color_index, marker_alpha);  
 }
 
-void styled_multishape_2d::drawGrid(float x0, float y0, float w, float h, uint32_t numCols, uint32_t numRows, uint32_t color_index) {
+void styled_multishape_2d::drawGrid(float x0, float y0, float w, float h, uint32_t numCols, uint32_t numRows, uint32_t color_index, float alpha) {
   // draw vertical lines
   float x = x0;
   const float dx = (w / numCols);
   for (uint32_t i = numCols + 1; i > 0; i--, x += dx)
-    drawLine(x, y0, x, y0 + h, color_index);
+    drawLine(x, y0, x, y0 + h, color_index, alpha);
   // draw horizontal lines
   float y = y0;
   const float dy = (h / numRows);
   for (uint32_t i = numRows + 1; i > 0; i--, y += dy)
-    drawLine(x0, y, x0 + w, y, color_index);
+    drawLine(x0, y, x0 + w, y, color_index, alpha);
 }
 
 // Markers for Graphs
-void styled_multishape_2d::drawCircleMarker(float x, float y, float size, uint32_t color_index) {
-  drawCircle(x, y, size, 20, color_index);
+void styled_multishape_2d::drawCircleMarker(float x, float y, float size, uint32_t color_index, float alpha) {
+  drawCircle(x, y, size, 20, color_index, alpha);
 }
 
-void styled_multishape_2d::drawTriangleMarker(float x, float y, float size, uint32_t color_index) {
+void styled_multishape_2d::drawTriangleMarker(float x, float y, float size, uint32_t color_index, float alpha) {
   float y1 = y - (size * 0.5);
   float xOffset = size * 0.5 * sqrt(3);
-  drawTriangle(x, y + size, x - xOffset, y1, x + xOffset, y1, color_index);
+  drawTriangle(x, y + size, x - xOffset, y1, x + xOffset, y1, color_index, alpha);
 }
 
-void styled_multishape_2d::drawSquareMarker(float x, float y, float size, uint32_t color_index) {
+void styled_multishape_2d::drawSquareMarker(float x, float y, float size, uint32_t color_index, float alpha) {
   float d = size * sqrt(2);
-  drawRectangle(x - d/2, y - d/2, d, d, color_index);
+  drawRectangle(x - d/2, y - d/2, d, d, color_index, alpha);
 }
 
-void styled_multishape_2d::drawHexagonMarker(float x, float y, float size, uint32_t color_index) {
-  drawEllipse(x, y, size, size, 6, color_index);
+void styled_multishape_2d::drawHexagonMarker(float x, float y, float size, uint32_t color_index, float alpha) {
+  drawEllipse(x, y, size, size, 6, color_index, alpha);
 }
 
-void styled_multishape_2d::drawCrossMarker(float x, float y, float size, uint32_t color_index) {
-  drawLine(x, y + size, x, y - size, color_index);
-  drawLine(x - size, y, x + size, y, color_index);
+void styled_multishape_2d::drawCrossMarker(float x, float y, float size, uint32_t color_index, float alpha) {
+  drawLine(x, y + size, x, y - size, color_index, alpha);
+  drawLine(x - size, y, x + size, y, color_index, alpha);
 }
 
-void styled_multishape_2d::drawMarkers(std::vector<glm::vec2> points, Marker marker, float markerSize, uint32_t color_index) {
-  void (styled_multishape_2d::*markerFunc)(float, float, float, uint32_t) = NULL;
+void styled_multishape_2d::drawMarkers(std::vector<glm::vec2> points, Marker marker, float markerSize, uint32_t color_index, float alpha) {
+  void (styled_multishape_2d::*markerFunc)(float, float, float, uint32_t, float) = NULL;
   switch(marker) {
     case Marker::FILL_CIRCLE:
       markerFunc = &styled_multishape_2d::fillCircleMarker;
@@ -550,55 +550,55 @@ void styled_multishape_2d::drawMarkers(std::vector<glm::vec2> points, Marker mar
       break;
   }
   for (auto point : points) {
-    (*this.*markerFunc)(point.x, point.y, markerSize, color_index);
+    (*this.*markerFunc)(point.x, point.y, markerSize, color_index, alpha);
   } 
 }
 
 
-void styled_multishape_2d::drawBezier(std::vector<glm::vec2> points, float inc, uint32_t color_index) {
-  const glm::vec4& c = drw.get_color(color_index);
+void styled_multishape_2d::drawBezier(std::vector<glm::vec2> points, float inc, uint32_t color_index, float alpha) {
+  const glm::vec4& c = glm::vec4(drw.get_color(color_index), alpha);
   lAddIndices(addBezierVertices(points, inc, c));
 }
 
-void styled_multishape_2d::drawQuadraticBezier(float p1x, float p1y, float p2x, float p2y, float p3x, float p3y, float inc, uint32_t color_index) {
-  const glm::vec4& c = drw.get_color(color_index);
+void styled_multishape_2d::drawQuadraticBezier(float p1x, float p1y, float p2x, float p2y, float p3x, float p3y, float inc, uint32_t color_index, float alpha) {
+  const glm::vec4& c = glm::vec4(drw.get_color(color_index), alpha);
   lAddIndices(addQuadBezierVertices(p1x, p1y, p2x, p2y, p3x, p3y, inc, c));
 }
 
-void styled_multishape_2d::drawCubicBezier(float p1x, float p1y, float p2x, float p2y, float p3x, float p3y, float p4x, float p4y, float inc, uint32_t color_index) {
-  const glm::vec4& c = drw.get_color(color_index);
+void styled_multishape_2d::drawCubicBezier(float p1x, float p1y, float p2x, float p2y, float p3x, float p3y, float p4x, float p4y, float inc, uint32_t color_index, float alpha) {
+  const glm::vec4& c = glm::vec4(drw.get_color(color_index), alpha);
   lAddIndices(addCubicBezierVertices(p1x, p1y, p2x, p2y, p3x, p3y, p4x, p4y, inc, c));
 }
 
-void styled_multishape_2d::drawCubicSpline(std::vector<glm::vec2> points, float inc, uint32_t color_index) {
-  const glm::vec4& c = drw.get_color(color_index); 
+void styled_multishape_2d::drawCubicSpline(std::vector<glm::vec2> points, float inc, uint32_t color_index, float alpha) {
+  const glm::vec4& c = glm::vec4(drw.get_color(color_index), alpha); 
   lAddIndices(addCubicSplineVertices(points, inc, c));
 }
 
-void styled_multishape_2d::drawCubicSplineMarker(std::vector<glm::vec2> points, float inc, Marker marker, float markerSize, uint32_t line_color_index, uint32_t marker_color_index) {
-  const glm::vec4& line_color = drw.get_color(line_color_index);
+void styled_multishape_2d::drawCubicSplineMarker(std::vector<glm::vec2> points, float inc, Marker marker, float markerSize, uint32_t line_color_index, float line_alpha, uint32_t marker_color_index, float marker_alpha) {
+  const glm::vec4& line_color = glm::vec4(drw.get_color(line_color_index), line_alpha);
   lAddIndices(addCubicSplineVertices(points, inc, line_color));
-  drawMarkers(points, marker, markerSize, marker_color_index);
+  drawMarkers(points, marker, markerSize, marker_color_index, marker_alpha);
 }
 
-void styled_multishape_2d::drawPCHIP(std::vector<glm::vec2> points, float inc, uint32_t color_index) {
+void styled_multishape_2d::drawPCHIP(std::vector<glm::vec2> points, float inc, uint32_t color_index, float alpha) {
 
 }
 
 // Point Primitives
-void styled_multishape_2d::rectanglePoints(float x, float y, float w, float h, uint32_t color_index) {
-  const glm::vec4& c = drw.get_color(color_index);
+void styled_multishape_2d::rectanglePoints(float x, float y, float w, float h, uint32_t color_index, float alpha) {
+  const glm::vec4& c = glm::vec4(drw.get_color(color_index), alpha);
   addRectVertices(x, y, w, h, c);
   pAddQuadIndices();
 }
 
-void styled_multishape_2d::squarePoints(float x, float y, float size, uint32_t color_index) {
-  rectanglePoints(x, y, size, size, color_index);
+void styled_multishape_2d::squarePoints(float x, float y, float size, uint32_t color_index, float alpha) {
+  rectanglePoints(x, y, size, size, color_index, alpha);
 }
 
 void styled_multishape_2d::roundRectPoints(float x, float y, float w, float h, float rx,
-                                   float ry, uint32_t sectors, uint32_t color_index) {
-  const glm::vec4& c = drw.get_color(color_index);
+                                   float ry, uint32_t sectors, uint32_t color_index, float alpha) {
+  const glm::vec4& c = glm::vec4(drw.get_color(color_index), alpha);
   float angle_inc = 90 / sectors;
   uint32_t toAdd = addSector(x + rx, y + ry, rx, ry, 90, 180, angle_inc, c);
   pAddIndices(toAdd);
@@ -614,26 +614,26 @@ void styled_multishape_2d::roundRectPoints(float x, float y, float w, float h, f
 }
 
 void styled_multishape_2d::trianglePoints(float x1, float y1, float x2, float y2,
-                                  float x3, float y3, uint32_t color_index) {
-  const glm::vec4& c = drw.get_color(color_index);
+                                  float x3, float y3, uint32_t color_index, float alpha) {
+  const glm::vec4& c = glm::vec4(drw.get_color(color_index), alpha);
   addTriVertices(x1, y1, x2, y2, x3, y3, c);
   pAddTriIndices();
 }
 
-void styled_multishape_2d::circlePoints(float x, float y, float rad, uint32_t sectors, uint32_t color_index) {
-  ellipsePoints(x, y, rad, rad, sectors, color_index);
+void styled_multishape_2d::circlePoints(float x, float y, float rad, uint32_t sectors, uint32_t color_index, float alpha) {
+  ellipsePoints(x, y, rad, rad, sectors, color_index, alpha);
 }
 
 void styled_multishape_2d::ellipsePoints(float x, float y, float xRad, float yRad,
-                                 uint32_t sectors, uint32_t color_index) {
-  const glm::vec4& c = drw.get_color(color_index);
+                                 uint32_t sectors, uint32_t color_index, float alpha) {
+  const glm::vec4& c = glm::vec4(drw.get_color(color_index), alpha);
   float angleInc = 360 / sectors;
   uint32_t toAdd = addSector(x, y, xRad, yRad, 0, 360 - angleInc, angleInc, c);
   pAddIndices(toAdd);
 }
 
-void styled_multishape_2d::drawPoint(float x, float y, uint32_t color_index) {
-  const glm::vec4& c = drw.get_color(color_index);
+void styled_multishape_2d::drawPoint(float x, float y, uint32_t color_index, float alpha) {
+  const glm::vec4& c = glm::vec4(drw.get_color(color_index), alpha);
   drawPoint(x, y, c);
 }
 
@@ -643,55 +643,55 @@ void styled_multishape_2d::drawPoint(float x, float y, const glm::vec4& c) {
   pointIndices.push_back(ind);
 }
 
-void styled_multishape_2d::bezierPoints(std::vector<glm::vec2> points, float inc, uint32_t color_index) {
-  const glm::vec4& c = drw.get_color(color_index);
+void styled_multishape_2d::bezierPoints(std::vector<glm::vec2> points, float inc, uint32_t color_index, float alpha) {
+  const glm::vec4& c = glm::vec4(drw.get_color(color_index), alpha);
   pAddIndices(addBezierVertices(points, inc, c));
 }
 
-void styled_multishape_2d::quadraticBezierPoints(float p1x, float p1y, float p2x, float p2y, float p3x, float p3y, float inc, uint32_t color_index) {
-  const glm::vec4& c = drw.get_color(color_index);
+void styled_multishape_2d::quadraticBezierPoints(float p1x, float p1y, float p2x, float p2y, float p3x, float p3y, float inc, uint32_t color_index, float alpha) {
+  const glm::vec4& c = glm::vec4(drw.get_color(color_index), alpha);
   pAddIndices(addQuadBezierVertices(p1x, p1y, p2x, p2y, p3x, p3y, inc, c));
 }
 
-void styled_multishape_2d::cubicBezierPoints(float p1x, float p1y, float p2x, float p2y, float p3x, float p3y, float p4x, float p4y, float inc, uint32_t color_index) {
-  const glm::vec4& c = drw.get_color(color_index);
+void styled_multishape_2d::cubicBezierPoints(float p1x, float p1y, float p2x, float p2y, float p3x, float p3y, float p4x, float p4y, float inc, uint32_t color_index, float alpha) {
+  const glm::vec4& c = glm::vec4(drw.get_color(color_index), alpha);
   pAddIndices(addCubicBezierVertices(p1x, p1y, p2x, p2y, p3x, p3y, p4x, p4y, inc, c));
 }
 
-void styled_multishape_2d::cubicSplinePoints(std::vector<glm::vec2> points, float inc, uint32_t color_index) {
-  const glm::vec4& c = drw.get_color(color_index);
+void styled_multishape_2d::cubicSplinePoints(std::vector<glm::vec2> points, float inc, uint32_t color_index, float alpha) {
+  const glm::vec4& c = glm::vec4(drw.get_color(color_index), alpha);
   pAddIndices(addCubicSplineVertices(points, inc, c));
 }
 
-void styled_multishape_2d::add_draw_point(float x, float y, uint32_t color_index) {
+void styled_multishape_2d::add_draw_point(float x, float y, uint32_t color_index, float alpha) {
   instructions.push_back(shape::full_instruction(instruction::DRAW_POINT, {x}, {y}, {}, {}, {color_index}));
-  drawPoint(x, y, color_index);
+  drawPoint(x, y, color_index, alpha);
 }
-void styled_multishape_2d::add_fill_rectangle(float x, float y, float w, float h, uint32_t color_index) {
+void styled_multishape_2d::add_fill_rectangle(float x, float y, float w, float h, uint32_t color_index, float alpha) {
   instructions.push_back(shape::full_instruction(instruction::FILL_RECTANGLE, {x}, {y}, {}, {w, h}, {color_index}));
-  fillRectangle(x, y, w, h, color_index);
+  fillRectangle(x, y, w, h, color_index, alpha);
 }
-void styled_multishape_2d::add_fill_square(float x, float y, float size, uint32_t color_index) {
+void styled_multishape_2d::add_fill_square(float x, float y, float size, uint32_t color_index, float alpha) {
   instructions.push_back(shape::full_instruction(instruction::FILL_SQUARE, {x}, {y}, {}, {size}, {color_index}));
-  fillSquare(x, y, size, color_index);
+  fillSquare(x, y, size, color_index, alpha);
 }
-void styled_multishape_2d::add_fill_round_rect(float x, float y, float w, float h, float rx, float ry, uint32_t sectors, uint32_t color_index) {
+void styled_multishape_2d::add_fill_round_rect(float x, float y, float w, float h, float rx, float ry, uint32_t sectors, uint32_t color_index, float alpha) {
   instructions.push_back(shape::full_instruction(instruction::FILL_ROUND_RECT, {x}, {y}, {}, {w, h, rx, ry}, {sectors, color_index}));
-  fillRoundRect(x, y, w, h, rx, ry, sectors, color_index);
+  fillRoundRect(x, y, w, h, rx, ry, sectors, color_index, alpha);
 }
-void styled_multishape_2d::add_fill_triangle(float x1, float y1, float x2, float y2, float x3, float y3, uint32_t color_index) {
+void styled_multishape_2d::add_fill_triangle(float x1, float y1, float x2, float y2, float x3, float y3, uint32_t color_index, float alpha) {
   instructions.push_back(shape::full_instruction(instruction::FILL_TRIANGLE, {x1, x2, x3}, {y1, y2, y3}, {}, {}, {color_index}));
-  fillTriangle(x1, y1, x2, y2, x3, y3, color_index);
+  fillTriangle(x1, y1, x2, y2, x3, y3, color_index, alpha);
 }
-void styled_multishape_2d::add_fill_circle(float x, float y, float rad, uint32_t sectors, uint32_t color_index) {
+void styled_multishape_2d::add_fill_circle(float x, float y, float rad, uint32_t sectors, uint32_t color_index, float alpha) {
   instructions.push_back(shape::full_instruction(instruction::FILL_CIRCLE, {x}, {y}, {}, {rad}, {sectors, color_index}));
-  fillCircle(x, y, rad, sectors, color_index);
+  fillCircle(x, y, rad, sectors, color_index, alpha);
 }
-void styled_multishape_2d::add_fill_ellipse(float x, float y, float xRad, float yRad, uint32_t sectors, uint32_t color_index) {
+void styled_multishape_2d::add_fill_ellipse(float x, float y, float xRad, float yRad, uint32_t sectors, uint32_t color_index, float alpha) {
   instructions.push_back(shape::full_instruction(instruction::FILL_ELLIPSE, {x}, {y}, {}, {xRad, yRad}, {sectors, color_index}));
-  fillEllipse(x, y, xRad, yRad, sectors, color_index);
+  fillEllipse(x, y, xRad, yRad, sectors, color_index, alpha);
 }
-void styled_multishape_2d::add_fill_polygon(std::vector<glm::vec2> points, uint32_t color_index) {
+void styled_multishape_2d::add_fill_polygon(std::vector<glm::vec2> points, uint32_t color_index, float alpha) {
   std::vector<float> x_coords;
   std::vector<float> y_coords;
   for (auto p : points) {
@@ -699,81 +699,81 @@ void styled_multishape_2d::add_fill_polygon(std::vector<glm::vec2> points, uint3
     y_coords.push_back(p.y);
   }
   instructions.push_back(shape::full_instruction(instruction::FILL_POLYGON, x_coords, y_coords, {}, {}, {(uint32_t) points.size(), color_index}));
-  fillPolygon(points, color_index);
+  fillPolygon(points, color_index, alpha);
 }
-void styled_multishape_2d::add_fill_circle_marker(float x, float y, float size, uint32_t color_index) {
+void styled_multishape_2d::add_fill_circle_marker(float x, float y, float size, uint32_t color_index, float alpha) {
   instructions.push_back(shape::full_instruction(instruction::FILL_CIRCLE_MARKER, {x}, {y}, {}, {size}, {color_index}));
-  fillCircleMarker(x, y, size, color_index);
+  fillCircleMarker(x, y, size, color_index, alpha);
 }
-void styled_multishape_2d::add_fill_triangle_marker(float x, float y, float size, uint32_t color_index) {
+void styled_multishape_2d::add_fill_triangle_marker(float x, float y, float size, uint32_t color_index, float alpha) {
   instructions.push_back(shape::full_instruction(instruction::FILL_TRIANGLE_MARKER, {x}, {y}, {}, {size}, {color_index}));
-  fillTriangleMarker(x, y, size, color_index);
+  fillTriangleMarker(x, y, size, color_index, alpha);
 }
-void styled_multishape_2d::add_fill_square_marker(float x, float y, float size, uint32_t color_index) {
+void styled_multishape_2d::add_fill_square_marker(float x, float y, float size, uint32_t color_index, float alpha) {
   instructions.push_back(shape::full_instruction(instruction::FILL_SQUARE_MARKER, {x}, {y}, {}, {size}, {color_index}));
-  fillSquareMarker(x, y, size, color_index);
+  fillSquareMarker(x, y, size, color_index, alpha);
 }
-void styled_multishape_2d::add_fill_hexagon_marker(float x, float y, float size, uint32_t color_index) {
+void styled_multishape_2d::add_fill_hexagon_marker(float x, float y, float size, uint32_t color_index, float alpha) {
   instructions.push_back(shape::full_instruction(instruction::FILL_HEXAGON_MARKER, {x}, {y}, {}, {size}, {color_index}));
-  fillHexagonMarker(x, y, size, color_index);
+  fillHexagonMarker(x, y, size, color_index, alpha);
 }
 
-void styled_multishape_2d::add_draw_line(float x1, float y1, float x2, float y2, uint32_t color_index) {
+void styled_multishape_2d::add_draw_line(float x1, float y1, float x2, float y2, uint32_t color_index, float alpha) {
   instructions.push_back(shape::full_instruction(instruction::DRAW_LINE, {x1, x2}, {y1, y2}, {}, {}, {color_index}));
-  drawLine(x1, y1, x2, y2, color_index);
+  drawLine(x1, y1, x2, y2, color_index, alpha);
 }
 
-void styled_multishape_2d::add_draw_rectangle(float x, float y, float w, float h, uint32_t color_index) {
+void styled_multishape_2d::add_draw_rectangle(float x, float y, float w, float h, uint32_t color_index, float alpha) {
   instructions.push_back(shape::full_instruction(instruction::DRAW_RECTANGLE, {x}, {y}, {}, {w, h}, {color_index}));
-  drawRectangle(x, y, w, h, color_index);
+  drawRectangle(x, y, w, h, color_index, alpha);
 }
-void styled_multishape_2d::add_draw_square(float x, float y, float size, uint32_t color_index) {
+void styled_multishape_2d::add_draw_square(float x, float y, float size, uint32_t color_index, float alpha) {
   instructions.push_back(shape::full_instruction(instruction::DRAW_SQUARE, {x}, {y}, {}, {size}, {color_index}));
-  drawSquare(x, y, size, color_index);
+  drawSquare(x, y, size, color_index, alpha);
 }
-void styled_multishape_2d::add_draw_round_rect(float x, float y, float w, float h, float rx, float ry, uint32_t sectors, uint32_t color_index) {
+void styled_multishape_2d::add_draw_round_rect(float x, float y, float w, float h, float rx, float ry, uint32_t sectors, uint32_t color_index, float alpha) {
   instructions.push_back(shape::full_instruction(instruction::DRAW_ROUND_RECT, {x}, {y}, {}, {w, h, rx, ry}, {sectors, color_index}));
-  drawRoundRect(x, y, w, h, rx, ry, sectors, color_index);
+  drawRoundRect(x, y, w, h, rx, ry, sectors, color_index, alpha);
 }
-void styled_multishape_2d::add_draw_triangle(float x1, float y1, float x2, float y2, float x3, float y3, uint32_t color_index) {
+void styled_multishape_2d::add_draw_triangle(float x1, float y1, float x2, float y2, float x3, float y3, uint32_t color_index, float alpha) {
   instructions.push_back(shape::full_instruction(instruction::DRAW_TRIANGLE, {x1, x2, x3}, {y1, y2, y3}, {}, {}, {color_index}));
-  drawTriangle(x1, y1, x2, y2, x3, y3, color_index);
+  drawTriangle(x1, y1, x2, y2, x3, y3, color_index, alpha);
 }
-void styled_multishape_2d::add_draw_circle(float x, float y, float rad, uint32_t sectors, uint32_t color_index) {
+void styled_multishape_2d::add_draw_circle(float x, float y, float rad, uint32_t sectors, uint32_t color_index, float alpha) {
   instructions.push_back(shape::full_instruction(instruction::DRAW_CIRCLE, {x}, {y}, {}, {rad}, {sectors, color_index}));
-  drawCircle(x, y, rad, sectors, color_index);
+  drawCircle(x, y, rad, sectors, color_index, alpha);
 }
-void styled_multishape_2d::add_draw_ellipse(float x, float y, float xRad, float yRad, uint32_t sectors, uint32_t color_index) {
+void styled_multishape_2d::add_draw_ellipse(float x, float y, float xRad, float yRad, uint32_t sectors, uint32_t color_index, float alpha) {
   instructions.push_back(shape::full_instruction(instruction::DRAW_ELLIPSE, {x}, {y}, {}, {xRad, yRad}, {sectors, color_index}));
-  drawEllipse(x, y, xRad, yRad, sectors, color_index);
+  drawEllipse(x, y, xRad, yRad, sectors, color_index, alpha);
 }
 
-void styled_multishape_2d::add_rectangle_points(float x, float y, float w, float h, uint32_t color_index) {
+void styled_multishape_2d::add_rectangle_points(float x, float y, float w, float h, uint32_t color_index, float alpha) {
   instructions.push_back(shape::full_instruction(instruction::RECTANGLE_POINTS, {x}, {y}, {}, {w, h}, {color_index}));
-  rectanglePoints(x, y, w, h, color_index);
+  rectanglePoints(x, y, w, h, color_index, alpha);
 }
-void styled_multishape_2d::add_square_points(float x, float y, float size, uint32_t color_index) {
+void styled_multishape_2d::add_square_points(float x, float y, float size, uint32_t color_index, float alpha) {
   instructions.push_back(shape::full_instruction(instruction::SQUARE_POINTS, {x}, {y}, {}, {size}, {color_index}));
-  squarePoints(x, y, size, color_index);
+  squarePoints(x, y, size, color_index, alpha);
 }
-void styled_multishape_2d::add_round_rect_points(float x, float y, float w, float h, float rx, float ry, uint32_t sectors, uint32_t color_index) {
+void styled_multishape_2d::add_round_rect_points(float x, float y, float w, float h, float rx, float ry, uint32_t sectors, uint32_t color_index, float alpha) {
   instructions.push_back(shape::full_instruction(instruction::ROUND_RECT_POINTS, {x}, {y}, {}, {w, h, rx, ry}, {sectors, color_index}));
-  roundRectPoints(x, y, w, h, rx, ry, sectors, color_index);
+  roundRectPoints(x, y, w, h, rx, ry, sectors, color_index, alpha);
 }
-void styled_multishape_2d::add_triangle_points(float x1, float y1, float x2, float y2, float x3, float y3, uint32_t color_index) {
+void styled_multishape_2d::add_triangle_points(float x1, float y1, float x2, float y2, float x3, float y3, uint32_t color_index, float alpha) {
   instructions.push_back(shape::full_instruction(instruction::TRIANGLE_POINTS, {x1, x2, x3}, {y1, y2, y3}, {}, {}, {color_index}));
-  trianglePoints(x1, y1, x2, y2, x3, y3, color_index);
+  trianglePoints(x1, y1, x2, y2, x3, y3, color_index, alpha);
 }
-void styled_multishape_2d::add_circle_points(float x, float y, float rad, uint32_t sectors, uint32_t color_index) {
+void styled_multishape_2d::add_circle_points(float x, float y, float rad, uint32_t sectors, uint32_t color_index, float alpha) {
   instructions.push_back(shape::full_instruction(instruction::CIRCLE_POINTS, {x}, {y}, {}, {rad}, {sectors, color_index}));
-  circlePoints(x, y, rad, sectors, color_index);
+  circlePoints(x, y, rad, sectors, color_index, alpha);
 }
-void styled_multishape_2d::add_ellipse_points(float x, float y, float xRad, float yRad, uint32_t sectors, uint32_t color_index) {
+void styled_multishape_2d::add_ellipse_points(float x, float y, float xRad, float yRad, uint32_t sectors, uint32_t color_index, float alpha) {
   instructions.push_back(shape::full_instruction(instruction::ELLIPSE_POINTS, {x}, {y}, {}, {xRad, yRad}, {sectors, color_index}));
-  ellipsePoints(x, y, xRad, yRad, sectors, color_index);
+  ellipsePoints(x, y, xRad, yRad, sectors, color_index, alpha);
 }
 
-void styled_multishape_2d::add_draw_polygon(std::vector<glm::vec2> points, uint32_t color_index) {
+void styled_multishape_2d::add_draw_polygon(std::vector<glm::vec2> points, uint32_t color_index, float alpha) {
   std::vector<float> x_coords;
   std::vector<float> y_coords;
   for (auto p : points) {
@@ -781,9 +781,9 @@ void styled_multishape_2d::add_draw_polygon(std::vector<glm::vec2> points, uint3
     y_coords.push_back(p.y);
   }
   instructions.push_back(shape::full_instruction(instruction::DRAW_POLYGON, x_coords, y_coords, {}, {}, {(uint32_t) points.size(), color_index}));
-  drawPolygon(points, color_index);
+  drawPolygon(points, color_index, alpha);
 }
-void styled_multishape_2d::add_draw_PCHIP(std::vector<glm::vec2> points, float inc, uint32_t color_index) {
+void styled_multishape_2d::add_draw_PCHIP(std::vector<glm::vec2> points, float inc, uint32_t color_index, float alpha) {
   std::vector<float> x_coords;
   std::vector<float> y_coords;
   for (auto p : points) {
@@ -791,9 +791,9 @@ void styled_multishape_2d::add_draw_PCHIP(std::vector<glm::vec2> points, float i
     y_coords.push_back(p.y);
   }
   instructions.push_back(shape::full_instruction(instruction::DRAW_PCHIP, x_coords, y_coords, {}, {inc}, {(uint32_t) points.size(), color_index}));
-  drawPCHIP(points, inc, color_index);
+  drawPCHIP(points, inc, color_index, alpha);
 }
-void styled_multishape_2d::add_draw_cubic_spline(std::vector<glm::vec2> points, float inc, uint32_t color_index) {
+void styled_multishape_2d::add_draw_cubic_spline(std::vector<glm::vec2> points, float inc, uint32_t color_index, float alpha) {
   std::vector<float> x_coords;
   std::vector<float> y_coords;
   for (auto p : points) {
@@ -801,9 +801,9 @@ void styled_multishape_2d::add_draw_cubic_spline(std::vector<glm::vec2> points, 
     y_coords.push_back(p.y);
   }
   instructions.push_back(shape::full_instruction(instruction::DRAW_CUBIC_SPLINE, x_coords, y_coords, {}, {inc}, {(uint32_t) points.size(), color_index}));
-  drawCubicSpline(points, inc, color_index);
+  drawCubicSpline(points, inc, color_index, alpha);
 }
-void styled_multishape_2d::add_cubic_spline_points(std::vector<glm::vec2> points, float inc, uint32_t color_index) {
+void styled_multishape_2d::add_cubic_spline_points(std::vector<glm::vec2> points, float inc, uint32_t color_index, float alpha) {
   std::vector<float> x_coords;
   std::vector<float> y_coords;
   for (auto p : points) {
@@ -811,9 +811,9 @@ void styled_multishape_2d::add_cubic_spline_points(std::vector<glm::vec2> points
     y_coords.push_back(p.y);
   }
   instructions.push_back(shape::full_instruction(instruction::CUBIC_SPLINE_POINTS, x_coords, y_coords, {}, {inc}, {(uint32_t) points.size(), color_index}));
-  cubicSplinePoints(points, inc, color_index);
+  cubicSplinePoints(points, inc, color_index, alpha);
 }
-void styled_multishape_2d::add_draw_bezier(std::vector<glm::vec2> points, float inc, uint32_t color_index) {
+void styled_multishape_2d::add_draw_bezier(std::vector<glm::vec2> points, float inc, uint32_t color_index, float alpha) {
   std::vector<float> x_coords;
   std::vector<float> y_coords;
   for (auto p : points) {
@@ -821,9 +821,9 @@ void styled_multishape_2d::add_draw_bezier(std::vector<glm::vec2> points, float 
     y_coords.push_back(p.y);
   }
   instructions.push_back(shape::full_instruction(instruction::DRAW_BEZIER, x_coords, y_coords, {}, {inc}, {(uint32_t) points.size(), color_index}));
-  drawBezier(points, inc, color_index);
+  drawBezier(points, inc, color_index, alpha);
 }
-void styled_multishape_2d::add_bezier_points(std::vector<glm::vec2> points, float inc, uint32_t color_index) {
+void styled_multishape_2d::add_bezier_points(std::vector<glm::vec2> points, float inc, uint32_t color_index, float alpha) {
   std::vector<float> x_coords;
   std::vector<float> y_coords;
   for (auto p : points) {
@@ -831,17 +831,17 @@ void styled_multishape_2d::add_bezier_points(std::vector<glm::vec2> points, floa
     y_coords.push_back(p.y);
   }
   instructions.push_back(shape::full_instruction(instruction::BEZIER_POINTS, x_coords, y_coords, {}, {inc}, {(uint32_t) points.size(), color_index}));
-  bezierPoints(points, inc, color_index);
+  bezierPoints(points, inc, color_index, alpha);
 }
-void styled_multishape_2d::add_draw_grid(float x0, float y0, float w, float h, uint32_t numCols, uint32_t numRows, uint32_t color_index) {
+void styled_multishape_2d::add_draw_grid(float x0, float y0, float w, float h, uint32_t numCols, uint32_t numRows, uint32_t color_index, float alpha) {
   instructions.push_back(shape::full_instruction(instruction::DRAW_GRID, {x0}, {y0}, {}, {w, h}, {numCols, numRows, color_index}));
-  drawGrid(x0, y0, w, h, numCols, numRows, color_index);
+  drawGrid(x0, y0, w, h, numCols, numRows, color_index, alpha);
 }
-void styled_multishape_2d::add_fill_grid(float x0, float y0, float w, float h, uint32_t numCols, uint32_t numRows, uint32_t bg_color_index, uint32_t fg_color_index) {
+void styled_multishape_2d::add_fill_grid(float x0, float y0, float w, float h, uint32_t numCols, uint32_t numRows, uint32_t bg_color_index, float bg_alpha, uint32_t fg_color_index, float fg_alpha) {
   instructions.push_back(shape::full_instruction(instruction::FILL_GRID, {x0}, {y0}, {}, {w, h}, {numCols, numRows, bg_color_index, fg_color_index}));
-  fillGrid(x0, y0, w, h, numCols, numRows, bg_color_index, fg_color_index);
+  fillGrid(x0, y0, w, h, numCols, numRows, bg_color_index, bg_alpha, fg_color_index, fg_alpha);
 }
-void styled_multishape_2d::add_draw_polyline(std::vector<glm::vec2> points, uint32_t color_index) {
+void styled_multishape_2d::add_draw_polyline(std::vector<glm::vec2> points, uint32_t color_index, float alpha) {
   std::vector<float> x_coords;
   std::vector<float> y_coords;
   for (auto p : points) {
@@ -849,9 +849,9 @@ void styled_multishape_2d::add_draw_polyline(std::vector<glm::vec2> points, uint
     y_coords.push_back(p.y);
   }
   instructions.push_back(shape::full_instruction(instruction::DRAW_POLYLINE, x_coords, y_coords, {}, {}, {(uint32_t) points.size(), color_index}));
-  drawPolyline(points, color_index);
+  drawPolyline(points, color_index, alpha);
 }
-void styled_multishape_2d::add_draw_polyline_marker(std::vector<glm::vec2> points, Marker marker, float markerSize, uint32_t line_color_index, uint32_t marker_color_index) {
+void styled_multishape_2d::add_draw_polyline_marker(std::vector<glm::vec2> points, Marker marker, float markerSize, uint32_t line_color_index, float line_alpha, uint32_t marker_color_index, float marker_alpha) {
   std::vector<float> x_coords;
   std::vector<float> y_coords;
   for (auto p : points) {
@@ -859,9 +859,9 @@ void styled_multishape_2d::add_draw_polyline_marker(std::vector<glm::vec2> point
     y_coords.push_back(p.y);
   }
   instructions.push_back(shape::full_instruction(instruction::DRAW_POLYLINE_MARKER, x_coords, y_coords, {}, {markerSize}, {(uint32_t) points.size(), to_underlying(marker), line_color_index, marker_color_index}));
-  drawPolylineMarker(points, marker, markerSize, line_color_index, marker_color_index);
+  drawPolylineMarker(points, marker, markerSize, line_color_index, line_alpha, marker_color_index, marker_alpha);
 }
-void styled_multishape_2d::add_draw_polygon_marker(std::vector<glm::vec2> points, Marker marker, float markerSize, uint32_t line_color_index, uint32_t marker_color_index) {
+void styled_multishape_2d::add_draw_polygon_marker(std::vector<glm::vec2> points, Marker marker, float markerSize, uint32_t line_color_index, float line_alpha, uint32_t marker_color_index, float marker_alpha) {
   std::vector<float> x_coords;
   std::vector<float> y_coords;
   for (auto p : points) {
@@ -869,9 +869,9 @@ void styled_multishape_2d::add_draw_polygon_marker(std::vector<glm::vec2> points
     y_coords.push_back(p.y);
   }
   instructions.push_back(shape::full_instruction(instruction::DRAW_POLYGON_MARKER, x_coords, y_coords, {}, {markerSize}, {(uint32_t) points.size(), to_underlying(marker), line_color_index, marker_color_index}));
-  drawPolygonMarker(points, marker, markerSize, line_color_index, marker_color_index);
+  drawPolygonMarker(points, marker, markerSize, line_color_index, line_alpha, marker_color_index, marker_alpha);
 }
-void styled_multishape_2d::add_draw_cubic_spline_marker(std::vector<glm::vec2> points, float inc, Marker marker, float markerSize, uint32_t line_color_index, uint32_t marker_color_index) {
+void styled_multishape_2d::add_draw_cubic_spline_marker(std::vector<glm::vec2> points, float inc, Marker marker, float markerSize, uint32_t line_color_index, float line_alpha, uint32_t marker_color_index, float marker_alpha) {
   std::vector<float> x_coords;
   std::vector<float> y_coords;
   for (auto p : points) {
@@ -879,34 +879,34 @@ void styled_multishape_2d::add_draw_cubic_spline_marker(std::vector<glm::vec2> p
     y_coords.push_back(p.y);
   }
   instructions.push_back(shape::full_instruction(instruction::DRAW_CUBIC_SPLINE_MARKER, x_coords, y_coords, {}, {inc, markerSize}, {(uint32_t) points.size(), to_underlying(marker), line_color_index, marker_color_index}));
-  drawCubicSplineMarker(points, inc, marker, markerSize, line_color_index,
-                        marker_color_index);
+  drawCubicSplineMarker(points, inc, marker, markerSize, line_color_index, line_alpha,
+                        marker_color_index, marker_alpha);
 }
-void styled_multishape_2d::add_draw_circle_marker(float x, float y, float size, uint32_t color_index) {
+void styled_multishape_2d::add_draw_circle_marker(float x, float y, float size, uint32_t color_index, float alpha) {
   instructions.push_back(shape::full_instruction(instruction::DRAW_CIRCLE_MARKER, {x}, {y}, {}, {size}, {color_index}));
-  drawCircleMarker(x, y, size, color_index);
+  drawCircleMarker(x, y, size, color_index, alpha);
 }
-void styled_multishape_2d::add_draw_quadratic_bezier(float p1x, float p1y, float p2x, float p2y, float p3x, float p3y, float inc, uint32_t color_index) {
+void styled_multishape_2d::add_draw_quadratic_bezier(float p1x, float p1y, float p2x, float p2y, float p3x, float p3y, float inc, uint32_t color_index, float alpha) {
   instructions.push_back(shape::full_instruction(instruction::DRAW_QUADRATIC_BEZIER, {p1x, p2x, p3x}, {p1y, p2y, p3y}, {}, {inc}, {color_index}));
-  drawQuadraticBezier(p1x, p1y, p2x, p2y, p3x, p3y, inc, color_index);
+  drawQuadraticBezier(p1x, p1y, p2x, p2y, p3x, p3y, inc, color_index, alpha);
 }
-void styled_multishape_2d::add_draw_cubic_bezier(float p1x, float p1y, float p2x, float p2y, float p3x, float p3y, float p4x, float p4y, float inc, uint32_t color_index) {
+void styled_multishape_2d::add_draw_cubic_bezier(float p1x, float p1y, float p2x, float p2y, float p3x, float p3y, float p4x, float p4y, float inc, uint32_t color_index, float alpha) {
   instructions.push_back(shape::full_instruction(instruction::DRAW_CUBIC_BEZIER, {p1x, p2x, p3x, p4x}, {p1y, p2y, p3y, p4y}, {}, {inc}, {color_index}));
-  drawCubicBezier(p1x, p1y, p2x, p2y, p3x, p3y, p4x, p4y, inc, color_index);
+  drawCubicBezier(p1x, p1y, p2x, p2y, p3x, p3y, p4x, p4y, inc, color_index, alpha);
 }
-void styled_multishape_2d::add_quadratic_bezier_points(float p1x, float p1y, float p2x, float p2y, float p3x, float p3y, float inc, uint32_t color_index) {
+void styled_multishape_2d::add_quadratic_bezier_points(float p1x, float p1y, float p2x, float p2y, float p3x, float p3y, float inc, uint32_t color_index, float alpha) {
   instructions.push_back(shape::full_instruction(instruction::QUADRATIC_BEZIER_POINTS, {p1x, p2x, p3x}, {p1y, p2y, p3y}, {}, {inc}, {color_index}));
-  quadraticBezierPoints(p1x, p1y, p2x, p2y, p3x, p3y, inc, color_index);
+  quadraticBezierPoints(p1x, p1y, p2x, p2y, p3x, p3y, inc, color_index, alpha);
 }
-void styled_multishape_2d::add_cubic_bezier_points(float p1x, float p1y, float p2x, float p2y, float p3x, float p3y, float p4x, float p4y, float inc, uint32_t color_index) {
+void styled_multishape_2d::add_cubic_bezier_points(float p1x, float p1y, float p2x, float p2y, float p3x, float p3y, float p4x, float p4y, float inc, uint32_t color_index, float alpha) {
   instructions.push_back(shape::full_instruction(instruction::CUBIC_BEZIER_POINTS, {p1x, p2x, p3x, p4x}, {p1y, p2y, p3y, p4y}, {}, {inc}, {color_index}));
-  cubicBezierPoints(p1x, p1y, p2x, p2y, p3x, p3y, p4x, p4y, inc, color_index);
+  cubicBezierPoints(p1x, p1y, p2x, p2y, p3x, p3y, p4x, p4y, inc, color_index, alpha);
 }
-void styled_multishape_2d::add_draw_cross_marker(float x, float y, float size, uint32_t color_index) {
+void styled_multishape_2d::add_draw_cross_marker(float x, float y, float size, uint32_t color_index, float alpha) {
   instructions.push_back(shape::full_instruction(instruction::DRAW_CROSS_MARKER, {x}, {y}, {}, {size}, {color_index}));
-  drawCrossMarker(x, y, size, color_index);
+  drawCrossMarker(x, y, size, color_index, alpha);
 }
-void styled_multishape_2d::add_draw_markers(std::vector<glm::vec2> points, Marker marker, float markerSize, uint32_t color_index) {
+void styled_multishape_2d::add_draw_markers(std::vector<glm::vec2> points, Marker marker, float markerSize, uint32_t color_index, float alpha) {
   std::vector<float> x_coords;
   std::vector<float> y_coords;
   for (auto p : points) {
@@ -914,67 +914,69 @@ void styled_multishape_2d::add_draw_markers(std::vector<glm::vec2> points, Marke
     y_coords.push_back(p.y);
   }
   instructions.push_back(shape::full_instruction(instruction::DRAW_MARKERS, x_coords, y_coords, {}, {markerSize}, {(uint32_t) points.size(), to_underlying(marker), color_index}));
-  drawMarkers(points, marker, markerSize, color_index);
+  drawMarkers(points, marker, markerSize, color_index, alpha);
 }
-void styled_multishape_2d::add_draw_triangle_marker(float x, float y, float size, uint32_t color_index) {
+void styled_multishape_2d::add_draw_triangle_marker(float x, float y, float size, uint32_t color_index, float alpha) {
   instructions.push_back(shape::full_instruction(instruction::DRAW_TRIANGLE_MARKER, {x}, {y}, {}, {size}, {color_index}));
-  drawTriangleMarker(x, y, size, color_index);
+  drawTriangleMarker(x, y, size, color_index, alpha);
 }
-void styled_multishape_2d::add_draw_square_marker(float x, float y, float size, uint32_t color_index) {
+void styled_multishape_2d::add_draw_square_marker(float x, float y, float size, uint32_t color_index, float alpha) {
   instructions.push_back(shape::full_instruction(instruction::DRAW_SQUARE_MARKER, {x}, {y}, {}, {size}, {color_index}));
-  drawSquareMarker(x, y, size, color_index);
+  drawSquareMarker(x, y, size, color_index, alpha);
 }
-void styled_multishape_2d::add_draw_hexagon_marker(float x, float y, float size, uint32_t color_index) {
+void styled_multishape_2d::add_draw_hexagon_marker(float x, float y, float size, uint32_t color_index, float alpha) {
   instructions.push_back(shape::full_instruction(instruction::DRAW_HEXAGON_MARKER, {x}, {y}, {}, {size}, {color_index}));
-  drawHexagonMarker(x, y, size, color_index);
+  drawHexagonMarker(x, y, size, color_index, alpha);
 }
 
 const std::unordered_map<instruction, std::function<void(multishape::dispatch_inputs)>> styled_multishape_2d::dispatch_table = std::unordered_map<instruction, std::function<void(dispatch_inputs)>> {
 {instruction::DRAW_POINT, [](dispatch_inputs i) {
-    ((styled_multishape_2d*) i.shape)->drawPoint(i.x_coords[i.current_x_coord], i.y_coords[i.current_y_coord], i.uint32s[i.current_uint32]);
+    ((styled_multishape_2d*) i.shape)->drawPoint(i.x_coords[i.current_x_coord], i.y_coords[i.current_y_coord], i.uint32s[i.current_uint32], i.floats[i.current_float]);
     i.current_x_coord++;
     i.current_y_coord++;
     i.current_uint32++;
+    i.current_float++;
 }}, 
 {instruction::FILL_RECTANGLE, [](dispatch_inputs i) {
-  ((styled_multishape_2d*) i.shape)->fillRectangle(i.x_coords[i.current_x_coord], i.y_coords[i.current_y_coord], i.floats[i.current_float], i.floats[i.current_float + 1], i.uint32s[i.current_uint32]);
+  ((styled_multishape_2d*) i.shape)->fillRectangle(i.x_coords[i.current_x_coord], i.y_coords[i.current_y_coord], i.floats[i.current_float], i.floats[i.current_float + 1], i.uint32s[i.current_uint32], i.floats[i.current_float + 2]);
   i.current_x_coord++;
   i.current_y_coord++;
-  i.current_float += 2;
+  i.current_float += 3;
   i.current_uint32++;
 }},
 {instruction::FILL_SQUARE, [](dispatch_inputs i) {
-  ((styled_multishape_2d*) i.shape)->fillSquare(i.x_coords[i.current_x_coord], i.y_coords[i.current_y_coord], i.floats[i.current_float], i.uint32s[i.current_uint32]);
+  ((styled_multishape_2d*) i.shape)->fillSquare(i.x_coords[i.current_x_coord], i.y_coords[i.current_y_coord], i.floats[i.current_float], i.uint32s[i.current_uint32], i.floats[i.current_float + 1]);
   i.current_x_coord++;
   i.current_y_coord++;
-  i.current_float++;
+  i.current_float+=2;
   i.current_uint32++;
 }},
 {instruction::FILL_ROUND_RECT, [](dispatch_inputs i) {
-  ((styled_multishape_2d*) i.shape)->fillRoundRect(i.x_coords[i.current_x_coord], i.y_coords[i.current_y_coord], i.floats[i.current_float], i.floats[i.current_float + 1], i.floats[i.current_float + 2], i.floats[i.current_float + 3], i.uint32s[i.current_uint32], i.uint32s[i.current_uint32 + 1]);
+  ((styled_multishape_2d*) i.shape)->fillRoundRect(i.x_coords[i.current_x_coord], i.y_coords[i.current_y_coord], i.floats[i.current_float], i.floats[i.current_float + 1], i.floats[i.current_float + 2], i.floats[i.current_float + 3], i.uint32s[i.current_uint32], i.uint32s[i.current_uint32 + 1], i.floats[i.current_float + 4]);
   i.current_x_coord++;
   i.current_y_coord++;
-  i.current_float += 4;
+  i.current_float += 5;
   i.current_uint32 += 2;
 }},
 {instruction::FILL_TRIANGLE, [](dispatch_inputs i) {
-  ((styled_multishape_2d*) i.shape)->fillTriangle(i.x_coords[i.current_x_coord], i.y_coords[i.current_y_coord], i.x_coords[i.current_x_coord + 1], i.y_coords[i.current_y_coord + 1], i.x_coords[i.current_x_coord + 2], i.y_coords[i.current_y_coord + 2], i.uint32s[i.current_uint32]);
+  ((styled_multishape_2d*) i.shape)->fillTriangle(i.x_coords[i.current_x_coord], i.y_coords[i.current_y_coord], i.x_coords[i.current_x_coord + 1], i.y_coords[i.current_y_coord + 1], i.x_coords[i.current_x_coord + 2], i.y_coords[i.current_y_coord + 2], i.uint32s[i.current_uint32], i.floats[i.current_float]);
   i.current_x_coord+=3;
   i.current_y_coord+=3;
   i.current_uint32++;
+  i.current_float++;
 }},
 {instruction::FILL_CIRCLE, [](dispatch_inputs i) {
-  ((styled_multishape_2d*)i.shape)->fillCircle(i.x_coords[i.current_x_coord], i.y_coords[i.current_y_coord], i.floats[i.current_float], i.uint32s[i.current_uint32], i.uint32s[i.current_uint32 + 1]);
+  ((styled_multishape_2d*)i.shape)->fillCircle(i.x_coords[i.current_x_coord], i.y_coords[i.current_y_coord], i.floats[i.current_float], i.uint32s[i.current_uint32], i.uint32s[i.current_uint32 + 1], i.floats[i.current_float + 1]);
   i.current_x_coord++;
   i.current_y_coord++;
-  i.current_float++;
+  i.current_float+=2;
   i.current_uint32 += 2;
 }},
 {instruction::FILL_ELLIPSE, [](dispatch_inputs i) {
-  ((styled_multishape_2d*) i.shape)->fillEllipse(i.x_coords[i.current_x_coord], i.y_coords[i.current_y_coord], i.floats[i.current_float], i.floats[i.current_float + 1], i.uint32s[i.current_uint32], i.uint32s[i.current_uint32 + 1]);
+  ((styled_multishape_2d*) i.shape)->fillEllipse(i.x_coords[i.current_x_coord], i.y_coords[i.current_y_coord], i.floats[i.current_float], i.floats[i.current_float + 1], i.uint32s[i.current_uint32], i.uint32s[i.current_uint32 + 1], i.floats[i.current_float + 2]);
   i.current_x_coord++;
   i.current_y_coord++;
-  i.current_float += 2;
+  i.current_float += 3;
   i.current_uint32 += 2;
 }},
 {instruction::FILL_POLYGON, [](dispatch_inputs i) {
@@ -986,90 +988,93 @@ const std::unordered_map<instruction, std::function<void(multishape::dispatch_in
     i.current_x_coord++;
     i.current_y_coord++;
   }
-  ((styled_multishape_2d*) i.shape)->fillPolygon(points, i.uint32s[i.current_uint32]);
+  ((styled_multishape_2d*) i.shape)->fillPolygon(points, i.uint32s[i.current_uint32], i.floats[i.current_float]);
   i.current_uint32++;
+  i.current_float++;
 }},
 {instruction::FILL_GRID, [](dispatch_inputs i) {
-  ((styled_multishape_2d*) i.shape)->fillGrid(i.x_coords[i.current_x_coord], i.y_coords[i.current_y_coord], i.floats[i.current_float], i.floats[i.current_float + 1], i.uint32s[i.current_uint32], i.uint32s[i.current_uint32+1], i.uint32s[i.current_uint32 + 2], i.uint32s[i.current_uint32 + 3]);
-  i.current_x_coord++;
-  i.current_y_coord++;
-  i.current_float += 2;
-  i.current_uint32 += 4;
-}},
-{instruction::FILL_CIRCLE_MARKER, [](dispatch_inputs i) {
-  ((styled_multishape_2d*) i.shape)->fillCircleMarker(i.x_coords[i.current_x_coord], i.y_coords[i.current_y_coord], i.floats[i.current_float], i.uint32s[i.current_uint32]);
-  i.current_x_coord++;
-  i.current_y_coord++;
-  i.current_float++;
-  i.current_uint32++;
-}},
-{instruction::FILL_TRIANGLE_MARKER, [](dispatch_inputs i) {
-  ((styled_multishape_2d*) i.shape)->fillTriangleMarker(i.x_coords[i.current_x_coord], i.y_coords[i.current_y_coord], i.floats[i.current_float], i.uint32s[i.current_uint32]);
-  i.current_x_coord++;
-  i.current_y_coord++;
-  i.current_float++;
-  i.current_uint32++;
-}},
-{instruction::FILL_SQUARE_MARKER, [](dispatch_inputs i) {
-  ((styled_multishape_2d*) i.shape)->fillSquareMarker(i.x_coords[i.current_x_coord], i.y_coords[i.current_y_coord], i.floats[i.current_float], i.uint32s[i.current_uint32]);
-  i.current_x_coord++;
-  i.current_y_coord++;
-  i.current_float++;
-  i.current_uint32++;
-}},
-{instruction::FILL_HEXAGON_MARKER, [](dispatch_inputs i) {
-  ((styled_multishape_2d*) i.shape)->fillHexagonMarker(i.x_coords[i.current_x_coord], i.y_coords[i.current_y_coord], i.floats[i.current_float], i.uint32s[i.current_uint32]);
-  i.current_x_coord++;
-  i.current_y_coord++;
-  i.current_float++;
-  i.current_uint32++;
-}},
-{instruction::DRAW_RECTANGLE, [](dispatch_inputs i) {
-  ((styled_multishape_2d*) i.shape)->drawRectangle(i.x_coords[i.current_x_coord], i.y_coords[i.current_y_coord], i.floats[i.current_float], i.floats[i.current_float + 1], i.uint32s[i.current_uint32]);
-  i.current_x_coord++;
-  i.current_y_coord++;
-  i.current_float += 2;
-  i.current_uint32++;
-}},
-{instruction::DRAW_SQUARE, [](dispatch_inputs i) {
-  ((styled_multishape_2d*) i.shape)->drawSquare(i.x_coords[i.current_x_coord], i.y_coords[i.current_y_coord], i.floats[i.current_float], i.uint32s[i.current_uint32]);
-  i.current_x_coord++;
-  i.current_y_coord++;
-  i.current_float++;
-  i.current_uint32++;
-}},
-{instruction::DRAW_ROUND_RECT, [](dispatch_inputs i) {
-  ((styled_multishape_2d*) i.shape)->drawRoundRect(i.x_coords[i.current_x_coord], i.y_coords[i.current_y_coord], i.floats[i.current_float], i.floats[i.current_float + 1], i.floats[i.current_float + 2], i.floats[i.current_float + 3], i.uint32s[i.current_uint32], i.uint32s[i.current_uint32 + 1]);
+  ((styled_multishape_2d*) i.shape)->fillGrid(i.x_coords[i.current_x_coord], i.y_coords[i.current_y_coord], i.floats[i.current_float], i.floats[i.current_float + 1], i.uint32s[i.current_uint32], i.uint32s[i.current_uint32+1], i.uint32s[i.current_uint32 + 2], i.floats[i.current_float + 2], i.uint32s[i.current_uint32 + 3], i.floats[i.current_float + 3]);
   i.current_x_coord++;
   i.current_y_coord++;
   i.current_float += 4;
+  i.current_uint32 += 4;
+}},
+{instruction::FILL_CIRCLE_MARKER, [](dispatch_inputs i) {
+  ((styled_multishape_2d*) i.shape)->fillCircleMarker(i.x_coords[i.current_x_coord], i.y_coords[i.current_y_coord], i.floats[i.current_float], i.uint32s[i.current_uint32], i.floats[i.current_float + 1]);
+  i.current_x_coord++;
+  i.current_y_coord++;
+  i.current_float+=2;
+  i.current_uint32++;
+}},
+{instruction::FILL_TRIANGLE_MARKER, [](dispatch_inputs i) {
+  ((styled_multishape_2d*) i.shape)->fillTriangleMarker(i.x_coords[i.current_x_coord], i.y_coords[i.current_y_coord], i.floats[i.current_float], i.uint32s[i.current_uint32], i.floats[i.current_float + 1]);
+  i.current_x_coord++;
+  i.current_y_coord++;
+  i.current_float+=2;
+  i.current_uint32++;
+}},
+{instruction::FILL_SQUARE_MARKER, [](dispatch_inputs i) {
+  ((styled_multishape_2d*) i.shape)->fillSquareMarker(i.x_coords[i.current_x_coord], i.y_coords[i.current_y_coord], i.floats[i.current_float], i.uint32s[i.current_uint32], i.floats[i.current_float + 1]);
+  i.current_x_coord++;
+  i.current_y_coord++;
+  i.current_float+=2;
+  i.current_uint32++;
+}},
+{instruction::FILL_HEXAGON_MARKER, [](dispatch_inputs i) {
+  ((styled_multishape_2d*) i.shape)->fillHexagonMarker(i.x_coords[i.current_x_coord], i.y_coords[i.current_y_coord], i.floats[i.current_float], i.uint32s[i.current_uint32], i.floats[i.current_float + 1]);
+  i.current_x_coord++;
+  i.current_y_coord++;
+  i.current_float+=2;
+  i.current_uint32++;
+}},
+{instruction::DRAW_RECTANGLE, [](dispatch_inputs i) {
+  ((styled_multishape_2d*) i.shape)->drawRectangle(i.x_coords[i.current_x_coord], i.y_coords[i.current_y_coord], i.floats[i.current_float], i.floats[i.current_float + 1], i.uint32s[i.current_uint32], i.floats[i.current_float + 2]);
+  i.current_x_coord++;
+  i.current_y_coord++;
+  i.current_float += 3;
+  i.current_uint32++;
+}},
+{instruction::DRAW_SQUARE, [](dispatch_inputs i) {
+  ((styled_multishape_2d*) i.shape)->drawSquare(i.x_coords[i.current_x_coord], i.y_coords[i.current_y_coord], i.floats[i.current_float], i.uint32s[i.current_uint32], i.floats[i.current_float + 1]);
+  i.current_x_coord++;
+  i.current_y_coord++;
+  i.current_float+=2;
+  i.current_uint32++;
+}},
+{instruction::DRAW_ROUND_RECT, [](dispatch_inputs i) {
+  ((styled_multishape_2d*) i.shape)->drawRoundRect(i.x_coords[i.current_x_coord], i.y_coords[i.current_y_coord], i.floats[i.current_float], i.floats[i.current_float + 1], i.floats[i.current_float + 2], i.floats[i.current_float + 3], i.uint32s[i.current_uint32], i.uint32s[i.current_uint32 + 1], i.floats[i.current_float + 4]);
+  i.current_x_coord++;
+  i.current_y_coord++;
+  i.current_float += 5;
   i.current_uint32 += 2;
 }},
 {instruction::DRAW_TRIANGLE, [](dispatch_inputs i) {
-  ((styled_multishape_2d*) i.shape)->drawTriangle(i.x_coords[i.current_x_coord], i.y_coords[i.current_y_coord], i.x_coords[i.current_x_coord + 1], i.y_coords[i.current_y_coord + 1], i.x_coords[i.current_x_coord + 2], i.y_coords[i.current_y_coord + 2], i.uint32s[i.current_uint32]);
+  ((styled_multishape_2d*) i.shape)->drawTriangle(i.x_coords[i.current_x_coord], i.y_coords[i.current_y_coord], i.x_coords[i.current_x_coord + 1], i.y_coords[i.current_y_coord + 1], i.x_coords[i.current_x_coord + 2], i.y_coords[i.current_y_coord + 2], i.uint32s[i.current_uint32], i.floats[i.current_float]);
   i.current_x_coord+=3;
   i.current_y_coord+=3;
   i.current_uint32++;
+  i.current_float++;
 }},
 {instruction::DRAW_CIRCLE, [](dispatch_inputs i) {
-  ((styled_multishape_2d*)i.shape)->drawCircle(i.x_coords[i.current_x_coord], i.y_coords[i.current_y_coord], i.floats[i.current_float], i.uint32s[i.current_uint32], i.uint32s[i.current_uint32 + 1]);
+  ((styled_multishape_2d*)i.shape)->drawCircle(i.x_coords[i.current_x_coord], i.y_coords[i.current_y_coord], i.floats[i.current_float], i.uint32s[i.current_uint32], i.uint32s[i.current_uint32 + 1], i.floats[i.current_float + 1]);
   i.current_x_coord++;
   i.current_y_coord++;
-  i.current_float++;
+  i.current_float+=2;
   i.current_uint32 += 2;
 }},
 {instruction::DRAW_ELLIPSE, [](dispatch_inputs i) {
-  ((styled_multishape_2d*) i.shape)->drawEllipse(i.x_coords[i.current_x_coord], i.y_coords[i.current_y_coord], i.floats[i.current_float], i.floats[i.current_float + 1], i.uint32s[i.current_uint32], i.uint32s[i.current_uint32 + 1]);
+  ((styled_multishape_2d*) i.shape)->drawEllipse(i.x_coords[i.current_x_coord], i.y_coords[i.current_y_coord], i.floats[i.current_float], i.floats[i.current_float + 1], i.uint32s[i.current_uint32], i.uint32s[i.current_uint32 + 1], i.floats[i.current_float + 2]);
   i.current_x_coord++;
   i.current_y_coord++;
-  i.current_float += 2;
+  i.current_float += 3;
   i.current_uint32 += 2;
 }},
 {instruction::DRAW_LINE, [](dispatch_inputs i) {
-  ((styled_multishape_2d*) i.shape)->drawLine(i.x_coords[i.current_x_coord], i.y_coords[i.current_y_coord], i.x_coords[i.current_x_coord + 1], i.y_coords[i.current_y_coord + 1], i.uint32s[i.current_uint32]);
+  ((styled_multishape_2d*) i.shape)->drawLine(i.x_coords[i.current_x_coord], i.y_coords[i.current_y_coord], i.x_coords[i.current_x_coord + 1], i.y_coords[i.current_y_coord + 1], i.uint32s[i.current_uint32], i.floats[i.current_float]);
   i.current_x_coord += 2;
   i.current_y_coord += 2;
   i.current_uint32++;
+  i.current_float++;
 }},
 {instruction::DRAW_POLYLINE, [](dispatch_inputs i) {
   uint32_t num_points = i.uint32s[i.current_uint32];
@@ -1080,8 +1085,9 @@ const std::unordered_map<instruction, std::function<void(multishape::dispatch_in
     i.current_x_coord++;
     i.current_y_coord++;
   }
-  ((styled_multishape_2d*) i.shape)->drawPolyline(points, i.uint32s[i.current_uint32]);
+  ((styled_multishape_2d*) i.shape)->drawPolyline(points, i.uint32s[i.current_uint32], i.floats[i.current_float]);
   i.current_uint32++;
+  i.current_float++;
 }},
 {instruction::DRAW_POLYLINE_MARKER, [](dispatch_inputs i) {
   uint32_t num_points = i.uint32s[i.current_uint32];
@@ -1094,9 +1100,9 @@ const std::unordered_map<instruction, std::function<void(multishape::dispatch_in
     i.current_x_coord++;
     i.current_y_coord++;
   }
-  ((styled_multishape_2d*) i.shape)->drawPolylineMarker(points, marker, i.floats[i.current_float], i.uint32s[i.current_uint32], i.uint32s[i.current_uint32 + 1]);
+  ((styled_multishape_2d*) i.shape)->drawPolylineMarker(points, marker, i.floats[i.current_float], i.uint32s[i.current_uint32], i.floats[i.current_float + 1], i.uint32s[i.current_uint32 + 1], i.floats[i.current_float + 2]);
   i.current_uint32 += 2;
-  i.current_float++;
+  i.current_float+=3;
 }},
 {instruction::DRAW_POLYGON, [](dispatch_inputs i) {
   uint32_t num_points = i.uint32s[i.current_uint32];
@@ -1107,8 +1113,9 @@ const std::unordered_map<instruction, std::function<void(multishape::dispatch_in
     i.current_x_coord++;
     i.current_y_coord++;
   }
-  ((styled_multishape_2d*) i.shape)->drawPolygon(points, i.uint32s[i.current_uint32]);
+  ((styled_multishape_2d*) i.shape)->drawPolygon(points, i.uint32s[i.current_uint32], i.floats[i.current_float]);
   i.current_uint32++;
+  i.current_float++;
 }},
 {instruction::DRAW_POLYGON_MARKER, [](dispatch_inputs i) {
   uint32_t num_points = i.uint32s[i.current_uint32];
@@ -1121,50 +1128,50 @@ const std::unordered_map<instruction, std::function<void(multishape::dispatch_in
     i.current_x_coord++;
     i.current_y_coord++;
   }
-  ((styled_multishape_2d*) i.shape)->drawPolygonMarker(points, marker, i.floats[i.current_float], i.uint32s[i.current_uint32], i.uint32s[i.current_uint32 + 1]);
+  ((styled_multishape_2d*) i.shape)->drawPolygonMarker(points, marker, i.floats[i.current_float], i.uint32s[i.current_uint32], i.floats[i.current_float + 1], i.uint32s[i.current_uint32 + 1], i.floats[i.current_float + 2]);
   i.current_uint32 += 2;
-  i.current_float++;
+  i.current_float+=3;
 }},
 {instruction::DRAW_GRID, [](dispatch_inputs i) {
-  ((styled_multishape_2d*) i.shape)->drawGrid(i.x_coords[i.current_x_coord], i.y_coords[i.current_y_coord], i.floats[i.current_float], i.floats[i.current_float + 1], i.uint32s[i.current_uint32], i.uint32s[i.current_uint32+1], i.uint32s[i.current_uint32+2]);
+  ((styled_multishape_2d*) i.shape)->drawGrid(i.x_coords[i.current_x_coord], i.y_coords[i.current_y_coord], i.floats[i.current_float], i.floats[i.current_float + 1], i.uint32s[i.current_uint32], i.uint32s[i.current_uint32+1], i.uint32s[i.current_uint32+2], i.floats[i.current_float+2]);
   i.current_x_coord++;
   i.current_y_coord++;
-  i.current_float += 2;
+  i.current_float += 3;
   i.current_uint32 += 3;
 }},
 {instruction::DRAW_CIRCLE_MARKER, [](dispatch_inputs i) {
-  ((styled_multishape_2d*) i.shape)->drawCircleMarker(i.x_coords[i.current_x_coord], i.y_coords[i.current_y_coord], i.floats[i.current_float], i.uint32s[i.current_uint32]);
+  ((styled_multishape_2d*) i.shape)->drawCircleMarker(i.x_coords[i.current_x_coord], i.y_coords[i.current_y_coord], i.floats[i.current_float], i.uint32s[i.current_uint32], i.floats[i.current_float + 1]);
   i.current_x_coord++;
   i.current_y_coord++;
-  i.current_float++;
+  i.current_float+=2;
   i.current_uint32++;
 }},
 {instruction::DRAW_TRIANGLE_MARKER, [](dispatch_inputs i) {
-  ((styled_multishape_2d*) i.shape)->drawTriangleMarker(i.x_coords[i.current_x_coord], i.y_coords[i.current_y_coord], i.floats[i.current_float], i.uint32s[i.current_uint32]);
+  ((styled_multishape_2d*) i.shape)->drawTriangleMarker(i.x_coords[i.current_x_coord], i.y_coords[i.current_y_coord], i.floats[i.current_float], i.uint32s[i.current_uint32], i.floats[i.current_float + 1]);
   i.current_x_coord++;
   i.current_y_coord++;
   i.current_uint32++;
-  i.current_float++;
+  i.current_float+=2;
 }},
 {instruction::DRAW_SQUARE_MARKER, [](dispatch_inputs i) {
-  ((styled_multishape_2d*) i.shape)->drawSquareMarker(i.x_coords[i.current_x_coord], i.y_coords[i.current_y_coord], i.floats[i.current_float], i.uint32s[i.current_uint32]);
+  ((styled_multishape_2d*) i.shape)->drawSquareMarker(i.x_coords[i.current_x_coord], i.y_coords[i.current_y_coord], i.floats[i.current_float], i.uint32s[i.current_uint32], i.floats[i.current_float + 1]);
   i.current_x_coord++;
   i.current_y_coord++;
   i.current_uint32++;
-  i.current_float++;
+  i.current_float+=2;
 }},
 {instruction::DRAW_HEXAGON_MARKER, [](dispatch_inputs i) {
-  ((styled_multishape_2d*) i.shape)->drawHexagonMarker(i.x_coords[i.current_x_coord], i.y_coords[i.current_y_coord], i.floats[i.current_float], i.uint32s[i.current_uint32]);
+  ((styled_multishape_2d*) i.shape)->drawHexagonMarker(i.x_coords[i.current_x_coord], i.y_coords[i.current_y_coord], i.floats[i.current_float], i.uint32s[i.current_uint32], i.floats[i.current_float + 1]);
   i.current_x_coord++;
   i.current_y_coord++;
-  i.current_float++;
+  i.current_float+=2;
   i.current_uint32++;
 }},
 {instruction::DRAW_CROSS_MARKER, [](dispatch_inputs i) {
-  ((styled_multishape_2d*) i.shape)->drawCrossMarker(i.x_coords[i.current_x_coord], i.y_coords[i.current_y_coord], i.floats[i.current_float], i.uint32s[i.current_uint32]);
+  ((styled_multishape_2d*) i.shape)->drawCrossMarker(i.x_coords[i.current_x_coord], i.y_coords[i.current_y_coord], i.floats[i.current_float], i.uint32s[i.current_uint32], i.floats[i.current_float]);
   i.current_x_coord++;
   i.current_y_coord++;
-  i.current_float++;
+  i.current_float+=2;
   i.current_uint32++;
 }},
 {instruction::DRAW_MARKERS, [](dispatch_inputs i) {
@@ -1178,9 +1185,9 @@ const std::unordered_map<instruction, std::function<void(multishape::dispatch_in
     i.current_x_coord++;
     i.current_y_coord++;
   }
-  ((styled_multishape_2d*) i.shape)->drawMarkers(points, marker, i.floats[i.current_float], i.uint32s[i.current_uint32]);
+  ((styled_multishape_2d*) i.shape)->drawMarkers(points, marker, i.floats[i.current_float], i.uint32s[i.current_uint32], i.floats[i.current_float + 1]);
   i.current_uint32++;
-  i.current_float++;
+  i.current_float+=2;
 }},
 {instruction::DRAW_BEZIER, [](dispatch_inputs i) {
   uint32_t num_points = i.uint32s[i.current_uint32];
@@ -1191,22 +1198,22 @@ const std::unordered_map<instruction, std::function<void(multishape::dispatch_in
     i.current_x_coord++;
     i.current_y_coord++;
   }
-  ((styled_multishape_2d*) i.shape)->drawBezier(points, i.floats[i.current_float], i.uint32s[i.current_uint32]);
+  ((styled_multishape_2d*) i.shape)->drawBezier(points, i.floats[i.current_float], i.uint32s[i.current_uint32], i.floats[i.current_float + 1]);
   i.current_uint32++;
-  i.current_float++;
+  i.current_float+=2;
 }},
 {instruction::DRAW_QUADRATIC_BEZIER, [](dispatch_inputs i) {
-  ((styled_multishape_2d*) i.shape)->drawQuadraticBezier(i.x_coords[i.current_x_coord], i.y_coords[i.current_y_coord], i.x_coords[i.current_x_coord + 1], i.y_coords[i.current_y_coord + 1], i.x_coords[i.current_x_coord + 2], i.y_coords[i.current_y_coord + 2], i.floats[i.current_float], i.uint32s[i.current_uint32]);
+  ((styled_multishape_2d*) i.shape)->drawQuadraticBezier(i.x_coords[i.current_x_coord], i.y_coords[i.current_y_coord], i.x_coords[i.current_x_coord + 1], i.y_coords[i.current_y_coord + 1], i.x_coords[i.current_x_coord + 2], i.y_coords[i.current_y_coord + 2], i.floats[i.current_float], i.uint32s[i.current_uint32], i.floats[i.current_float+1]);
   i.current_x_coord += 3;
   i.current_y_coord += 3;
-  i.current_float++;
+  i.current_float += 2;
   i.current_uint32++;
 }},
 {instruction::DRAW_CUBIC_BEZIER, [](dispatch_inputs i) {
-  ((styled_multishape_2d*) i.shape)->drawCubicBezier(i.x_coords[i.current_x_coord], i.y_coords[i.current_y_coord], i.x_coords[i.current_x_coord + 1], i.y_coords[i.current_y_coord + 1], i.x_coords[i.current_x_coord + 2], i.y_coords[i.current_y_coord + 2], i.x_coords[i.current_x_coord + 3], i.y_coords[i.current_y_coord + 3], i.floats[i.current_float], i.uint32s[i.current_uint32]);
+  ((styled_multishape_2d*) i.shape)->drawCubicBezier(i.x_coords[i.current_x_coord], i.y_coords[i.current_y_coord], i.x_coords[i.current_x_coord + 1], i.y_coords[i.current_y_coord + 1], i.x_coords[i.current_x_coord + 2], i.y_coords[i.current_y_coord + 2], i.x_coords[i.current_x_coord + 3], i.y_coords[i.current_y_coord + 3], i.floats[i.current_float], i.uint32s[i.current_uint32], i.floats[i.current_float+1]);
   i.current_x_coord += 4;
   i.current_y_coord += 4;
-  i.current_float++;
+  i.current_float+=2;
   i.current_uint32++;
 }},
 {instruction::DRAW_CUBIC_SPLINE, [](dispatch_inputs i) {
@@ -1218,9 +1225,9 @@ const std::unordered_map<instruction, std::function<void(multishape::dispatch_in
     i.current_x_coord++;
     i.current_y_coord++;
   }
-  ((styled_multishape_2d*) i.shape)->drawCubicSpline(points, i.floats[i.current_float], i.uint32s[i.current_uint32]);
+  ((styled_multishape_2d*) i.shape)->drawCubicSpline(points, i.floats[i.current_float], i.uint32s[i.current_uint32], i.floats[i.current_float+1]);
   i.current_uint32++;
-  i.current_float++;
+  i.current_float+=2;
 }},
 {instruction::DRAW_CUBIC_SPLINE_MARKER, [](dispatch_inputs i) {
   uint32_t num_points = i.uint32s[i.current_uint32];
@@ -1233,9 +1240,9 @@ const std::unordered_map<instruction, std::function<void(multishape::dispatch_in
     i.current_x_coord++;
     i.current_y_coord++;
   }
-  ((styled_multishape_2d*) i.shape)->drawCubicSplineMarker(points, i.floats[i.current_float], marker, i.floats[i.current_float + 1], i.uint32s[i.current_uint32], i.uint32s[i.current_uint32 + 1]);
+  ((styled_multishape_2d*) i.shape)->drawCubicSplineMarker(points, i.floats[i.current_float], marker, i.floats[i.current_float + 1], i.uint32s[i.current_uint32], i.floats[i.current_float+2], i.uint32s[i.current_uint32 + 1], i.floats[i.current_float+3]);
   i.current_uint32 += 2;
-  i.current_float += 2;
+  i.current_float += 4;
 }},
 {instruction::DRAW_PCHIP, [](dispatch_inputs i) {
   uint32_t num_points = i.uint32s[i.current_uint32];
@@ -1246,49 +1253,50 @@ const std::unordered_map<instruction, std::function<void(multishape::dispatch_in
     i.current_x_coord++;
     i.current_y_coord++;
   }
-  ((styled_multishape_2d*) i.shape)->drawPCHIP(points, i.floats[i.current_float], i.uint32s[i.current_uint32]);
+  ((styled_multishape_2d*) i.shape)->drawPCHIP(points, i.floats[i.current_float], i.uint32s[i.current_uint32], i.floats[i.current_float+1]);
   i.current_uint32++;
-  i.current_float++;
+  i.current_float+=2;
 }},
 {instruction::RECTANGLE_POINTS, [](dispatch_inputs i) {
-  ((styled_multishape_2d*) i.shape)->rectanglePoints(i.x_coords[i.current_x_coord], i.y_coords[i.current_y_coord], i.floats[i.current_float], i.floats[i.current_float + 1], i.uint32s[i.current_uint32]);
+  ((styled_multishape_2d*) i.shape)->rectanglePoints(i.x_coords[i.current_x_coord], i.y_coords[i.current_y_coord], i.floats[i.current_float], i.floats[i.current_float + 1], i.uint32s[i.current_uint32], i.floats[i.current_float + 2]);
   i.current_x_coord++;
   i.current_y_coord++;
   i.current_uint32++;
-  i.current_float += 2;
+  i.current_float += 3;
 }},
 {instruction::SQUARE_POINTS, [](dispatch_inputs i) {
-  ((styled_multishape_2d*) i.shape)->squarePoints(i.x_coords[i.current_x_coord], i.y_coords[i.current_y_coord], i.floats[i.current_float], i.uint32s[i.current_uint32]);
+  ((styled_multishape_2d*) i.shape)->squarePoints(i.x_coords[i.current_x_coord], i.y_coords[i.current_y_coord], i.floats[i.current_float], i.uint32s[i.current_uint32], i.floats[i.current_float+1]);
   i.current_x_coord++;
   i.current_y_coord++;
   i.current_uint32++;
-  i.current_float++;
+  i.current_float+=2;
 }},
 {instruction::ROUND_RECT_POINTS, [](dispatch_inputs i) {
-  ((styled_multishape_2d*) i.shape)->roundRectPoints(i.x_coords[i.current_x_coord], i.y_coords[i.current_y_coord], i.floats[i.current_float], i.floats[i.current_float + 1], i.floats[i.current_float + 2], i.floats[i.current_float + 3], i.uint32s[i.current_uint32], i.uint32s[i.current_uint32 + 1]);
+  ((styled_multishape_2d*) i.shape)->roundRectPoints(i.x_coords[i.current_x_coord], i.y_coords[i.current_y_coord], i.floats[i.current_float], i.floats[i.current_float + 1], i.floats[i.current_float + 2], i.floats[i.current_float + 3], i.uint32s[i.current_uint32], i.uint32s[i.current_uint32 + 1], i.floats[i.current_float+4]);
   i.current_x_coord++;
   i.current_y_coord++;
-  i.current_float += 4;
+  i.current_float += 5;
   i.current_uint32 += 2;
 }},
 {instruction::TRIANGLE_POINTS, [](dispatch_inputs i) {
-  ((styled_multishape_2d*) i.shape)->trianglePoints(i.x_coords[i.current_x_coord], i.y_coords[i.current_y_coord], i.x_coords[i.current_x_coord + 1], i.y_coords[i.current_y_coord + 1], i.x_coords[i.current_x_coord + 2], i.y_coords[i.current_y_coord + 2], i.uint32s[i.current_uint32]);
+  ((styled_multishape_2d*) i.shape)->trianglePoints(i.x_coords[i.current_x_coord], i.y_coords[i.current_y_coord], i.x_coords[i.current_x_coord + 1], i.y_coords[i.current_y_coord + 1], i.x_coords[i.current_x_coord + 2], i.y_coords[i.current_y_coord + 2], i.uint32s[i.current_uint32], i.floats[i.current_float]);
   i.current_x_coord+=3;
   i.current_y_coord+=3;
   i.current_uint32++;
+  i.current_float++;
 }},
 {instruction::CIRCLE_POINTS, [](dispatch_inputs i) {
-  ((styled_multishape_2d*)i.shape)->circlePoints(i.x_coords[i.current_x_coord], i.y_coords[i.current_y_coord], i.floats[i.current_float], i.uint32s[i.current_uint32], i.uint32s[i.current_uint32 + 1]);
+  ((styled_multishape_2d*)i.shape)->circlePoints(i.x_coords[i.current_x_coord], i.y_coords[i.current_y_coord], i.floats[i.current_float], i.uint32s[i.current_uint32], i.uint32s[i.current_uint32 + 1], i.floats[i.current_float+1]);
   i.current_x_coord++;
   i.current_y_coord++;
-  i.current_float++;
+  i.current_float+=2;
   i.current_uint32 += 2;
 }},
 {instruction::ELLIPSE_POINTS, [](dispatch_inputs i) {
-  ((styled_multishape_2d*) i.shape)->ellipsePoints(i.x_coords[i.current_x_coord], i.y_coords[i.current_y_coord], i.floats[i.current_float], i.floats[i.current_float + 1], i.uint32s[i.current_uint32], i.uint32s[i.current_uint32 + 1]);
+  ((styled_multishape_2d*) i.shape)->ellipsePoints(i.x_coords[i.current_x_coord], i.y_coords[i.current_y_coord], i.floats[i.current_float], i.floats[i.current_float + 1], i.uint32s[i.current_uint32], i.uint32s[i.current_uint32 + 1], i.floats[i.current_float+2]);
   i.current_x_coord++;
   i.current_y_coord++;
-  i.current_float += 2;
+  i.current_float += 3;
   i.current_uint32 += 2;
 }},
 {instruction::BEZIER_POINTS, [](dispatch_inputs i) {
@@ -1300,22 +1308,22 @@ const std::unordered_map<instruction, std::function<void(multishape::dispatch_in
     i.current_x_coord++;
     i.current_y_coord++;
   }
-  ((styled_multishape_2d*) i.shape)->bezierPoints(points, i.floats[i.current_float], i.uint32s[i.current_uint32]);
-  i.current_float++;
+  ((styled_multishape_2d*) i.shape)->bezierPoints(points, i.floats[i.current_float], i.uint32s[i.current_uint32], i.floats[i.current_float+1]);
+  i.current_float+=2;
   i.current_uint32++;
 }},
 {instruction::QUADRATIC_BEZIER_POINTS, [](dispatch_inputs i) {
-  ((styled_multishape_2d*) i.shape)->quadraticBezierPoints(i.x_coords[i.current_x_coord], i.y_coords[i.current_y_coord], i.x_coords[i.current_x_coord + 1], i.y_coords[i.current_y_coord + 1], i.x_coords[i.current_x_coord + 2], i.y_coords[i.current_y_coord + 2], i.floats[i.current_float], i.uint32s[i.current_uint32]);
+  ((styled_multishape_2d*) i.shape)->quadraticBezierPoints(i.x_coords[i.current_x_coord], i.y_coords[i.current_y_coord], i.x_coords[i.current_x_coord + 1], i.y_coords[i.current_y_coord + 1], i.x_coords[i.current_x_coord + 2], i.y_coords[i.current_y_coord + 2], i.floats[i.current_float], i.uint32s[i.current_uint32], i.floats[i.current_float+1]);
   i.current_x_coord += 3;
   i.current_y_coord += 3;
   i.current_uint32 ++;
-  i.current_float++;
+  i.current_float+=2;
 }},
 {instruction::CUBIC_BEZIER_POINTS, [](dispatch_inputs i) {
-  ((styled_multishape_2d*) i.shape)->cubicBezierPoints(i.x_coords[i.current_x_coord], i.y_coords[i.current_y_coord], i.x_coords[i.current_x_coord + 1], i.y_coords[i.current_y_coord + 1], i.x_coords[i.current_x_coord + 2], i.y_coords[i.current_y_coord + 2], i.x_coords[i.current_x_coord + 3], i.y_coords[i.current_y_coord + 3], i.floats[i.current_float], i.uint32s[i.current_uint32]);
+  ((styled_multishape_2d*) i.shape)->cubicBezierPoints(i.x_coords[i.current_x_coord], i.y_coords[i.current_y_coord], i.x_coords[i.current_x_coord + 1], i.y_coords[i.current_y_coord + 1], i.x_coords[i.current_x_coord + 2], i.y_coords[i.current_y_coord + 2], i.x_coords[i.current_x_coord + 3], i.y_coords[i.current_y_coord + 3], i.floats[i.current_float], i.uint32s[i.current_uint32], i.floats[i.current_float+1]);
   i.current_x_coord += 4;
   i.current_y_coord += 4;
-  i.current_float++;
+  i.current_float+=2;
   i.current_uint32++;
 }},
 {instruction::CUBIC_SPLINE_POINTS, [](dispatch_inputs i) {
@@ -1327,8 +1335,8 @@ const std::unordered_map<instruction, std::function<void(multishape::dispatch_in
     i.current_x_coord++;
     i.current_y_coord++;
   }
-  ((styled_multishape_2d*) i.shape)->cubicSplinePoints(points, i.floats[i.current_float], i.uint32s[i.current_uint32]);
+  ((styled_multishape_2d*) i.shape)->cubicSplinePoints(points, i.floats[i.current_float], i.uint32s[i.current_uint32], i.floats[i.current_float+1]);
   i.current_uint32++;
-  i.current_float++;
+  i.current_float+=2;
   }}
 };

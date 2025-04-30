@@ -7,8 +7,9 @@
 #include "lit_multishape_3d.hpp"
 #include "drw_file.hpp"
 
-
-void create_window(drw_file& drw, const std::string& title, int width, int height) {
+void create_window(drw_file& drw, const std::string& title) {
+  int width = drw.get_width();
+  int height = drw.get_height();
   // Initialize SDL
   if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER) < 0) {
     throw "Failed to initialize SDL";
@@ -16,6 +17,20 @@ void create_window(drw_file& drw, const std::string& title, int width, int heigh
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
+
+  SDL_DisplayMode DM;
+  if (SDL_GetDesktopDisplayMode(0, &DM) != 0)
+    throw "Failed to get display mode";
+  if (DM.w < width) {
+    int temp = width;
+    width = DM.w;
+    height *= 1.f * width/temp;
+  }
+  if (DM.h < height) {
+    int temp = height;
+    height = 0.8 * DM.h;
+    width *= 1.f * height/temp;
+  }
 
   // Create window
   SDL_Window* window = SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
@@ -33,12 +48,11 @@ void create_window(drw_file& drw, const std::string& title, int width, int heigh
   glewInit();
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
   drw.init();
 
   // Set background color
-  glm::vec4& bg_color = drw.get_bg_color();
-  glClearColor(bg_color.r, bg_color.g, bg_color.b, bg_color.a);
+  glm::vec3& bg_color = drw.get_bg_color();
+  glClearColor(bg_color.r, bg_color.g, bg_color.b, 1.f);
 
   // Clear the screen
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -66,7 +80,14 @@ void create_window(drw_file& drw, const std::string& title, int width, int heigh
 }
 
 int main(int argc, char* argv[]) {
-  drw_file drw(500, 500);
+  drw_file drw_svg(0, 0);
+  try {
+    drw_svg = drw_file("svg/circles.svg");
+  } catch (char const* ex) {
+    std::cerr << ex << std::endl;
+  }
+
+  drw_file drw(300, 100);
   drw.set_bg_color_index(drw.get_color_index("white"));
 
   camera cam = camera(1);
@@ -89,13 +110,12 @@ int main(int argc, char* argv[]) {
   drw.add_transform(glm::mat4(1.f));
   drw.add_transform(glm::rotate(glm::mat4(1.f), 0.3f, glm::vec3(1, 0, 0)));
   drawing main = drawing();
-  view vw = view(0, 0, 400, 100);
+  view vw = view(0, 0, 300, 100);
   main.set_view(vw);
   styled_multishape_2d shapes = styled_multishape_2d(drw, 1, 0);
-  shapes.add_fill_circle(50, 50, 40, 20, drw.get_color_index("red"));
-  shapes.add_draw_rectangle(0, 0, 400, 100, drw.get_color_index("red"));
-  shapes.add_fill_circle(150, 50, 40, 20, drw.get_color_index("green"));
-  shapes.add_fill_circle(250, 50, 40, 20, drw.get_color_index("blue"));
+  shapes.add_fill_circle(50, 50, 40, 20, drw.get_color_index("black"), 1.f);
+  shapes.add_fill_circle(150, 50, 40, 20, drw.get_color_index("black"), 1.f);
+  shapes.add_fill_circle(250, 50, 40, 20, drw.get_color_index("black"), 1.f);
   multishape_3d wireframes = multishape_3d(1, drw.get_color_index("blue"), 1, 0);
   wireframes.add_draw_sphere(50, 50, 0, 40, 32, 18);
   wireframes.add_draw_rect_prism(0, 0, 0, 400, 100, 400);
@@ -115,7 +135,7 @@ int main(int argc, char* argv[]) {
 
   try {
     std::cerr << "Creating window..." << std::endl;
-    create_window(drw, "Drawing", drw.get_width(), drw.get_height());
+    create_window(drw_svg, "Drawing");
     std::cerr << "Application exited normally." << std::endl;
   } catch (char const* ex) {
     std::cerr << ex << std::endl;

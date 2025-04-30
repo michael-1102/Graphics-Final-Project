@@ -50,7 +50,7 @@ void multishape_3d::render(drw_file& drw, view& view) {
   shader& s = drw.get_shader(sid);
 
   s.use();
-  s.setVec4("color", drw.get_color(color_index));
+  s.setVec4("color", glm::vec4(drw.get_color(color_index), alpha));
   s.setMat4("transform", drw.get_transform(transform_index));
   s.setMat4("scale", drw.get_scale());
   s.setMat4("view", camera.get_view());

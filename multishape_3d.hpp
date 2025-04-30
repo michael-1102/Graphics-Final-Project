@@ -8,6 +8,7 @@ class multishape_3d : public multishape {
  protected:
   uint32_t camera_index;
   uint32_t color_index;
+  float alpha;
 
   void add3DPoint(float x, float y, float z) {
     vertices.push_back(x);
@@ -120,11 +121,11 @@ class multishape_3d : public multishape {
   void add_draw_spline_extrusion(shape_2d shape, std::vector<glm::vec3> points, float inc);
   void add_draw_cubic_spline(std::vector<glm::vec3> points, float inc);
 
-  multishape_3d(float line_width, uint32_t color_index, uint32_t camera_index, uint32_t transform_index, shader_id sid = shader_id::FIXED_COLOR_CAMERA, uint32_t vertCount = 1024,
+  multishape_3d(float line_width, uint32_t color_index, uint32_t camera_index, uint32_t transform_index, float alpha = 1.f, shader_id sid = shader_id::FIXED_COLOR_CAMERA, uint32_t vertCount = 1024,
                uint32_t solidIndCount = 1024, uint32_t lineIndCount = 1024,
                uint32_t pointIndCount = 1024, uint32_t elemPerVert = 3)
-      : color_index(color_index), camera_index(camera_index), multishape(line_width, transform_index, sid, vertCount, solidIndCount, lineIndCount, pointIndCount, elemPerVert) {
-        set_start_instr(shape::full_instruction(instruction::START_MULTISHAPE_3D, {}, {}, {}, {line_width}, {color_index, camera_index, transform_index, (uint32_t) to_underlying(sid)}));
+      : alpha(alpha), color_index(color_index), camera_index(camera_index), multishape(line_width, transform_index, sid, vertCount, solidIndCount, lineIndCount, pointIndCount, elemPerVert) {
+        set_start_instr(shape::full_instruction(instruction::START_MULTISHAPE_3D, {}, {}, {}, {line_width, alpha}, {color_index, camera_index, transform_index, (uint32_t) to_underlying(sid)}));
         end_instr = instruction::END_MULTISHAPE_3D;
       }
   ~multishape_3d();
