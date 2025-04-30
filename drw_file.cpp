@@ -63,7 +63,7 @@ drw_file::drw_file(const char filename[]) {
 
   XMLParser::ContentContext* content = svg->content();
   std::vector<XMLParser::ElementContext*> elements = content->element();
-  styled_multishape_2d* shapes = new styled_multishape_2d(*this, DEFAULT_STROKE_WIDTH, DEFAULT_TRANSFORM_INDEX);
+  styled_multishape_2d* shapes = main_drawing.create_styled_multishape_2d(*this, DEFAULT_STROKE_WIDTH, DEFAULT_TRANSFORM_INDEX);
   main_drawing.add_shape(shapes);
   add_svg_elements(elements, shapes, group_attributes());
 
@@ -131,7 +131,7 @@ void drw_file::add_circle(XMLParser::ElementContext* element, styled_multishape_
   }
 
   if (stroke_width != attribs.stroke_width || transform_index != attribs.transform_index) {
-    styled_multishape_2d* new_shapes = new styled_multishape_2d(*this, stroke_width, transform_index);
+    styled_multishape_2d* new_shapes = main_drawing.create_styled_multishape_2d(*this, stroke_width, transform_index);
     main_drawing.add_shape(new_shapes);
     new_shapes->add_fill_circle(cx, cy, r, 30, fill_color_index, fill_opacity);
     if (has_stroke) new_shapes->add_draw_circle(cx, cy, r, 30, stroke_color_index, stroke_opacity);

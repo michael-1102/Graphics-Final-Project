@@ -89,7 +89,6 @@ class drw_file {
       return val;
     }
 
-
   public:
     drw_file(float width, float height) : width(width), height(height) {
       scale = glm::scale(glm::mat4(1.f), glm::vec3(1.f, width/height, 1.f));

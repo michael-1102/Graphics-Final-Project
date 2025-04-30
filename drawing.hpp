@@ -2,6 +2,7 @@
 
 #include <vector>
 #include "shape.hpp"
+#include "styled_multishape_2d.hpp"
 #include "view.hpp"
 #include <memory>
 
@@ -20,4 +21,6 @@ class drawing : public shape {
     void add_shape(shape* shape);
     
     inline void set_view(view& v) { my_view = v; }
+
+    styled_multishape_2d* create_styled_multishape_2d(drw_file& drw, float line_width, uint32_t transform_index);
 };

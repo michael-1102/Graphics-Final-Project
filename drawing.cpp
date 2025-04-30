@@ -23,3 +23,8 @@ void drawing::render(drw_file& drw, view& view) { render(drw); }
 void drawing::add_shape(shape* shape) {
   shapes.push_back(shape);
 }
+
+styled_multishape_2d* drawing::create_styled_multishape_2d(drw_file& drw, float line_width, uint32_t transform_index) {
+  shapes.push_back(new styled_multishape_2d(drw, line_width, transform_index));
+  return (styled_multishape_2d*) shapes.back();
+}
