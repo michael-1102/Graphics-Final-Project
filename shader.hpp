@@ -18,7 +18,7 @@ enum class shader_id {
   MATERIAL_MULTILIGHT
 };
 
-const char* const frag_fixed_color = 1 + R"GLSL(
+const char *const frag_fixed_color = 1 + R"GLSL(
   #version 310 es
   precision mediump float;
 
@@ -27,7 +27,7 @@ const char* const frag_fixed_color = 1 + R"GLSL(
 
   void main()
   {
-    color = vec4(rgba);
+    color = rgba.a * rgba;
   }
 )GLSL";
 const char* const vert_fixed_color = 1 + R"GLSL(

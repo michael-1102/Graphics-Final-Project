@@ -1,9 +1,12 @@
 <svg viewBox="0 0 400 100" width="300" height="100"
       xmlns="http://www.w3.org/2000/svg">
 
-  <circle cx="50" cy="50" r="40" fill="red" stroke="blue" stroke-width="3"/>
+  <rect x="0" y="0" width="400" height="100" fill="white"/>
+  <circle cx="50" cy="50" r="20" fill="blue"/>
+  <circle cx="50" cy="50" r="40" fill="red" stroke="blue" fill-opacity="0.5" stroke-width="3"/>
 
-  <circle cx="150" cy="50" r="40" fill="green" stroke="brown" stroke-width="5" />
+  <circle cx="150" cy="50" r="20" fill="blue"/>
+  <circle cx="150" cy="50" r="40" fill="green" stroke="brown" fill-opacity="0.5" stroke-width="5" />
 
   <circle cx="250" cy="50" r="40" fill="blue" />
 

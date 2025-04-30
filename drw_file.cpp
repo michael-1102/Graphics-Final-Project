@@ -111,8 +111,10 @@ void drw_file::add_line(XMLParser::ElementContext* element, group_attributes att
     } else if (attrib_name == "y2") {
       y2 = string_to_pixels(attrib_value);
     } else if (attrib_name == "stroke") {
-      has_stroke = true;
-      stroke_color_index = string_to_color_index(attrib_value);
+      if (attrib_value != "transparent") {
+        has_stroke = true;
+        stroke_color_index = string_to_color_index(attrib_value);
+      }
     } else if (attrib_name == "stroke-opacity") {
       stroke_opacity = string_to_float(attrib_value);
     } else if (attrib_name == "stroke-width") {
@@ -138,7 +140,7 @@ void drw_file::add_circle(XMLParser::ElementContext* element, group_attributes a
   uint32_t stroke_color_index = attribs.stroke_color_index;
   uint32_t stroke_width = attribs.stroke_width;
   uint32_t transform_index = attribs.transform_index;
-  bool has_stroke = false;
+  bool has_stroke = false, has_fill = true;
   for (auto attrib : attributes) {
     std::string attrib_name = attrib->Name()[0].getText();
     std::string attrib_value = std::regex_replace(attrib->STRING()[0].getText(), std::regex(R"(\")"), ""); // remove quotation marks
@@ -149,10 +151,16 @@ void drw_file::add_circle(XMLParser::ElementContext* element, group_attributes a
     } else if (attrib_name == "r") {
       r = string_to_pixels(attrib_value);
     } else if (attrib_name == "fill") {
-      fill_color_index = string_to_color_index(attrib_value);
+      if (attrib_value == "transparent") {
+        has_fill = false;
+      } else {
+        fill_color_index = string_to_color_index(attrib_value);
+      }
     } else if (attrib_name == "stroke") {
-      stroke_color_index = string_to_color_index(attrib_value);
-      has_stroke = true;
+      if (attrib_value != "transparent") {
+        stroke_color_index = string_to_color_index(attrib_value);
+        has_stroke = true;
+      }
     } else if (attrib_name == "fill-opacity") {
       fill_opacity = string_to_float(attrib_value);
     } else if (attrib_name == "stroke-opacity") {
@@ -168,7 +176,7 @@ void drw_file::add_circle(XMLParser::ElementContext* element, group_attributes a
 
   styled_multishape_2d* shape = main_drawing.create_styled_multishape_2d(*this, stroke_width, transform_index);
   main_drawing.add_shape(shape);
-  shape->add_fill_circle(cx, cy, r, 30, fill_color_index, fill_opacity);
+  if (has_fill) shape->add_fill_circle(cx, cy, r, 30, fill_color_index, fill_opacity);
   if (has_stroke) shape->add_draw_circle(cx, cy, r, 30, stroke_color_index, stroke_opacity);
 }
 

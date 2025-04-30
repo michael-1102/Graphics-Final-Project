@@ -46,8 +46,10 @@ void create_window(drw_file& drw, const std::string& title) {
   }
 
   glewInit();
+  //TODO: this blend function does not behave like svg's default blending but it's closer 
+  glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+  //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   glEnable(GL_BLEND);
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   drw.init();
 
   // Set background color

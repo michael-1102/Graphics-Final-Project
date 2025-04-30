@@ -63,6 +63,7 @@ class drw_file {
 
 
     uint32_t string_to_color_index(std::string str) {
+      //TODO: support hsl
       if (str.rfind("#", 0) == 0) {
         std::string red_str = str.substr(1, 2);
         std::string green_str = str.substr(3, 2);
@@ -78,7 +79,7 @@ class drw_file {
       return stoi(str);
     }
 
-    uint32_t string_to_float(std::string str) {
+    float string_to_float(std::string str) {
       //TODO: handle %
       return stof(str);
     }
