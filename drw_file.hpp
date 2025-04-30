@@ -6,7 +6,6 @@
 #include "camera.hpp"
 #include "colors.hpp"
 #include "antlr4-runtime.h"
-#include "styled_multishape_2d.hpp"
 #include "libs/XMLLexer.h"
 #include "libs/XMLParser.h"
 #include "libs/XMLParserBaseVisitor.h"
@@ -57,9 +56,10 @@ class drw_file {
 
 
     void apply_svg_attributes(XMLParser::ElementContext* svg);
-    void add_svg_elements(std::vector<XMLParser::ElementContext*> elements, styled_multishape_2d* shapes, group_attributes attribs);
+    void add_svg_elements(std::vector<XMLParser::ElementContext*> elements, group_attributes attribs);
 
-    void add_circle(XMLParser::ElementContext* element, styled_multishape_2d* shapes, group_attributes attribs);
+    void add_circle(XMLParser::ElementContext* element, group_attributes attribs);
+    void add_line(XMLParser::ElementContext* element, group_attributes attribs);
 
 
     uint32_t string_to_color_index(std::string str) {
@@ -82,6 +82,8 @@ class drw_file {
       //TODO: handle %
       return stof(str);
     }
+
+    uint32_t string_to_transform_index(std::string str);
 
     uint32_t get_next_value(std::string& s, std::string delimiter) {
       uint32_t val = string_to_pixels(s.substr(0, s.find(delimiter)));

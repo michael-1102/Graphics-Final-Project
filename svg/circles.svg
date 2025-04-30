@@ -6,4 +6,6 @@
   <circle cx="150" cy="50" r="40" fill="green" stroke="brown" stroke-width="5" />
 
   <circle cx="250" cy="50" r="40" fill="blue" />
+
+  <line x1="50" y1="50" x2="100" y2="100" stroke="navy"/>
 </svg>
