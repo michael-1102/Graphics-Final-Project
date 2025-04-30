@@ -63,14 +63,14 @@ drw_file::drw_file(const char filename[]) {
 
   XMLParser::ContentContext* content = svg->content();
   std::vector<XMLParser::ElementContext*> elements = content->element();
-  svg_shapes.push_back(styled_multishape_2d(*this, DEFAULT_STROKE_WIDTH, DEFAULT_TRANSFORM_INDEX));
-  main_drawing.add_shape(&svg_shapes.back());
-  add_svg_elements(elements, svg_shapes.back(), group_attributes());
+  styled_multishape_2d* shapes = new styled_multishape_2d(*this, DEFAULT_STROKE_WIDTH, DEFAULT_TRANSFORM_INDEX);
+  main_drawing.add_shape(shapes);
+  add_svg_elements(elements, shapes, group_attributes());
 
   stream.close();
 }
 
-void drw_file::add_svg_elements(std::vector<XMLParser::ElementContext*> elements, styled_multishape_2d& shapes, group_attributes attribs) {
+void drw_file::add_svg_elements(std::vector<XMLParser::ElementContext*> elements, styled_multishape_2d* shapes, group_attributes attribs) {
   for (auto elem : elements) {
     std::string elem_name = elem->Name()[0]->getText();
     if (elem_name == "line") {
@@ -93,7 +93,7 @@ void drw_file::add_svg_elements(std::vector<XMLParser::ElementContext*> elements
   }
 }
 
-void drw_file::add_circle(XMLParser::ElementContext* element, styled_multishape_2d& shapes, group_attributes attribs) {
+void drw_file::add_circle(XMLParser::ElementContext* element, styled_multishape_2d* shapes, group_attributes attribs) {
   std::vector<XMLParser::AttributeContext*> attributes = element->attribute();
   float cx = 0, cy = 0, r = 0;
   float fill_opacity = attribs.fill_opacity;
@@ -101,6 +101,7 @@ void drw_file::add_circle(XMLParser::ElementContext* element, styled_multishape_
   uint32_t fill_color_index = attribs.fill_color_index;
   uint32_t stroke_color_index = attribs.stroke_color_index;
   uint32_t stroke_width = attribs.stroke_width;
+  uint32_t transform_index = attribs.transform_index;
   bool has_stroke = false;
   for (auto attrib : attributes) {
     std::string attrib_name = attrib->Name()[0].getText();
@@ -121,13 +122,21 @@ void drw_file::add_circle(XMLParser::ElementContext* element, styled_multishape_
     } else if (attrib_name == "stroke-opacity") {
       stroke_opacity = string_to_float(attrib_value);
     } else if (attrib_name == "stroke-width") {
-      //TODO: change shape
+      stroke_width = string_to_float(attrib_value);
     } else if (attrib_name == "transform") {
-      //TODO: change shape
+      //TODO: transform
     } else {
       std::cout << "Unsupported attribute: " << attrib_name << std::endl;
     }
   }
-  shapes.add_fill_circle(cx, cy, r, 30, fill_color_index, fill_opacity);
-  if (has_stroke) shapes.add_draw_circle(cx, cy, r, 30, stroke_color_index, stroke_opacity);
+
+  if (stroke_width != attribs.stroke_width || transform_index != attribs.transform_index) {
+    styled_multishape_2d* new_shapes = new styled_multishape_2d(*this, stroke_width, transform_index);
+    main_drawing.add_shape(new_shapes);
+    new_shapes->add_fill_circle(cx, cy, r, 30, fill_color_index, fill_opacity);
+    if (has_stroke) new_shapes->add_draw_circle(cx, cy, r, 30, stroke_color_index, stroke_opacity);
+  } else {
+    shapes->add_fill_circle(cx, cy, r, 30, fill_color_index, fill_opacity);
+    if (has_stroke) shapes->add_draw_circle(cx, cy, r, 30, stroke_color_index, stroke_opacity);
+  }
 }

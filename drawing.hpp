@@ -3,6 +3,7 @@
 #include <vector>
 #include "shape.hpp"
 #include "view.hpp"
+#include <memory>
 
 class drawing : public shape {
   private:

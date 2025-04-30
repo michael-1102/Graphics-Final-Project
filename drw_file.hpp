@@ -29,12 +29,12 @@ class drw_file {
       uint32_t fill_color_index;
       uint32_t stroke_color_index;
 
-      group_attributes(uint32_t stroke_width = DEFAULT_STROKE_WIDTH, float fill_opacity = DEFAULT_OPACITY, 
-                       float stroke_opacity = DEFAULT_OPACITY, uint32_t fill_color_index = DEFAULT_COLOR_INDEX, uint32_t stroke_color_index = DEFAULT_COLOR_INDEX) :
-                       stroke_width(stroke_width), fill_opacity(fill_opacity), stroke_opacity(stroke_opacity), fill_color_index(fill_color_index), stroke_color_index(stroke_color_index) {}
-    };
+      uint32_t transform_index;
 
-    std::vector<styled_multishape_2d> svg_shapes;
+      group_attributes(uint32_t stroke_width = DEFAULT_STROKE_WIDTH, float fill_opacity = DEFAULT_OPACITY, 
+                       float stroke_opacity = DEFAULT_OPACITY, uint32_t fill_color_index = DEFAULT_COLOR_INDEX, uint32_t stroke_color_index = DEFAULT_COLOR_INDEX, uint32_t transform_index = DEFAULT_TRANSFORM_INDEX) :
+                       transform_index(transform_index), stroke_width(stroke_width), fill_opacity(fill_opacity), stroke_opacity(stroke_opacity), fill_color_index(fill_color_index), stroke_color_index(stroke_color_index) {}
+    };
 
     float width = 300;
     float height = 100;
@@ -57,9 +57,9 @@ class drw_file {
 
 
     void apply_svg_attributes(XMLParser::ElementContext* svg);
-    void add_svg_elements(std::vector<XMLParser::ElementContext*> elements, styled_multishape_2d& shapes, group_attributes attribs);
+    void add_svg_elements(std::vector<XMLParser::ElementContext*> elements, styled_multishape_2d* shapes, group_attributes attribs);
 
-    void add_circle(XMLParser::ElementContext* element, styled_multishape_2d& shapes, group_attributes attribs);
+    void add_circle(XMLParser::ElementContext* element, styled_multishape_2d* shapes, group_attributes attribs);
 
 
     uint32_t string_to_color_index(std::string str) {
