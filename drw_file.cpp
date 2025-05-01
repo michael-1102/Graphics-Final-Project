@@ -90,9 +90,11 @@ void drw_file::add_svg_elements(std::vector<XMLParser::ElementContext*> elements
     } else if (elem_name == "rect") {
       add_rect(elem, attribs);
     } else if (elem_name == "polyline") {
-
+      add_poly(elem, attribs, false);
     } else if (elem_name == "polygon") {
-
+      add_poly(elem, attribs, true);
+    } else if (elem_name == "path") {
+      //TODO: path support
     } else if (elem_name == "g") {
       group_attributes group_attribs = apply_group_attributes(elem, attribs);
       add_svg_elements(elem->content()->element(), group_attribs);
@@ -134,6 +136,55 @@ drw_file::group_attributes drw_file::apply_group_attributes(XMLParser::ElementCo
     }
   }
   return attribs;
+}
+
+void drw_file::add_poly(XMLParser::ElementContext* element, group_attributes attribs, bool connect_ends) {
+  std::vector<XMLParser::AttributeContext*> attributes = element->attribute();
+  std::vector<glm::vec2> points;
+  for (auto attrib : attributes) {
+    std::string attrib_name = attrib->Name()[0].getText();
+    std::string attrib_value = std::regex_replace(attrib->STRING()[0].getText(), std::regex(R"(\"|\')"), ""); // remove quotation marks
+    if (attrib_name == "points") {
+      std::vector<std::string> values = resplit(attrib_value, std::regex{"[ ,]"});
+      for (uint32_t i = 0; i < values.size(); i+=2) {
+        points.push_back(glm::vec2(string_to_float(values[i]), string_to_float(values[i + 1])));
+      }
+    } else if (attrib_name == "fill") {
+      if (attrib_value == "transparent" || attrib_value == "none") {
+        attribs.has_fill = false;
+      } else {
+        attribs.fill_color_index = string_to_color_index(attrib_value);
+        attribs.has_fill = true;
+      }
+    } else if (attrib_name == "stroke") {
+      if (!(attrib_value == "transparent" || attrib_value == "none")) {
+        attribs.stroke_color_index = string_to_color_index(attrib_value);
+        attribs.has_stroke = true;
+      } else {
+        attribs.has_stroke = false;
+      }
+    } else if (attrib_name == "fill-opacity") {
+      attribs.fill_opacity = string_to_float(attrib_value);
+    } else if (attrib_name == "stroke-opacity") {
+      attribs.stroke_opacity = string_to_float(attrib_value);
+    } else if (attrib_name == "stroke-width") {
+      attribs.stroke_width = string_to_float(attrib_value);
+    } else if (attrib_name == "transform") {
+      attribs.transform_index = string_to_transform_index(attrib_value);
+    } else {
+      std::cout << "Unsupported circle attribute: " << attrib_name << std::endl;
+    }
+  }
+
+  styled_multishape_2d* shape = main_drawing.create_styled_multishape_2d(*this, attribs.stroke_width, attribs.transform_index);
+  main_drawing.add_shape(shape);
+  if (connect_ends) {
+    if (attribs.has_fill) shape->add_fill_polygon(points, attribs.fill_color_index, attribs.fill_opacity);
+    if (attribs.has_stroke) shape->add_draw_polygon(points, attribs.stroke_color_index, attribs.stroke_opacity);
+  } else {
+    if (attribs.has_fill) shape->add_fill_polyline(points, attribs.fill_color_index, attribs.fill_opacity);
+    if (attribs.has_stroke) shape->add_draw_polyline(points, attribs.stroke_color_index, attribs.stroke_opacity);
+  }
 }
 
 void drw_file::add_line(XMLParser::ElementContext* element, group_attributes attribs) {

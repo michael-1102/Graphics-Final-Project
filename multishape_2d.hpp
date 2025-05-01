@@ -49,6 +49,7 @@ class multishape_2d : public multishape {
   void fillCircle(float x, float y, float rad, uint32_t sectors);
   void fillEllipse(float x, float y, float xRad, float yRad, uint32_t sectors);
   void fillPolygon(std::vector<glm::vec2> points);
+  void fillPolyline(std::vector<glm::vec2> points);
   void fillCircleMarker(float x, float y, float size);
   void fillTriangleMarker(float x, float y, float size);
   void fillSquareMarker(float x, float y, float size);
@@ -122,6 +123,7 @@ class multishape_2d : public multishape {
   void add_fill_circle(float x, float y, float rad, uint32_t sectors);
   void add_fill_ellipse(float x, float y, float xRad, float yRad, uint32_t sectors);
   void add_fill_polygon(std::vector<glm::vec2> points);
+  void add_fill_polyline(std::vector<glm::vec2> points);
   void add_fill_circle_marker(float x, float y, float size);
   void add_fill_triangle_marker(float x, float y, float size);
   void add_fill_square_marker(float x, float y, float size);

@@ -66,6 +66,7 @@ class drw_file {
     void add_circle(XMLParser::ElementContext* element, group_attributes attribs);
     void add_rect(XMLParser::ElementContext* element, group_attributes attribs);
     void add_line(XMLParser::ElementContext* element, group_attributes attribs);
+    void add_poly(XMLParser::ElementContext* element, group_attributes attribs, bool connect);
 
 
     uint32_t string_to_color_index(std::string str) {

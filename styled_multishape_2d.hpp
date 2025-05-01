@@ -47,6 +47,7 @@ class styled_multishape_2d : public multishape_2d {
   void fillCircle(float x, float y, float rad, uint32_t sectors, uint32_t color_index, float alpha);
   void fillEllipse(float x, float y, float xRad, float yRad, uint32_t sectors, uint32_t color_index, float alpha);
   void fillPolygon(std::vector<glm::vec2> points, uint32_t color_index, float alpha);
+  void fillPolyline(std::vector<glm::vec2> points, uint32_t color_index, float alpha);
   void fillGrid(float x0, float y0, float w, float h, uint32_t numCols, uint32_t numRows, uint32_t bg_color_index, float bg_alpha, uint32_t fg_color_index, float fg_alpha);
   void fillCircleMarker(float x, float y, float size, uint32_t color_index, float alpha);
   void fillTriangleMarker(float x, float y, float size, uint32_t color_index, float alpha);
@@ -122,6 +123,7 @@ class styled_multishape_2d : public multishape_2d {
   void add_fill_circle(float x, float y, float rad, uint32_t sectors, uint32_t color_index, float alpha);
   void add_fill_ellipse(float x, float y, float xRad, float yRad, uint32_t sectors, uint32_t color_index, float alpha);
   void add_fill_polygon(std::vector<glm::vec2> points, uint32_t color_index, float alpha);
+  void add_fill_polyline(std::vector<glm::vec2> points, uint32_t color_index, float alpha);
   void add_fill_grid(float x0, float y0, float w, float h, uint32_t numCols, uint32_t numRows, uint32_t bg_color_index, float bg_alpha, uint32_t fg_color_index, float fg_alpha);
   void add_fill_circle_marker(float x, float y, float size, uint32_t color_index, float alpha);
   void add_fill_triangle_marker(float x, float y, float size, uint32_t color_index, float alpha);

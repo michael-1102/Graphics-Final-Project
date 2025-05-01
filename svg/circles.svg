@@ -15,4 +15,6 @@
   <line x1="50" y1="50" x2="100" y2="100" stroke="navy"/>
   <rect x="100" y="50" width="30" height="50" rx="3" ry="4" stroke="hotpink"/>
 
+  <polygon points="100,100 150,25 150,75 200,0" fill="none" stroke="black" />
+
 </svg>

@@ -334,6 +334,11 @@ void styled_multishape_2d::fillPolygon(std::vector<glm::vec2> points, uint32_t c
   //TODO: filled in polygon
 }
 
+void styled_multishape_2d::fillPolyline(std::vector<glm::vec2> points, uint32_t color_index, float alpha) {
+  const glm::vec4& c = glm::vec4(drw.get_color(color_index), alpha);
+  //TODO: filled in polyline
+}
+
 void styled_multishape_2d::fillGrid(float x0, float y0, float w, float h, uint32_t numCols, uint32_t numRows, uint32_t bg_color_index, float bg_alpha, uint32_t fg_color_index, float fg_alpha) {
   fillRectangle(x0, y0, w, h, bg_color_index, bg_alpha);
   drawGrid(x0, y0, w, h, numCols, numRows, fg_color_index, fg_alpha);
@@ -701,6 +706,18 @@ void styled_multishape_2d::add_fill_polygon(std::vector<glm::vec2> points, uint3
   instructions.push_back(shape::full_instruction(instruction::FILL_POLYGON, x_coords, y_coords, {}, {alpha}, {(uint32_t) points.size(), color_index}));
   fillPolygon(points, color_index, alpha);
 }
+
+void styled_multishape_2d::add_fill_polyline(std::vector<glm::vec2> points, uint32_t color_index, float alpha) {
+  std::vector<float> x_coords;
+  std::vector<float> y_coords;
+  for (auto p : points) {
+    x_coords.push_back(p.x);
+    y_coords.push_back(p.y);
+  }
+  instructions.push_back(shape::full_instruction(instruction::FILL_POLYLINE, x_coords, y_coords, {}, {alpha}, {(uint32_t) points.size(), color_index}));
+  fillPolyline(points, color_index, alpha);
+}
+
 void styled_multishape_2d::add_fill_circle_marker(float x, float y, float size, uint32_t color_index, float alpha) {
   instructions.push_back(shape::full_instruction(instruction::FILL_CIRCLE_MARKER, {x}, {y}, {}, {size, alpha}, {color_index}));
   fillCircleMarker(x, y, size, color_index, alpha);
@@ -989,6 +1006,19 @@ const std::unordered_map<instruction, std::function<void(multishape::dispatch_in
     i.current_y_coord++;
   }
   ((styled_multishape_2d*) i.shape)->fillPolygon(points, i.uint32s[i.current_uint32], i.floats[i.current_float]);
+  i.current_uint32++;
+  i.current_float++;
+}},
+{instruction::FILL_POLYLINE, [](dispatch_inputs i) {
+  uint32_t num_points = i.uint32s[i.current_uint32];
+  i.current_uint32++;
+  std::vector<glm::vec2> points;
+  for (uint32_t j = 0; j < num_points; j++) {
+    points.push_back(glm::vec2(i.x_coords[i.current_x_coord], i.y_coords[i.current_y_coord]));
+    i.current_x_coord++;
+    i.current_y_coord++;
+  }
+  ((styled_multishape_2d*) i.shape)->fillPolyline(points, i.uint32s[i.current_uint32], i.floats[i.current_float]);
   i.current_uint32++;
   i.current_float++;
 }},

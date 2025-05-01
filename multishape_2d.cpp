@@ -367,6 +367,10 @@ void multishape_2d::fillPolygon(std::vector<glm::vec2> points) {
   //TODO: filled in polygon
 }
 
+void multishape_2d::fillPolyline(std::vector<glm::vec2> points) {
+  //TODO: filled in polygon
+}
+
 // Markers for Graphs
 void multishape_2d::fillCircleMarker(float x, float y, float size) {
   fillCircle(x, y, size, 20);
@@ -695,6 +699,16 @@ void multishape_2d::add_fill_polygon(std::vector<glm::vec2> points) {
   instructions.push_back(shape::full_instruction(instruction::FILL_POLYGON, x_coords, y_coords, {}, {}, {(uint32_t) points.size()}));
   fillPolygon(points);
 }
+void multishape_2d::add_fill_polyline(std::vector<glm::vec2> points) {
+  std::vector<float> x_coords;
+  std::vector<float> y_coords;
+  for (auto p : points) {
+    x_coords.push_back(p.x);
+    y_coords.push_back(p.y);
+  }
+  instructions.push_back(shape::full_instruction(instruction::FILL_POLYLINE, x_coords, y_coords, {}, {}, {(uint32_t) points.size()}));
+  fillPolyline(points);
+}
 void multishape_2d::add_fill_circle_marker(float x, float y, float size) {
   instructions.push_back(shape::full_instruction(instruction::FILL_CIRCLE_MARKER, {x}, {y}, {}, {size}, {}));
   fillCircleMarker(x, y, size);
@@ -972,6 +986,17 @@ const std::unordered_map<instruction, std::function<void(multishape::dispatch_in
       i.current_y_coord++;
     }
     ((multishape_2d*) i.shape)->fillPolygon(points);
+  }},
+  {instruction::FILL_POLYLINE, [](dispatch_inputs i) {
+    uint32_t num_points = i.uint32s[i.current_uint32];
+    i.current_uint32++;
+    std::vector<glm::vec2> points;
+    for (uint32_t j = 0; j < num_points; j++) {
+      points.push_back(glm::vec2(i.x_coords[i.current_x_coord], i.y_coords[i.current_y_coord]));
+      i.current_x_coord++;
+      i.current_y_coord++;
+    }
+    ((multishape_2d*) i.shape)->fillPolyline(points);
   }},
   {instruction::FILL_CIRCLE_MARKER, [](dispatch_inputs i) {
     ((multishape_2d*) i.shape)->fillCircleMarker(i.x_coords[i.current_x_coord], i.y_coords[i.current_y_coord], i.floats[i.current_float]);
