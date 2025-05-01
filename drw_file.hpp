@@ -15,6 +15,8 @@
 #define DEFAULT_COLOR_INDEX 0
 #define DEFAULT_TRANSFORM_INDEX 0
 
+#define NUM_SECTORS 100
+
 using namespace antlr4;
 
 
@@ -24,6 +26,8 @@ class drw_file {
       uint32_t stroke_width;
 
       float fill_opacity;
+      bool has_fill = true;
+      bool has_stroke = false;
       float stroke_opacity;
       uint32_t fill_color_index;
       uint32_t stroke_color_index;
@@ -54,43 +58,54 @@ class drw_file {
 
     std::unordered_map<shader_id, shader> shaders; // shader_id, shader key-value pair
 
-
+    group_attributes apply_group_attributes(XMLParser::ElementContext* elem, group_attributes attribs);
     void apply_svg_attributes(XMLParser::ElementContext* svg);
     void add_svg_elements(std::vector<XMLParser::ElementContext*> elements, group_attributes attribs);
 
+    void add_ellipse(XMLParser::ElementContext* element, group_attributes attribs);
     void add_circle(XMLParser::ElementContext* element, group_attributes attribs);
+    void add_rect(XMLParser::ElementContext* element, group_attributes attribs);
     void add_line(XMLParser::ElementContext* element, group_attributes attribs);
 
 
     uint32_t string_to_color_index(std::string str) {
-      //TODO: support hsl
+      //TODO: support hsl(h, s, l) and rgb(r, g, b)
       if (str.rfind("#", 0) == 0) {
-        std::string red_str = str.substr(1, 2);
-        std::string green_str = str.substr(3, 2);
-        std::string blue_str = str.substr(5, 2);
+        std::string red_str;
+        std::string green_str;
+        std::string blue_str;
+        if (str.length() == 4) {
+          red_str = str.substr(1, 1);
+          red_str += red_str;
+          green_str = str.substr(2, 1);
+          green_str += green_str;
+          blue_str = str.substr(3, 1);
+          blue_str += blue_str;
+        } else if (str.length() == 7) {
+          red_str = str.substr(1, 2);
+          green_str = str.substr(3, 2);
+          blue_str = str.substr(5, 2);
+        } else {
+          std::cout << str << std::endl;
+          throw "Error: Unsupported color value";
+        }
         glm::vec3 color = glm::vec3(stoi(red_str, nullptr, 16) / 255.f, stoi(green_str, nullptr, 16) / 255.f, stoi(blue_str, nullptr, 16) / 255.f);
         return clrs.add_color(color);
       }
       return clrs.get_color_index(str);
     }
 
-    uint32_t string_to_pixels(std::string str) {
-      //TODO: handle px, cm, in, %
-      return stoi(str);
-    }
-
     float string_to_float(std::string str) {
       //TODO: handle %
-      return stof(str);
+      try {
+        return stof(str);
+      } catch (...) {
+        std::cout << "Unsupported value: " << str << std::endl;
+        return 0;
+      }
     }
 
     uint32_t string_to_transform_index(std::string str);
-
-    uint32_t get_next_value(std::string& s, std::string delimiter) {
-      uint32_t val = string_to_pixels(s.substr(0, s.find(delimiter)));
-      s.erase(0, s.find(delimiter) + delimiter.length());
-      return val;
-    }
 
   public:
     drw_file(float width, float height) : width(width), height(height) {

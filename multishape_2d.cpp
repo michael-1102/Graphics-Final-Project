@@ -310,7 +310,7 @@ void multishape_2d::fillRectangle(float x, float y, float w, float h) {
 
 void multishape_2d::fillRoundRect(float x, float y, float w, float h, float rx,
                                  float ry, uint32_t sectors) {
-  float angle_inc = 90 / sectors;
+  float angle_inc = 90.f /sectors;
   uint32_t centerIndex = getPointIndex();
   addPoint(x + w / 2, y + h / 2);
 
@@ -355,7 +355,7 @@ void multishape_2d::fillCircle(float x, float y, float rad, uint32_t sectors) {
 
 void multishape_2d::fillEllipse(float x, float y, float xRad, float yRad,
                                uint32_t sectors) {
-  float angleInc = 360 / sectors;
+  float angleInc = 360.f /sectors;
   uint32_t centerIndex = getPointIndex();
   addPoint(x, y);
 
@@ -399,7 +399,7 @@ void multishape_2d::drawSquare(float x, float y, float size) {
 
 void multishape_2d::drawRoundRect(float x, float y, float w, float h, float rx,
                                  float ry, uint32_t sectors) {
-  float angle_inc = 90 / sectors;
+  float angle_inc = 90.f /sectors;
   uint32_t ind = getPointIndex();
 
   uint32_t toAdd = addSector(x + rx, y + ry, rx, ry, 90, 180, angle_inc);
@@ -439,7 +439,7 @@ void multishape_2d::drawCircle(float x, float y, float rad, uint32_t sectors) {
 
 void multishape_2d::drawEllipse(float x, float y, float xRad, float yRad,
                                uint32_t sectors) {
-  float angleInc = 360 / sectors;
+  float angleInc = 360.f /sectors;
   uint32_t ind = getPointIndex();
   uint32_t toAdd = addSector(x, y, xRad, yRad, 0, 360 - angleInc, angleInc);
   lAddClosedIndices(toAdd);
@@ -604,7 +604,7 @@ void multishape_2d::squarePoints(float x, float y, float size) {
 
 void multishape_2d::roundRectPoints(float x, float y, float w, float h, float rx,
                                    float ry, uint32_t sectors) {
-  float angle_inc = 90 / sectors;
+  float angle_inc = 90.f /sectors;
   uint32_t toAdd = addSector(x + rx, y + ry, rx, ry, 90, 180, sectors);
   pAddIndices(toAdd);
 
@@ -630,7 +630,7 @@ void multishape_2d::circlePoints(float x, float y, float rad, uint32_t sectors) 
 
 void multishape_2d::ellipsePoints(float x, float y, float xRad, float yRad,
                                  uint32_t sectors) {
-  float angleInc = 360 / sectors;
+  float angleInc = 360.f /sectors;
   uint32_t toAdd = addSector(x, y, xRad, yRad, 0, 360 - angleInc, angleInc);
   pAddIndices(toAdd);
 }

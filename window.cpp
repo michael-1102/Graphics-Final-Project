@@ -87,6 +87,7 @@ int main(int argc, char* argv[]) {
     drw_svg = drw_file("svg/circles.svg");
   } catch (char const* ex) {
     std::cerr << ex << std::endl;
+    return 1;
   }
 
   drw_file drw(300, 100);
@@ -115,9 +116,9 @@ int main(int argc, char* argv[]) {
   view vw = view(0, 0, 300, 100);
   main.set_view(vw);
   styled_multishape_2d shapes = styled_multishape_2d(drw, 1, 0);
-  shapes.add_fill_circle(50, 50, 40, 20, drw.get_color_index("black"), 1.f);
-  shapes.add_fill_circle(150, 50, 40, 20, drw.get_color_index("black"), 1.f);
-  shapes.add_fill_circle(250, 50, 40, 20, drw.get_color_index("black"), 1.f);
+  //shapes.add_fill_circle(50, 50, 40, 20, drw.get_color_index("black"), 1.f);
+  //shapes.add_fill_circle(150, 50, 40, 20, drw.get_color_index("black"), 1.f);
+  //shapes.add_fill_circle(250, 50, 40, 20, drw.get_color_index("black"), 1.f);
   multishape_3d wireframes = multishape_3d(1, drw.get_color_index("blue"), 1, 0);
   wireframes.add_draw_sphere(50, 50, 0, 40, 32, 18);
   wireframes.add_draw_rect_prism(0, 0, 0, 400, 100, 400);
@@ -138,8 +139,10 @@ int main(int argc, char* argv[]) {
   try {
     std::cerr << "Creating window..." << std::endl;
     create_window(drw_svg, "Drawing");
-    std::cerr << "Application exited normally." << std::endl;
   } catch (char const* ex) {
     std::cerr << ex << std::endl;
+    return 1;
   }
+  std::cerr << "Application exited normally." << std::endl;
+  return 0;
 }

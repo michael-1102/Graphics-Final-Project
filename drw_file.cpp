@@ -1,31 +1,39 @@
 #include "drw_file.hpp"
 
+std::vector<std::string> resplit(const std::string &s, const std::regex &sep_regex = std::regex{"\\s+"}) {
+  std::sregex_token_iterator iter(s.begin(), s.end(), sep_regex, -1);
+  std::sregex_token_iterator end;
+  return {iter, end};
+}
+
 void drw_file::apply_svg_attributes(XMLParser::ElementContext* svg) {
   std::vector<XMLParser::AttributeContext *> attributes = svg->attribute();
   bool has_viewbox = false, has_width = false, has_height = false;
   view v;
   for (auto attrib : attributes) {
     std::string attrib_name = attrib->Name()[0].getText();
-    std::string attrib_value = std::regex_replace(attrib->STRING()[0].getText(), std::regex(R"(\")"), ""); // remove quotation marks
+    std::string attrib_value = std::regex_replace(attrib->STRING()[0].getText(), std::regex(R"(\"|\')"), ""); // remove quotation marks
     if (attrib_name == "viewBox") {
       has_viewbox = true;
-      std::string delimiter = " ";
-      uint32_t x = get_next_value(attrib_value, delimiter);
-      uint32_t y = get_next_value(attrib_value, delimiter);
-      uint32_t w = get_next_value(attrib_value, delimiter);
-      uint32_t h = get_next_value(attrib_value, delimiter);
+      std::vector<std::string> values = resplit(attrib_value, std::regex{"[ ,]"});
+      uint32_t x = string_to_float(values[0]);
+      uint32_t y = string_to_float(values[1]);
+      uint32_t w = string_to_float(values[2]);
+      uint32_t h = string_to_float(values[3]);
       v = view(x, y, w, h);
       main_drawing.set_view(v);
     } else if (attrib_name == "width") {
       has_width = true;
-      width = string_to_pixels(attrib_value);
+      width = string_to_float(attrib_value);
     } else if (attrib_name == "height") {
       has_height = true;
-      height = string_to_pixels(attrib_value);
+      height = string_to_float(attrib_value);
     } else if (attrib_name == "xmlns") {
       // do nothing with namespace
+    } else if (attrib_name == "version") {
+      // do nothing with version, at least for now
     } else {
-      std::cout << "Unsupported attribute: " << attrib_name << std::endl;
+      std::cout << "Unsupported svg attribute: " << attrib_name << std::endl;
     }
   }
   if (!has_viewbox) {
@@ -52,16 +60,18 @@ drw_file::drw_file(const char filename[]) {
   CommonTokenStream tokens(&lexer);
   XMLParser parser(&tokens);
 
-  XMLParser::ElementContext* svg = parser.element();
-  //std::cout << svg->toStringTree(&parser) << std::endl;
+  XMLParser::DocumentContext* doc = parser.document();
+
+  XMLParser::ElementContext* svg = doc->element();
+  // std::cout << svg->toStringTree(&parser) << std::endl;
 
   if (svg->Name()[0]->getText() != "svg") {
-    throw "Error: SVG must be first element of file";
+    throw "Error: SVG must be first element of document";
   }
 
   apply_svg_attributes(svg);
 
-                   XMLParser::ContentContext* content = svg->content();
+  XMLParser::ContentContext* content = svg->content();
   std::vector<XMLParser::ElementContext*> elements = content->element();
   add_svg_elements(elements, group_attributes());
 
@@ -76,108 +86,252 @@ void drw_file::add_svg_elements(std::vector<XMLParser::ElementContext*> elements
     } else if (elem_name == "circle") {
       add_circle(elem, attribs);
     } else if (elem_name == "ellipse") {
-
+      add_ellipse(elem, attribs);
     } else if (elem_name == "rect") {
-
+      add_rect(elem, attribs);
     } else if (elem_name == "polyline") {
 
     } else if (elem_name == "polygon") {
 
     } else if (elem_name == "g") {
-
+      group_attributes group_attribs = apply_group_attributes(elem, attribs);
+      add_svg_elements(elem->content()->element(), group_attribs);
     } else {
       std::cout << "Unsupported element: " << elem_name << std::endl;
     }
   }
 }
 
+drw_file::group_attributes drw_file::apply_group_attributes(XMLParser::ElementContext* elem, group_attributes attribs) {
+  std::vector<XMLParser::AttributeContext *> attributes = elem->attribute();
+  for (auto attrib : attributes) {
+    std::string attrib_name = attrib->Name()[0].getText();
+    std::string attrib_value = std::regex_replace(attrib->STRING()[0].getText(), std::regex(R"(\"|\')"), ""); // remove quotation marks
+    if (attrib_name == "fill") {
+      if (attrib_value == "transparent" || attrib_value == "none") {
+        attribs.has_fill = false;
+      } else {
+        attribs.has_fill = true;
+        attribs.fill_color_index = string_to_color_index(attrib_value);
+      }
+    } else if (attrib_name == "stroke") {
+      if (!(attrib_value == "transparent" || attrib_value == "none")) {
+        attribs.stroke_color_index = string_to_color_index(attrib_value);
+        attribs.has_stroke = true;
+      } else {
+        attribs.has_stroke = false;
+      }
+    } else if (attrib_name == "fill-opacity") {
+      attribs.fill_opacity = string_to_float(attrib_value);
+    } else if (attrib_name == "stroke-opacity") {
+      attribs.stroke_opacity = string_to_float(attrib_value);
+    } else if (attrib_name == "stroke-width") {
+      attribs.stroke_width = string_to_float(attrib_value);
+    } else if (attrib_name == "transform") {
+      attribs.transform_index = string_to_transform_index(attrib_value);
+    } else {
+      std::cout << "Unsupported group attribute: " << attrib_name << std::endl;
+    }
+  }
+  return attribs;
+}
+
 void drw_file::add_line(XMLParser::ElementContext* element, group_attributes attribs) {
   std::vector<XMLParser::AttributeContext*> attributes = element->attribute();
   float x1 = 0, y1 = 0, x2 = 0, y2 = 0;
-  float stroke_opacity = attribs.stroke_opacity;
-  uint32_t stroke_color_index = attribs.stroke_color_index;
-  uint32_t stroke_width = attribs.stroke_width;
-  uint32_t transform_index = attribs.transform_index;
-  bool has_stroke = false;
   for (auto attrib : attributes) {
     std::string attrib_name = attrib->Name()[0].getText();
-    std::string attrib_value = std::regex_replace(attrib->STRING()[0].getText(), std::regex(R"(\")"), ""); // remove quotation marks
+    std::string attrib_value = std::regex_replace(attrib->STRING()[0].getText(), std::regex(R"(\"|\')"), ""); // remove quotation marks
     if (attrib_name == "x1") {
-      x1 = string_to_pixels(attrib_value);
+      x1 = string_to_float(attrib_value);
     } else if (attrib_name == "y1") {
-      y1 = string_to_pixels(attrib_value);
+      y1 = string_to_float(attrib_value);
     } else if (attrib_name == "x2") {
-      x2 = string_to_pixels(attrib_value);
+      x2 = string_to_float(attrib_value);
     } else if (attrib_name == "y2") {
-      y2 = string_to_pixels(attrib_value);
+      y2 = string_to_float(attrib_value);
     } else if (attrib_name == "stroke") {
-      if (attrib_value != "transparent") {
-        has_stroke = true;
-        stroke_color_index = string_to_color_index(attrib_value);
+      if (!(attrib_value == "transparent" || attrib_value == "none")) {
+        attribs.has_stroke = true;
+        attribs.stroke_color_index = string_to_color_index(attrib_value);
+      } else {
+        attribs.has_stroke = false;
       }
     } else if (attrib_name == "stroke-opacity") {
-      stroke_opacity = string_to_float(attrib_value);
+      attribs.stroke_opacity = string_to_float(attrib_value);
     } else if (attrib_name == "stroke-width") {
-      stroke_width = string_to_float(attrib_value);
+      attribs.stroke_width = string_to_float(attrib_value);
     } else if (attrib_name == "transform") {
-      transform_index = string_to_transform_index(attrib_value);
+      attribs.transform_index = string_to_transform_index(attrib_value);
     } else {
-      std::cout << "Unsupported attribute: " << attrib_name << std::endl;
+      std::cout << "Unsupported line attribute: " << attrib_name << std::endl;
     }
   }
-  if (!has_stroke) return;
-  styled_multishape_2d* shape = main_drawing.create_styled_multishape_2d(*this, stroke_width, transform_index);
+  if (!attribs.has_stroke) return;
+  styled_multishape_2d* shape = main_drawing.create_styled_multishape_2d(*this, attribs.stroke_width, attribs.transform_index);
   main_drawing.add_shape(shape);
-  shape->add_draw_line(x1, y1, x2, y2, stroke_color_index, stroke_opacity);
+  shape->add_draw_line(x1, y1, x2, y2, attribs.stroke_color_index, attribs.stroke_opacity);
+}
+
+void drw_file::add_ellipse(XMLParser::ElementContext* element, group_attributes attribs) {
+  std::vector<XMLParser::AttributeContext*> attributes = element->attribute();
+  float cx = 0, cy = 0, rx = 0, ry = 0;
+  for (auto attrib : attributes) {
+    std::string attrib_name = attrib->Name()[0].getText();
+    std::string attrib_value = std::regex_replace(attrib->STRING()[0].getText(), std::regex(R"(\"|\')"), ""); // remove quotation marks
+    if (attrib_name == "cx") {
+      cx = string_to_float(attrib_value);
+    } else if (attrib_name == "cy") {
+      cy = string_to_float(attrib_value);
+    } else if (attrib_name == "rx") {
+      rx = string_to_float(attrib_value);
+    } else if (attrib_name == "ry") {
+      ry = string_to_float(attrib_value);
+    } else if (attrib_name == "fill") {
+      if (attrib_value == "transparent" || attrib_value == "none") {
+        attribs.has_fill = false;
+      } else {
+        attribs.has_fill = true;
+        attribs.fill_color_index = string_to_color_index(attrib_value);
+      }
+    } else if (attrib_name == "stroke") {
+      if (!(attrib_value == "transparent" || attrib_value == "none")) {
+        attribs.stroke_color_index = string_to_color_index(attrib_value);
+        attribs.has_stroke = true;
+      } else {
+        attribs.has_stroke = false;
+      }
+    } else if (attrib_name == "fill-opacity") {
+      attribs.fill_opacity = string_to_float(attrib_value);
+    } else if (attrib_name == "stroke-opacity") {
+      attribs.stroke_opacity = string_to_float(attrib_value);
+    } else if (attrib_name == "stroke-width") {
+      attribs.stroke_width = string_to_float(attrib_value);
+    } else if (attrib_name == "transform") {
+      attribs.transform_index = string_to_transform_index(attrib_value);
+    } else {
+      std::cout << "Unsupported ellipse attribute: " << attrib_name << std::endl;
+    }
+  }
+
+  styled_multishape_2d* shape = main_drawing.create_styled_multishape_2d(*this, attribs.stroke_width, attribs.transform_index);
+  main_drawing.add_shape(shape);
+  if (attribs.has_fill) shape->add_fill_ellipse(cx, cy, rx, ry, NUM_SECTORS, attribs.fill_color_index, attribs.fill_opacity);
+  if (attribs.has_stroke) shape->add_draw_ellipse(cx, cy, rx, ry, NUM_SECTORS, attribs.stroke_color_index, attribs.stroke_opacity);
 }
 
 void drw_file::add_circle(XMLParser::ElementContext* element, group_attributes attribs) {
   std::vector<XMLParser::AttributeContext*> attributes = element->attribute();
   float cx = 0, cy = 0, r = 0;
-  float fill_opacity = attribs.fill_opacity;
-  float stroke_opacity = attribs.stroke_opacity;
-  uint32_t fill_color_index = attribs.fill_color_index;
-  uint32_t stroke_color_index = attribs.stroke_color_index;
-  uint32_t stroke_width = attribs.stroke_width;
-  uint32_t transform_index = attribs.transform_index;
-  bool has_stroke = false, has_fill = true;
   for (auto attrib : attributes) {
     std::string attrib_name = attrib->Name()[0].getText();
-    std::string attrib_value = std::regex_replace(attrib->STRING()[0].getText(), std::regex(R"(\")"), ""); // remove quotation marks
+    std::string attrib_value = std::regex_replace(attrib->STRING()[0].getText(), std::regex(R"(\"|\')"), ""); // remove quotation marks
     if (attrib_name == "cx") {
-      cx = string_to_pixels(attrib_value);
+      cx = string_to_float(attrib_value);
     } else if (attrib_name == "cy") {
-      cy = string_to_pixels(attrib_value);
+      cy = string_to_float(attrib_value);
     } else if (attrib_name == "r") {
-      r = string_to_pixels(attrib_value);
+      r = string_to_float(attrib_value);
     } else if (attrib_name == "fill") {
-      if (attrib_value == "transparent") {
-        has_fill = false;
+      if (attrib_value == "transparent" || attrib_value == "none") {
+        attribs.has_fill = false;
       } else {
-        fill_color_index = string_to_color_index(attrib_value);
+        attribs.fill_color_index = string_to_color_index(attrib_value);
+        attribs.has_fill = true;
       }
     } else if (attrib_name == "stroke") {
-      if (attrib_value != "transparent") {
-        stroke_color_index = string_to_color_index(attrib_value);
-        has_stroke = true;
+      if (!(attrib_value == "transparent" || attrib_value == "none")) {
+        attribs.stroke_color_index = string_to_color_index(attrib_value);
+        attribs.has_stroke = true;
+      } else {
+        attribs.has_stroke = false;
       }
     } else if (attrib_name == "fill-opacity") {
-      fill_opacity = string_to_float(attrib_value);
+      attribs.fill_opacity = string_to_float(attrib_value);
     } else if (attrib_name == "stroke-opacity") {
-      stroke_opacity = string_to_float(attrib_value);
+      attribs.stroke_opacity = string_to_float(attrib_value);
     } else if (attrib_name == "stroke-width") {
-      stroke_width = string_to_float(attrib_value);
+      attribs.stroke_width = string_to_float(attrib_value);
     } else if (attrib_name == "transform") {
-      transform_index = string_to_transform_index(attrib_value);
+      attribs.transform_index = string_to_transform_index(attrib_value);
     } else {
-      std::cout << "Unsupported attribute: " << attrib_name << std::endl;
+      std::cout << "Unsupported circle attribute: " << attrib_name << std::endl;
     }
   }
 
-  styled_multishape_2d* shape = main_drawing.create_styled_multishape_2d(*this, stroke_width, transform_index);
+  styled_multishape_2d* shape = main_drawing.create_styled_multishape_2d(*this, attribs.stroke_width, attribs.transform_index);
   main_drawing.add_shape(shape);
-  if (has_fill) shape->add_fill_circle(cx, cy, r, 30, fill_color_index, fill_opacity);
-  if (has_stroke) shape->add_draw_circle(cx, cy, r, 30, stroke_color_index, stroke_opacity);
+  if (attribs.has_fill) shape->add_fill_circle(cx, cy, r, NUM_SECTORS, attribs.fill_color_index, attribs.fill_opacity);
+  if (attribs.has_stroke) shape->add_draw_circle(cx, cy, r, NUM_SECTORS, attribs.stroke_color_index, attribs.stroke_opacity);
+}
+
+void drw_file::add_rect(XMLParser::ElementContext* element, group_attributes attribs) {
+  std::vector<XMLParser::AttributeContext*> attributes = element->attribute();
+  float x = 0, y = 0, rx = 0, ry = 0, width = 0, height = 0;
+  bool rounded_x = false;
+  bool rounded_y = false;
+  for (auto attrib : attributes) {
+    std::string attrib_name = attrib->Name()[0].getText();
+    std::string attrib_value = std::regex_replace(attrib->STRING()[0].getText(), std::regex(R"(\"|\')"), ""); // remove quotation marks
+    if (attrib_name == "x") {
+      x = string_to_float(attrib_value);
+    } else if (attrib_name == "y") {
+      y = string_to_float(attrib_value);
+    } else if (attrib_name == "width") {
+      width = string_to_float(attrib_value);
+    } else if (attrib_name == "height") {
+      height = string_to_float(attrib_value);
+    } else if (attrib_name == "rx") {
+      rounded_x = true;
+      rx = string_to_float(attrib_value);
+    } else if (attrib_name == "ry") {
+      rounded_y = true;
+      ry = string_to_float(attrib_value);
+    } else if (attrib_name == "fill") {
+      if (attrib_value == "transparent" || attrib_value == "none") {
+        attribs.has_fill = false;
+      } else {
+        attribs.fill_color_index = string_to_color_index(attrib_value);
+        attribs.has_fill = true;
+      }
+    } else if (attrib_name == "stroke") {
+      if (!(attrib_value == "transparent" || attrib_value == "none")) {
+        attribs.stroke_color_index = string_to_color_index(attrib_value);
+        attribs.has_stroke = true;
+      } else {
+        attribs.has_stroke = false;
+      }
+    } else if (attrib_name == "fill-opacity") {
+      attribs.fill_opacity = string_to_float(attrib_value);
+    } else if (attrib_name == "stroke-opacity") {
+      attribs.stroke_opacity = string_to_float(attrib_value);
+    } else if (attrib_name == "stroke-width") {
+      attribs.stroke_width = string_to_float(attrib_value);
+    } else if (attrib_name == "transform") {
+      attribs.transform_index = string_to_transform_index(attrib_value);
+    } else {
+      std::cout << "Unsupported rect attribute: " << attrib_name << std::endl;
+    }
+  }
+
+  styled_multishape_2d* shape = main_drawing.create_styled_multishape_2d(*this, attribs.stroke_width, attribs.transform_index);
+  main_drawing.add_shape(shape);
+  if (!(rounded_x && rounded_y)) {
+    if (width == height && width > 0) {
+      if (attribs.has_fill) shape->add_fill_square(x, y, width, attribs.fill_color_index, attribs.fill_opacity);
+      if (attribs.has_stroke) shape->add_draw_square(x, y, width, attribs.stroke_color_index, attribs.stroke_opacity);
+    } else {
+      if (attribs.has_fill) shape->add_fill_rectangle(x, y, width, height, attribs.fill_color_index, attribs.fill_opacity);
+      if (attribs.has_stroke) shape->add_draw_rectangle(x, y, width, height, attribs.stroke_color_index, attribs.stroke_opacity);
+    }
+  } else {
+    if (!rounded_x) rx = ry;
+    else if (!rounded_y) ry = rx;
+    if (rx > 0.5 * width) rx = 0.5 * width;
+    if (ry > 0.5 * width) ry = 0.5 * width;
+    if (attribs.has_fill) shape->add_fill_round_rect(x, y, width, height, rx, ry, NUM_SECTORS, attribs.fill_color_index, attribs.fill_opacity);
+    if (attribs.has_stroke) shape->add_draw_round_rect(x, y, width, height, rx, ry, NUM_SECTORS, attribs.stroke_color_index, attribs.stroke_opacity);
+  }
 }
 
 uint32_t drw_file::string_to_transform_index(std::string str) {

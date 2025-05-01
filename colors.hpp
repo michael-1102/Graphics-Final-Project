@@ -134,7 +134,7 @@ class colors {
       add_color("coral", glm::vec3(1.f, 0.5f, 0.31f));
       add_color("darkorange", glm::vec3(1.f, 0.55f, 0.f));
       add_color("lightsalmon", glm::vec3(1.f, 0.63f, 0.48f));
-      add_color("orange", glm::vec3(1.f, 65.f, 0.f));
+      add_color("orange", glm::vec3(1.f, 0.65f, 0.f));
       add_color("lightpink", glm::vec3(1.f, 0.71f, 0.76f));
       add_color("pink", glm::vec3(1.f, 0.75f, 0.8f));
       add_color("gold", glm::vec3(1.f, 0.84f, 0.f));
