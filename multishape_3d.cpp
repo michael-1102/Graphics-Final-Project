@@ -1179,132 +1179,132 @@ void multishape_3d::drawCubicSpline(std::vector<glm::vec3> points, float inc) {
 }
 
 void multishape_3d::add_draw_point(float x, float y, float z) {
-  instructions.push_back(shape::full_instruction(instruction::DRAW_POINT, {x}, {y}, {z}, {}, {}));
+  instructions.push_back(multishape::full_instruction(instruction::DRAW_POINT, {x}, {y}, {z}, {}, {}));
   drawPoint(x, y, z);
 }
 void multishape_3d::add_draw_line(float x1, float y1, float z1, float x2, float y2, float z2) {
-  instructions.push_back(shape::full_instruction(instruction::DRAW_LINE, {x1, x2}, {y1, y2}, {z1, z2}, {}, {}));
+  instructions.push_back(multishape::full_instruction(instruction::DRAW_LINE, {x1, x2}, {y1, y2}, {z1, z2}, {}, {}));
   drawLine(x1, y1, z1, x2, y2, z2);
 }
 void multishape_3d::add_fill_rect_prism(float x, float y, float z, float width, float height, float length) {
-  instructions.push_back(shape::full_instruction(instruction::FILL_RECT_PRISM, {x}, {y}, {z}, {width, height, length}, {}));
+  instructions.push_back(multishape::full_instruction(instruction::FILL_RECT_PRISM, {x}, {y}, {z}, {width, height, length}, {}));
   fillRectPrism(x, y, z, width, height, length);
 }
 void multishape_3d::add_fill_cube(float x, float y, float z, float size) {
-  instructions.push_back(shape::full_instruction(instruction::FILL_CUBE, {x}, {y}, {z}, {size}, {}));
+  instructions.push_back(multishape::full_instruction(instruction::FILL_CUBE, {x}, {y}, {z}, {size}, {}));
   fillCube(x, y, z, size);
 }
 void multishape_3d::add_fill_rect_pyramid(float x, float y, float z, float width, float height, float length) {
-  instructions.push_back(shape::full_instruction(instruction::FILL_RECT_PYRAMID, {x}, {y}, {z}, {width, height, length}, {}));
+  instructions.push_back(multishape::full_instruction(instruction::FILL_RECT_PYRAMID, {x}, {y}, {z}, {width, height, length}, {}));
   fillRectPyramid(x, y, z, width, height, length);
 }
 void multishape_3d::add_fill_wedge(float x, float y, float z, float width, float height, float length) {
-  instructions.push_back(shape::full_instruction(instruction::FILL_WEDGE, {x}, {y}, {z}, {width, height, length}, {}));
+  instructions.push_back(multishape::full_instruction(instruction::FILL_WEDGE, {x}, {y}, {z}, {width, height, length}, {}));
   fillWedge(x, y, z, width, height, length);
 }
 void multishape_3d::add_fill_cylinder(float x, float y, float z, float rad, float height, uint32_t sectors, uint32_t stacks) {
-  instructions.push_back(shape::full_instruction(instruction::FILL_CYLINDER, {x}, {y}, {z}, {rad, height}, {sectors, stacks}));
+  instructions.push_back(multishape::full_instruction(instruction::FILL_CYLINDER, {x}, {y}, {z}, {rad, height}, {sectors, stacks}));
   fillCylinder(x, y, z, rad, height, sectors, stacks);
 }
 void multishape_3d::add_fill_cone(float x, float y, float z, float rad, float height, uint32_t sectors, uint32_t stacks) {
-  instructions.push_back(shape::full_instruction(instruction::FILL_CONE, {x}, {y}, {z}, {rad, height}, {sectors, stacks}));
+  instructions.push_back(multishape::full_instruction(instruction::FILL_CONE, {x}, {y}, {z}, {rad, height}, {sectors, stacks}));
   fillCone(x, y, z, rad, height, sectors, stacks);
 }
 void multishape_3d::add_fill_frustum(float x, float y, float z, float bottomRad, float topRad, float height, uint32_t sectors, uint32_t stacks) {
-  instructions.push_back(shape::full_instruction(instruction::FILL_FRUSTUM, {x}, {y}, {z}, {bottomRad, topRad, height}, {sectors, stacks}));
+  instructions.push_back(multishape::full_instruction(instruction::FILL_FRUSTUM, {x}, {y}, {z}, {bottomRad, topRad, height}, {sectors, stacks}));
   fillFrustum(x, y, z, bottomRad, topRad, height, sectors, stacks);
 }
 void multishape_3d::add_fill_frustum_minus_frustum(float x, float y, float z, float bottomOuterRad, float bottomInnerRad, float topOuterRad, float topInnerRad, float height, uint32_t sectors, uint32_t stacks) {
-  instructions.push_back(shape::full_instruction(instruction::FILL_FRUSTUM_MINUS_FRUSTUM, {x}, {y}, {z}, {bottomOuterRad, bottomInnerRad, topOuterRad, topInnerRad, height}, {sectors, stacks}));
+  instructions.push_back(multishape::full_instruction(instruction::FILL_FRUSTUM_MINUS_FRUSTUM, {x}, {y}, {z}, {bottomOuterRad, bottomInnerRad, topOuterRad, topInnerRad, height}, {sectors, stacks}));
   fillFrustumMinusFrustum(x, y, z, bottomOuterRad, bottomInnerRad, topOuterRad, topInnerRad, height, sectors, stacks);
 }
 void multishape_3d::add_fill_tube(float x, float y, float z, float outerRad, float innerRad, float height, uint32_t sectors, uint32_t stacks) {
-  instructions.push_back(shape::full_instruction(instruction::FILL_TUBE, {x}, {y}, {z}, {outerRad, innerRad, height}, {sectors, stacks}));
+  instructions.push_back(multishape::full_instruction(instruction::FILL_TUBE, {x}, {y}, {z}, {outerRad, innerRad, height}, {sectors, stacks}));
   fillTube(x, y, z, outerRad, innerRad, height, sectors, stacks);
 }
 void multishape_3d::add_fill_oblique_frustum(float x0, float y0, float z0, float rad0, float x1, float y1, float z1, float rad1, uint32_t sectors, uint32_t stacks) {
-  instructions.push_back(shape::full_instruction(instruction::FILL_OBLIQUE_FRUSTUM, {x0, x1}, {y0, y1}, {z0, z1}, {rad0, rad1}, {sectors, stacks}));
+  instructions.push_back(multishape::full_instruction(instruction::FILL_OBLIQUE_FRUSTUM, {x0, x1}, {y0, y1}, {z0, z1}, {rad0, rad1}, {sectors, stacks}));
   fillObliqueFrustum(x0, y0, z0, rad0, x1, y1, z1, rad1, sectors, stacks);
 }
 void multishape_3d::add_fill_oblique_cylinder(float x0, float y0, float z0, float x1, float y1, float z1, float rad, uint32_t sectors, uint32_t stacks) {
-  instructions.push_back(shape::full_instruction(instruction::FILL_OBLIQUE_CYLINDER, {x0, x1}, {y0, y1}, {z0, z1}, {rad}, {sectors, stacks}));
+  instructions.push_back(multishape::full_instruction(instruction::FILL_OBLIQUE_CYLINDER, {x0, x1}, {y0, y1}, {z0, z1}, {rad}, {sectors, stacks}));
   fillObliqueCylinder(x0, y0, z0, x1, y1, z1, rad, sectors, stacks);
 }
 void multishape_3d::add_fill_oblique_cone(float xBottom, float yBottom, float zBottom, float rad, float xTop, float yTop, float zTop, uint32_t sectors, uint32_t stacks) {
-  instructions.push_back(shape::full_instruction(instruction::FILL_OBLIQUE_CONE, {xBottom, xTop}, {yBottom, yTop}, {zBottom, zTop}, {rad}, {sectors, stacks}));
+  instructions.push_back(multishape::full_instruction(instruction::FILL_OBLIQUE_CONE, {xBottom, xTop}, {yBottom, yTop}, {zBottom, zTop}, {rad}, {sectors, stacks}));
   fillObliqueCone(xBottom, yBottom, zBottom, rad, xTop, yTop, zTop, sectors, stacks);
 }
 void multishape_3d::add_fill_torus(float x, float y, float z, float R, float r, uint32_t sectors, uint32_t stacks) {
-  instructions.push_back(shape::full_instruction(instruction::FILL_TORUS, {x}, {y}, {z}, {R, r}, {sectors, stacks}));
+  instructions.push_back(multishape::full_instruction(instruction::FILL_TORUS, {x}, {y}, {z}, {R, r}, {sectors, stacks}));
   fillTorus(x, y, z, R, r, sectors, stacks);
 }
 void multishape_3d::add_fill_ellipsoid(float x, float y, float z, float a, float b, float c, uint32_t sectors, uint32_t stacks) {
-  instructions.push_back(shape::full_instruction(instruction::FILL_ELLIPSOID, {x}, {y}, {z}, {a, b, c}, {sectors, stacks}));
+  instructions.push_back(multishape::full_instruction(instruction::FILL_ELLIPSOID, {x}, {y}, {z}, {a, b, c}, {sectors, stacks}));
   fillEllipsoid(x, y, z, a, b, c, sectors, stacks);
 }
 void multishape_3d::add_fill_sphere(float x, float y, float z, float rad, uint32_t sectors, uint32_t stacks) {
-  instructions.push_back(shape::full_instruction(instruction::FILL_SPHERE, {x}, {y}, {z}, {rad}, {sectors, stacks}));
+  instructions.push_back(multishape::full_instruction(instruction::FILL_SPHERE, {x}, {y}, {z}, {rad}, {sectors, stacks}));
   fillSphere(x, y, z, rad, sectors, stacks);
 }
 
 void multishape_3d::add_draw_rect_prism(float x, float y, float z, float width, float height, float length) {
-  instructions.push_back(shape::full_instruction(instruction::DRAW_RECT_PRISM, {x}, {y}, {z}, {width, height, length}, {}));
+  instructions.push_back(multishape::full_instruction(instruction::DRAW_RECT_PRISM, {x}, {y}, {z}, {width, height, length}, {}));
   drawRectPrism(x, y, z, width, height, length);
 }
 void multishape_3d::add_draw_cube(float x, float y, float z, float size) {
-  instructions.push_back(shape::full_instruction(instruction::DRAW_CUBE, {x}, {y}, {z}, {size}, {}));
+  instructions.push_back(multishape::full_instruction(instruction::DRAW_CUBE, {x}, {y}, {z}, {size}, {}));
   drawCube(x, y, z, size);
 }
 void multishape_3d::add_draw_rect_pyramid(float x, float y, float z, float width, float height, float length) {
-  instructions.push_back(shape::full_instruction(instruction::DRAW_RECT_PYRAMID, {x}, {y}, {z}, {width, height, length}, {}));
+  instructions.push_back(multishape::full_instruction(instruction::DRAW_RECT_PYRAMID, {x}, {y}, {z}, {width, height, length}, {}));
   drawRectPyramid(x, y, z, width, height, length);
 }
 void multishape_3d::add_draw_wedge(float x, float y, float z, float width, float height, float length) {
-  instructions.push_back(shape::full_instruction(instruction::DRAW_WEDGE, {x}, {y}, {z}, {width, height, length}, {}));
+  instructions.push_back(multishape::full_instruction(instruction::DRAW_WEDGE, {x}, {y}, {z}, {width, height, length}, {}));
   drawWedge(x, y, z, width, height, length);
 }
 void multishape_3d::add_draw_cylinder(float x, float y, float z, float rad, float height, uint32_t sectors, uint32_t stacks) {
-  instructions.push_back(shape::full_instruction(instruction::DRAW_CYLINDER, {x}, {y}, {z}, {rad, height}, {sectors, stacks}));
+  instructions.push_back(multishape::full_instruction(instruction::DRAW_CYLINDER, {x}, {y}, {z}, {rad, height}, {sectors, stacks}));
   drawCylinder(x, y, z, rad, height, sectors, stacks);
 }
 void multishape_3d::add_draw_cone(float x, float y, float z, float rad, float height, uint32_t sectors, uint32_t stacks) {
-  instructions.push_back(shape::full_instruction(instruction::DRAW_CONE, {x}, {y}, {z}, {rad, height}, {sectors, stacks}));
+  instructions.push_back(multishape::full_instruction(instruction::DRAW_CONE, {x}, {y}, {z}, {rad, height}, {sectors, stacks}));
   drawCone(x, y, z, rad, height, sectors, stacks);
 }
 void multishape_3d::add_draw_frustum(float x, float y, float z, float bottomRad, float topRad, float height, uint32_t sectors, uint32_t stacks) {
-  instructions.push_back(shape::full_instruction(instruction::DRAW_FRUSTUM, {x}, {y}, {z}, {bottomRad, topRad, height}, {sectors, stacks}));
+  instructions.push_back(multishape::full_instruction(instruction::DRAW_FRUSTUM, {x}, {y}, {z}, {bottomRad, topRad, height}, {sectors, stacks}));
   drawFrustum(x, y, z, bottomRad, topRad, height, sectors, stacks);
 }
 void multishape_3d::add_draw_frustum_minus_frustum(float x, float y, float z, float bottomOuterRad, float bottomInnerRad, float topOuterRad, float topInnerRad, float height, uint32_t sectors, uint32_t stacks) {
-  instructions.push_back(shape::full_instruction(instruction::DRAW_FRUSTUM_MINUS_FRUSTUM, {x}, {y}, {z}, {bottomOuterRad, bottomInnerRad, topOuterRad, topInnerRad, height}, {sectors, stacks}));
+  instructions.push_back(multishape::full_instruction(instruction::DRAW_FRUSTUM_MINUS_FRUSTUM, {x}, {y}, {z}, {bottomOuterRad, bottomInnerRad, topOuterRad, topInnerRad, height}, {sectors, stacks}));
   drawFrustumMinusFrustum(x, y, z, bottomOuterRad, bottomInnerRad, topOuterRad, topInnerRad, height, sectors, stacks);
 }
 void multishape_3d::add_draw_tube(float x, float y, float z, float outerRad, float innerRad, float height, uint32_t sectors, uint32_t stacks) {
-  instructions.push_back(shape::full_instruction(instruction::DRAW_TUBE, {x}, {y}, {z}, {outerRad, innerRad, height}, {sectors, stacks}));
+  instructions.push_back(multishape::full_instruction(instruction::DRAW_TUBE, {x}, {y}, {z}, {outerRad, innerRad, height}, {sectors, stacks}));
   drawTube(x, y, z, outerRad, innerRad, height, sectors, stacks);
 }
 void multishape_3d::add_draw_oblique_frustum(float x0, float y0, float z0, float rad0, float x1, float y1, float z1, float rad1, uint32_t sectors, uint32_t stacks) {
-  instructions.push_back(shape::full_instruction(instruction::DRAW_OBLIQUE_FRUSTUM, {x0, x1}, {y0, y1}, {z0, z1}, {rad0, rad1}, {sectors, stacks}));
+  instructions.push_back(multishape::full_instruction(instruction::DRAW_OBLIQUE_FRUSTUM, {x0, x1}, {y0, y1}, {z0, z1}, {rad0, rad1}, {sectors, stacks}));
   drawObliqueFrustum(x0, y0, z0, rad0, x1, y1, z1, rad1, sectors, stacks);
 }
 void multishape_3d::add_draw_oblique_cylinder(float x0, float y0, float z0, float x1, float y1, float z1, float rad, uint32_t sectors, uint32_t stacks) {
-  instructions.push_back(shape::full_instruction(instruction::DRAW_OBLIQUE_CYLINDER, {x0, x1}, {y0, y1}, {z0, z1}, {rad}, {sectors, stacks}));
+  instructions.push_back(multishape::full_instruction(instruction::DRAW_OBLIQUE_CYLINDER, {x0, x1}, {y0, y1}, {z0, z1}, {rad}, {sectors, stacks}));
   drawObliqueCylinder(x0, y0, z0, x1, y1, z1, rad, sectors, stacks);
 }
 void multishape_3d::add_draw_oblique_cone(float xBottom, float yBottom, float zBottom, float rad, float xTop, float yTop, float zTop, uint32_t sectors, uint32_t stacks) {
-  instructions.push_back(shape::full_instruction(instruction::DRAW_OBLIQUE_CONE, {xBottom, xTop}, {yBottom, yTop}, {zBottom, zTop}, {rad}, {sectors, stacks}));
+  instructions.push_back(multishape::full_instruction(instruction::DRAW_OBLIQUE_CONE, {xBottom, xTop}, {yBottom, yTop}, {zBottom, zTop}, {rad}, {sectors, stacks}));
   drawObliqueCone(xBottom, yBottom, zBottom, rad, xTop, yTop, zTop, sectors, stacks);
 }
 void multishape_3d::add_draw_torus(float x, float y, float z, float R, float r, uint32_t sectors, uint32_t stacks) {
-  instructions.push_back(shape::full_instruction(instruction::DRAW_TORUS, {x}, {y}, {z}, {R, r}, {sectors, stacks}));
+  instructions.push_back(multishape::full_instruction(instruction::DRAW_TORUS, {x}, {y}, {z}, {R, r}, {sectors, stacks}));
   drawTorus(x, y, z, R, r, sectors, stacks);
 }
 void multishape_3d::add_draw_ellipsoid(float x, float y, float z, float a, float b, float c, uint32_t sectors, uint32_t stacks) {
-  instructions.push_back(shape::full_instruction(instruction::DRAW_ELLIPSOID, {x}, {y}, {z}, {a, b, c}, {sectors, stacks}));
+  instructions.push_back(multishape::full_instruction(instruction::DRAW_ELLIPSOID, {x}, {y}, {z}, {a, b, c}, {sectors, stacks}));
   drawEllipsoid(x, y, z, a, b, c, sectors, stacks);
 }
 void multishape_3d::add_draw_sphere(float x, float y, float z, float rad, uint32_t sectors, uint32_t stacks) {
-  instructions.push_back(shape::full_instruction(instruction::DRAW_SPHERE, {x}, {y}, {z}, {rad}, {sectors, stacks}));
+  instructions.push_back(multishape::full_instruction(instruction::DRAW_SPHERE, {x}, {y}, {z}, {rad}, {sectors, stacks}));
   drawSphere(x, y, z, rad, sectors, stacks);
 }
 void multishape_3d::add_draw_cubic_spline(std::vector<glm::vec3> points, float inc) {
@@ -1316,7 +1316,7 @@ void multishape_3d::add_draw_cubic_spline(std::vector<glm::vec3> points, float i
     y_coords.push_back(p.y);
     z_coords.push_back(p.z);
   }
-  instructions.push_back(shape::full_instruction(instruction::DRAW_CUBIC_SPLINE, x_coords, y_coords, z_coords, {inc}, {(uint32_t) points.size()}));
+  instructions.push_back(multishape::full_instruction(instruction::DRAW_CUBIC_SPLINE, x_coords, y_coords, z_coords, {inc}, {(uint32_t) points.size()}));
   drawCubicSpline(points, inc);
 }
 
@@ -1332,7 +1332,7 @@ void multishape_3d::add_fill_linear_extrusion(shape_2d shape, float x, float y, 
   ints.push_back(stacks);
   ints.push_back(shape_type);
   std::rotate(ints.rbegin(), ints.rbegin() + 1, ints.rend());
-  instructions.push_back(shape::full_instruction(instruction::FILL_LINEAR_EXTRUSION, x_coords, y_coords, {z}, floats, ints));
+  instructions.push_back(multishape::full_instruction(instruction::FILL_LINEAR_EXTRUSION, x_coords, y_coords, {z}, floats, ints));
   fillLinearExtrusion(shape, x, y, z, height, stacks);
 }
 
@@ -1348,7 +1348,7 @@ void multishape_3d::add_draw_linear_extrusion(shape_2d shape, float x, float y, 
   ints.push_back(stacks);
   ints.push_back(shape_type);
   std::rotate(ints.rbegin(), ints.rbegin() + 1, ints.rend());
-  instructions.push_back(shape::full_instruction(instruction::DRAW_LINEAR_EXTRUSION, x_coords, y_coords, {z}, floats, ints));
+  instructions.push_back(multishape::full_instruction(instruction::DRAW_LINEAR_EXTRUSION, x_coords, y_coords, {z}, floats, ints));
   drawLinearExtrusion(shape, x, y, z, height, stacks);
 }
 
@@ -1369,7 +1369,7 @@ void multishape_3d::add_fill_spline_extrusion(shape_2d shape, std::vector<glm::v
   ints.push_back(points.size());
   std::rotate(ints.rbegin(), ints.rbegin() + 1, ints.rend());
   std::rotate(ints.rbegin(), ints.rbegin() + 1, ints.rend());
-  instructions.push_back(shape::full_instruction(instruction::FILL_SPLINE_EXTRUSION, x_coords, y_coords, z_coords, floats, ints));
+  instructions.push_back(multishape::full_instruction(instruction::FILL_SPLINE_EXTRUSION, x_coords, y_coords, z_coords, floats, ints));
   fillSplineExtrusion(shape, points, inc);
 }
 
@@ -1391,7 +1391,7 @@ void multishape_3d::add_draw_spline_extrusion(shape_2d shape, std::vector<glm::v
   ints.push_back(points.size());
   std::rotate(ints.rbegin(), ints.rbegin() + 1, ints.rend());
   std::rotate(ints.rbegin(), ints.rbegin() + 1, ints.rend());
-  instructions.push_back(shape::full_instruction(instruction::DRAW_SPLINE_EXTRUSION, x_coords, y_coords, z_coords, floats, ints));
+  instructions.push_back(multishape::full_instruction(instruction::DRAW_SPLINE_EXTRUSION, x_coords, y_coords, z_coords, floats, ints));
   drawSplineExtrusion(shape, points, inc);
 }
 

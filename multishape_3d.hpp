@@ -125,7 +125,7 @@ class multishape_3d : public multishape {
                uint32_t solidIndCount = 1024, uint32_t lineIndCount = 1024,
                uint32_t pointIndCount = 1024, uint32_t elemPerVert = 3)
       : alpha(alpha), color_index(color_index), camera_index(camera_index), multishape(line_width, transform_index, sid, vertCount, solidIndCount, lineIndCount, pointIndCount, elemPerVert) {
-        set_start_instr(shape::full_instruction(instruction::START_MULTISHAPE_3D, {}, {}, {}, {line_width, alpha}, {color_index, camera_index, transform_index, (uint32_t) to_underlying(sid)}));
+        set_start_instr(multishape::full_instruction(instruction::START_MULTISHAPE_3D, {}, {}, {}, {line_width, alpha}, {color_index, camera_index, transform_index, (uint32_t) to_underlying(sid)}));
         end_instr = instruction::END_MULTISHAPE_3D;
       }
   ~multishape_3d();

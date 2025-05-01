@@ -109,11 +109,27 @@ class drw_file {
     uint32_t string_to_transform_index(std::string str);
 
   public:
+    struct drw_header {
+      float width;
+      float height;
+      uint32_t bg_color_index;
+      uint32_t num_instructions;
+      uint32_t num_uint32s;
+      uint32_t num_x_coords;
+      uint32_t num_y_coords;
+      uint32_t num_z_coords;
+      uint32_t num_floats;
+      uint32_t num_colors;
+      uint32_t num_transforms;
+    };
+
     drw_file(float width, float height) : width(width), height(height) {
       scale = glm::scale(glm::mat4(1.f), glm::vec3(1.f, width/height, 1.f));
     }
 
     drw_file(const char filename[]);
+
+    void save(const char filename[]) const;
 
     void init() { 
       main_drawing.init(); 
@@ -132,7 +148,7 @@ class drw_file {
 
     inline void set_bg_color_index(uint32_t i) { bg_color_index = i; }
 
-    inline glm::vec3& get_bg_color() {
+    inline glm::vec3 get_bg_color() {
       return get_color(bg_color_index);
     }
 
@@ -170,7 +186,7 @@ class drw_file {
       transforms.push_back(transform);
     }
 
-    glm::vec3& get_color(uint32_t i) {
+    glm::vec3 get_color(uint32_t i) {
       return clrs.get_color(i);
     }
 

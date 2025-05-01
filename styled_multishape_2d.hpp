@@ -106,7 +106,7 @@ class styled_multishape_2d : public multishape_2d {
       : drw(drw), multishape_2d(line_width, 0, transform_index, 1.f, sid, vertCount, solidIndCount, lineIndCount,
                    pointIndCount, elemPerVert)
                    {
-                    set_start_instr(shape::full_instruction(instruction::START_STYLED_MULTISHAPE_2D, {}, {}, {}, {line_width}, {transform_index, (uint32_t) to_underlying(sid)}));
+                    set_start_instr(multishape::full_instruction(instruction::START_STYLED_MULTISHAPE_2D, {}, {}, {}, {line_width}, {transform_index, (uint32_t) to_underlying(sid)}));
                     end_instr = instruction::END_STYLED_MULTISHAPE_2D;
                    }
   ~styled_multishape_2d();

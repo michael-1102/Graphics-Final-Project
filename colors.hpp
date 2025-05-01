@@ -155,12 +155,22 @@ class colors {
       add_color("lightyellow", glm::vec3(1.f, 1.f, 0.88f));
       add_color("ivory", glm::vec3(1.f, 1.f, 0.94f));
       add_color("white", glm::vec3(1.f, 1.f, 1.f));
+      start_new_colors = name_list.size();
     }
 
-    inline glm::vec3& get_color(uint32_t i) { 
+    inline glm::vec3 get_color(uint32_t i) const { 
       if (i >= rgb_list.size()) throw "Color index out of bounds";
       return rgb_list[i]; 
     }
+
+    inline uint32_t get_start() const {
+      return start_new_colors;
+    }
+
+    inline uint32_t get_num_colors() const {
+      return rgb_list.size();
+    }
+
     uint32_t add_color(glm::vec3 rgb) { // returns index of newly added color
       rgb_list.push_back(rgb);
       return rgb_list.size() - 1;
@@ -178,6 +188,7 @@ class colors {
   private:
     std::vector<glm::vec3> rgb_list;
     std::vector<std::string> name_list;
+    uint32_t start_new_colors;
 
     void add_color(std::string name, glm::vec3 rgb) {
       rgb_list.push_back(rgb);

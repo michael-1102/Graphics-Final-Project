@@ -662,31 +662,31 @@ void multishape_2d::cubicSplinePoints(std::vector<glm::vec2> points, float inc) 
 }
 
 void multishape_2d::add_draw_point(float x, float y) {
-  instructions.push_back(shape::full_instruction(instruction::DRAW_POINT, {x}, {y}, {}, {}, {}));
+  instructions.push_back(multishape::full_instruction(instruction::DRAW_POINT, {x}, {y}, {}, {}, {}));
   drawPoint(x, y);
 }
 void multishape_2d::add_fill_rectangle(float x, float y, float w, float h) {
-  instructions.push_back(shape::full_instruction(instruction::FILL_RECTANGLE, {x}, {y}, {}, {w, h}, {}));
+  instructions.push_back(multishape::full_instruction(instruction::FILL_RECTANGLE, {x}, {y}, {}, {w, h}, {}));
   fillRectangle(x, y, w, h);
 }
 void multishape_2d::add_fill_square(float x, float y, float size) {
-  instructions.push_back(shape::full_instruction(instruction::FILL_SQUARE, {x}, {y}, {}, {size}, {}));
+  instructions.push_back(multishape::full_instruction(instruction::FILL_SQUARE, {x}, {y}, {}, {size}, {}));
   fillSquare(x, y, size);
 }
 void multishape_2d::add_fill_round_rect(float x, float y, float w, float h, float rx, float ry, uint32_t sectors) {
-  instructions.push_back(shape::full_instruction(instruction::FILL_ROUND_RECT, {x}, {y}, {}, {w, h, rx, ry}, {sectors}));
+  instructions.push_back(multishape::full_instruction(instruction::FILL_ROUND_RECT, {x}, {y}, {}, {w, h, rx, ry}, {sectors}));
   fillRoundRect(x, y, w, h, rx, ry, sectors);
 }
 void multishape_2d::add_fill_triangle(float x1, float y1, float x2, float y2, float x3, float y3) {
-  instructions.push_back(shape::full_instruction(instruction::FILL_TRIANGLE, {x1, x2, x3}, {y1, y2, y3}, {}, {}, {}));
+  instructions.push_back(multishape::full_instruction(instruction::FILL_TRIANGLE, {x1, x2, x3}, {y1, y2, y3}, {}, {}, {}));
   fillTriangle(x1, y1, x2, y2, x3, y3);
 }
 void multishape_2d::add_fill_circle(float x, float y, float rad, uint32_t sectors) {
-  instructions.push_back(shape::full_instruction(instruction::FILL_CIRCLE, {x}, {y}, {}, {rad}, {sectors}));
+  instructions.push_back(multishape::full_instruction(instruction::FILL_CIRCLE, {x}, {y}, {}, {rad}, {sectors}));
   fillCircle(x, y, rad, sectors);
 }
 void multishape_2d::add_fill_ellipse(float x, float y, float xRad, float yRad, uint32_t sectors) {
-  instructions.push_back(shape::full_instruction(instruction::FILL_ELLIPSE, {x}, {y}, {}, {xRad, yRad}, {sectors}));
+  instructions.push_back(multishape::full_instruction(instruction::FILL_ELLIPSE, {x}, {y}, {}, {xRad, yRad}, {sectors}));
   fillEllipse(x, y, xRad, yRad, sectors);
 }
 void multishape_2d::add_fill_polygon(std::vector<glm::vec2> points) {
@@ -696,7 +696,7 @@ void multishape_2d::add_fill_polygon(std::vector<glm::vec2> points) {
     x_coords.push_back(p.x);
     y_coords.push_back(p.y);
   }
-  instructions.push_back(shape::full_instruction(instruction::FILL_POLYGON, x_coords, y_coords, {}, {}, {(uint32_t) points.size()}));
+  instructions.push_back(multishape::full_instruction(instruction::FILL_POLYGON, x_coords, y_coords, {}, {}, {(uint32_t) points.size()}));
   fillPolygon(points);
 }
 void multishape_2d::add_fill_polyline(std::vector<glm::vec2> points) {
@@ -706,78 +706,78 @@ void multishape_2d::add_fill_polyline(std::vector<glm::vec2> points) {
     x_coords.push_back(p.x);
     y_coords.push_back(p.y);
   }
-  instructions.push_back(shape::full_instruction(instruction::FILL_POLYLINE, x_coords, y_coords, {}, {}, {(uint32_t) points.size()}));
+  instructions.push_back(multishape::full_instruction(instruction::FILL_POLYLINE, x_coords, y_coords, {}, {}, {(uint32_t) points.size()}));
   fillPolyline(points);
 }
 void multishape_2d::add_fill_circle_marker(float x, float y, float size) {
-  instructions.push_back(shape::full_instruction(instruction::FILL_CIRCLE_MARKER, {x}, {y}, {}, {size}, {}));
+  instructions.push_back(multishape::full_instruction(instruction::FILL_CIRCLE_MARKER, {x}, {y}, {}, {size}, {}));
   fillCircleMarker(x, y, size);
 }
 void multishape_2d::add_fill_triangle_marker(float x, float y, float size) {
-  instructions.push_back(shape::full_instruction(instruction::FILL_TRIANGLE_MARKER, {x}, {y}, {}, {size}, {}));
+  instructions.push_back(multishape::full_instruction(instruction::FILL_TRIANGLE_MARKER, {x}, {y}, {}, {size}, {}));
   fillTriangleMarker(x, y, size);
 }
 void multishape_2d::add_fill_square_marker(float x, float y, float size) {
-  instructions.push_back(shape::full_instruction(instruction::FILL_SQUARE_MARKER, {x}, {y}, {}, {size}, {}));
+  instructions.push_back(multishape::full_instruction(instruction::FILL_SQUARE_MARKER, {x}, {y}, {}, {size}, {}));
   fillSquareMarker(x, y, size);
 }
 void multishape_2d::add_fill_hexagon_marker(float x, float y, float size) {
-  instructions.push_back(shape::full_instruction(instruction::FILL_HEXAGON_MARKER, {x}, {y}, {}, {size}, {}));
+  instructions.push_back(multishape::full_instruction(instruction::FILL_HEXAGON_MARKER, {x}, {y}, {}, {size}, {}));
   fillHexagonMarker(x, y, size);
 }
 
 void multishape_2d::add_draw_line(float x1, float y1, float x2, float y2) {
-  instructions.push_back(shape::full_instruction(instruction::DRAW_LINE, {x1, x2}, {y1, y2}, {}, {}, {}));
+  instructions.push_back(multishape::full_instruction(instruction::DRAW_LINE, {x1, x2}, {y1, y2}, {}, {}, {}));
   drawLine(x1, y1, x2, y2);
 }
 
 void multishape_2d::add_draw_rectangle(float x, float y, float w, float h) {
-  instructions.push_back(shape::full_instruction(instruction::DRAW_RECTANGLE, {x}, {y}, {}, {w, h}, {}));
+  instructions.push_back(multishape::full_instruction(instruction::DRAW_RECTANGLE, {x}, {y}, {}, {w, h}, {}));
   drawRectangle(x, y, w, h);
 }
 void multishape_2d::add_draw_square(float x, float y, float size) {
-  instructions.push_back(shape::full_instruction(instruction::DRAW_SQUARE, {x}, {y}, {}, {size}, {}));
+  instructions.push_back(multishape::full_instruction(instruction::DRAW_SQUARE, {x}, {y}, {}, {size}, {}));
   drawSquare(x, y, size);
 }
 void multishape_2d::add_draw_round_rect(float x, float y, float w, float h, float rx, float ry, uint32_t sectors) {
-  instructions.push_back(shape::full_instruction(instruction::DRAW_ROUND_RECT, {x}, {y}, {}, {w, h, rx, ry}, {sectors}));
+  instructions.push_back(multishape::full_instruction(instruction::DRAW_ROUND_RECT, {x}, {y}, {}, {w, h, rx, ry}, {sectors}));
   drawRoundRect(x, y, w, h, rx, ry, sectors);
 }
 void multishape_2d::add_draw_triangle(float x1, float y1, float x2, float y2, float x3, float y3) {
-  instructions.push_back(shape::full_instruction(instruction::DRAW_TRIANGLE, {x1, x2, x3}, {y1, y2, y3}, {}, {}, {}));
+  instructions.push_back(multishape::full_instruction(instruction::DRAW_TRIANGLE, {x1, x2, x3}, {y1, y2, y3}, {}, {}, {}));
   drawTriangle(x1, y1, x2, y2, x3, y3);
 }
 void multishape_2d::add_draw_circle(float x, float y, float rad, uint32_t sectors) {
-  instructions.push_back(shape::full_instruction(instruction::DRAW_CIRCLE, {x}, {y}, {}, {rad}, {sectors}));
+  instructions.push_back(multishape::full_instruction(instruction::DRAW_CIRCLE, {x}, {y}, {}, {rad}, {sectors}));
   drawCircle(x, y, rad, sectors);
 }
 void multishape_2d::add_draw_ellipse(float x, float y, float xRad, float yRad, uint32_t sectors) {
-  instructions.push_back(shape::full_instruction(instruction::DRAW_ELLIPSE, {x}, {y}, {}, {xRad, yRad}, {sectors}));
+  instructions.push_back(multishape::full_instruction(instruction::DRAW_ELLIPSE, {x}, {y}, {}, {xRad, yRad}, {sectors}));
   drawEllipse(x, y, xRad, yRad, sectors);
 }
 
 void multishape_2d::add_rectangle_points(float x, float y, float w, float h) {
-  instructions.push_back(shape::full_instruction(instruction::RECTANGLE_POINTS, {x}, {y}, {}, {w, h}, {}));
+  instructions.push_back(multishape::full_instruction(instruction::RECTANGLE_POINTS, {x}, {y}, {}, {w, h}, {}));
   rectanglePoints(x, y, w, h);
 }
 void multishape_2d::add_square_points(float x, float y, float size) {
-  instructions.push_back(shape::full_instruction(instruction::SQUARE_POINTS, {x}, {y}, {}, {size}, {}));
+  instructions.push_back(multishape::full_instruction(instruction::SQUARE_POINTS, {x}, {y}, {}, {size}, {}));
   squarePoints(x, y, size);
 }
 void multishape_2d::add_round_rect_points(float x, float y, float w, float h, float rx, float ry, uint32_t sectors) {
-  instructions.push_back(shape::full_instruction(instruction::ROUND_RECT_POINTS, {x}, {y}, {}, {w, h, rx, ry}, {sectors}));
+  instructions.push_back(multishape::full_instruction(instruction::ROUND_RECT_POINTS, {x}, {y}, {}, {w, h, rx, ry}, {sectors}));
   roundRectPoints(x, y, w, h, rx, ry, sectors);
 }
 void multishape_2d::add_triangle_points(float x1, float y1, float x2, float y2, float x3, float y3) {
-  instructions.push_back(shape::full_instruction(instruction::TRIANGLE_POINTS, {x1, x2, x3}, {y1, y2, y3}, {}, {}, {}));
+  instructions.push_back(multishape::full_instruction(instruction::TRIANGLE_POINTS, {x1, x2, x3}, {y1, y2, y3}, {}, {}, {}));
   trianglePoints(x1, y1, x2, y2, x3, y3);
 }
 void multishape_2d::add_circle_points(float x, float y, float rad, uint32_t sectors) {
-  instructions.push_back(shape::full_instruction(instruction::CIRCLE_POINTS, {x}, {y}, {}, {rad}, {sectors}));
+  instructions.push_back(multishape::full_instruction(instruction::CIRCLE_POINTS, {x}, {y}, {}, {rad}, {sectors}));
   circlePoints(x, y, rad, sectors);
 }
 void multishape_2d::add_ellipse_points(float x, float y, float xRad, float yRad, uint32_t sectors) {
-  instructions.push_back(shape::full_instruction(instruction::ELLIPSE_POINTS, {x}, {y}, {}, {xRad, yRad}, {sectors}));
+  instructions.push_back(multishape::full_instruction(instruction::ELLIPSE_POINTS, {x}, {y}, {}, {xRad, yRad}, {sectors}));
   ellipsePoints(x, y, xRad, yRad, sectors);
 }
 
@@ -788,7 +788,7 @@ void multishape_2d::add_draw_polygon(std::vector<glm::vec2> points) {
     x_coords.push_back(p.x);
     y_coords.push_back(p.y);
   }
-  instructions.push_back(shape::full_instruction(instruction::DRAW_POLYGON, x_coords, y_coords, {}, {}, {(uint32_t) points.size()}));
+  instructions.push_back(multishape::full_instruction(instruction::DRAW_POLYGON, x_coords, y_coords, {}, {}, {(uint32_t) points.size()}));
   drawPolygon(points);
 }
 void multishape_2d::add_draw_PCHIP(std::vector<glm::vec2> points, float inc) {
@@ -798,7 +798,7 @@ void multishape_2d::add_draw_PCHIP(std::vector<glm::vec2> points, float inc) {
     x_coords.push_back(p.x);
     y_coords.push_back(p.y);
   }
-  instructions.push_back(shape::full_instruction(instruction::DRAW_PCHIP, x_coords, y_coords, {}, {inc}, {(uint32_t) points.size()}));
+  instructions.push_back(multishape::full_instruction(instruction::DRAW_PCHIP, x_coords, y_coords, {}, {inc}, {(uint32_t) points.size()}));
   drawPCHIP(points, inc);
 }
 void multishape_2d::add_draw_cubic_spline(std::vector<glm::vec2> points, float inc) {
@@ -808,7 +808,7 @@ void multishape_2d::add_draw_cubic_spline(std::vector<glm::vec2> points, float i
     x_coords.push_back(p.x);
     y_coords.push_back(p.y);
   }
-  instructions.push_back(shape::full_instruction(instruction::DRAW_CUBIC_SPLINE, x_coords, y_coords, {}, {inc}, {(uint32_t) points.size()}));
+  instructions.push_back(multishape::full_instruction(instruction::DRAW_CUBIC_SPLINE, x_coords, y_coords, {}, {inc}, {(uint32_t) points.size()}));
   drawCubicSpline(points, inc);
 }
 void multishape_2d::add_cubic_spline_points(std::vector<glm::vec2> points, float inc) {
@@ -818,7 +818,7 @@ void multishape_2d::add_cubic_spline_points(std::vector<glm::vec2> points, float
     x_coords.push_back(p.x);
     y_coords.push_back(p.y);
   }
-  instructions.push_back(shape::full_instruction(instruction::CUBIC_SPLINE_POINTS, x_coords, y_coords, {}, {inc}, {(uint32_t) points.size()}));
+  instructions.push_back(multishape::full_instruction(instruction::CUBIC_SPLINE_POINTS, x_coords, y_coords, {}, {inc}, {(uint32_t) points.size()}));
   cubicSplinePoints(points, inc);
 }
 void multishape_2d::add_draw_bezier(std::vector<glm::vec2> points, float inc) {
@@ -828,7 +828,7 @@ void multishape_2d::add_draw_bezier(std::vector<glm::vec2> points, float inc) {
     x_coords.push_back(p.x);
     y_coords.push_back(p.y);
   }
-  instructions.push_back(shape::full_instruction(instruction::DRAW_BEZIER, x_coords, y_coords, {}, {inc}, {(uint32_t) points.size()}));
+  instructions.push_back(multishape::full_instruction(instruction::DRAW_BEZIER, x_coords, y_coords, {}, {inc}, {(uint32_t) points.size()}));
   drawBezier(points, inc);
 }
 void multishape_2d::add_bezier_points(std::vector<glm::vec2> points, float inc) {
@@ -838,11 +838,11 @@ void multishape_2d::add_bezier_points(std::vector<glm::vec2> points, float inc) 
     x_coords.push_back(p.x);
     y_coords.push_back(p.y);
   }
-  instructions.push_back(shape::full_instruction(instruction::BEZIER_POINTS, x_coords, y_coords, {}, {inc}, {(uint32_t) points.size()}));
+  instructions.push_back(multishape::full_instruction(instruction::BEZIER_POINTS, x_coords, y_coords, {}, {inc}, {(uint32_t) points.size()}));
   bezierPoints(points, inc);
 }
 void multishape_2d::add_draw_grid(float x0, float y0, float w, float h, uint32_t numCols, uint32_t numRows) {
-  instructions.push_back(shape::full_instruction(instruction::DRAW_GRID, {x0}, {y0}, {}, {w, h}, {numCols, numRows}));
+  instructions.push_back(multishape::full_instruction(instruction::DRAW_GRID, {x0}, {y0}, {}, {w, h}, {numCols, numRows}));
   drawGrid(x0, y0, w, h, numCols, numRows);
 }
 void multishape_2d::add_draw_polyline(std::vector<glm::vec2> points) {
@@ -852,7 +852,7 @@ void multishape_2d::add_draw_polyline(std::vector<glm::vec2> points) {
     x_coords.push_back(p.x);
     y_coords.push_back(p.y);
   }
-  instructions.push_back(shape::full_instruction(instruction::DRAW_POLYLINE, x_coords, y_coords, {}, {}, {(uint32_t) points.size()}));
+  instructions.push_back(multishape::full_instruction(instruction::DRAW_POLYLINE, x_coords, y_coords, {}, {}, {(uint32_t) points.size()}));
   drawPolyline(points);
 }
 void multishape_2d::add_draw_polyline_marker(std::vector<glm::vec2> points, Marker marker, float markerSize) {
@@ -862,7 +862,7 @@ void multishape_2d::add_draw_polyline_marker(std::vector<glm::vec2> points, Mark
     x_coords.push_back(p.x);
     y_coords.push_back(p.y);
   }
-  instructions.push_back(shape::full_instruction(instruction::DRAW_POLYLINE_MARKER, x_coords, y_coords, {}, {markerSize}, {(uint32_t) points.size(), to_underlying(marker)}));
+  instructions.push_back(multishape::full_instruction(instruction::DRAW_POLYLINE_MARKER, x_coords, y_coords, {}, {markerSize}, {(uint32_t) points.size(), to_underlying(marker)}));
   drawPolylineMarker(points, marker, markerSize);
 }
 void multishape_2d::add_draw_polygon_marker(std::vector<glm::vec2> points, Marker marker, float markerSize) {
@@ -872,7 +872,7 @@ void multishape_2d::add_draw_polygon_marker(std::vector<glm::vec2> points, Marke
     x_coords.push_back(p.x);
     y_coords.push_back(p.y);
   }
-  instructions.push_back(shape::full_instruction(instruction::DRAW_POLYGON_MARKER, x_coords, y_coords, {}, {markerSize}, {(uint32_t) points.size(), to_underlying(marker)}));
+  instructions.push_back(multishape::full_instruction(instruction::DRAW_POLYGON_MARKER, x_coords, y_coords, {}, {markerSize}, {(uint32_t) points.size(), to_underlying(marker)}));
   drawPolygonMarker(points, marker, markerSize);
 }
 void multishape_2d::add_draw_cubic_spline_marker(std::vector<glm::vec2> points, float inc, Marker marker, float markerSize) {
@@ -882,31 +882,31 @@ void multishape_2d::add_draw_cubic_spline_marker(std::vector<glm::vec2> points, 
     x_coords.push_back(p.x);
     y_coords.push_back(p.y);
   }
-  instructions.push_back(shape::full_instruction(instruction::DRAW_CUBIC_SPLINE_MARKER, x_coords, y_coords, {}, {markerSize, inc}, {(uint32_t) points.size(), to_underlying(marker)}));
+  instructions.push_back(multishape::full_instruction(instruction::DRAW_CUBIC_SPLINE_MARKER, x_coords, y_coords, {}, {markerSize, inc}, {(uint32_t) points.size(), to_underlying(marker)}));
   drawCubicSplineMarker(points, inc, marker, markerSize);
 }
 void multishape_2d::add_draw_circle_marker(float x, float y, float size) {
-  instructions.push_back(shape::full_instruction(instruction::DRAW_CIRCLE_MARKER, {x}, {y}, {}, {size}, {}));
+  instructions.push_back(multishape::full_instruction(instruction::DRAW_CIRCLE_MARKER, {x}, {y}, {}, {size}, {}));
   drawCircleMarker(x, y, size);
 }
 void multishape_2d::add_draw_quadratic_bezier(float p1x, float p1y, float p2x, float p2y, float p3x, float p3y, float inc) {
-  instructions.push_back(shape::full_instruction(instruction::DRAW_QUADRATIC_BEZIER, {p1x, p2x, p3x}, {p1y, p2y, p3y}, {}, {inc}, {}));
+  instructions.push_back(multishape::full_instruction(instruction::DRAW_QUADRATIC_BEZIER, {p1x, p2x, p3x}, {p1y, p2y, p3y}, {}, {inc}, {}));
   drawQuadraticBezier(p1x, p1y, p2x, p2y, p3x, p3y, inc);
 }
 void multishape_2d::add_draw_cubic_bezier(float p1x, float p1y, float p2x, float p2y, float p3x, float p3y, float p4x, float p4y, float inc) {
-  instructions.push_back(shape::full_instruction(instruction::DRAW_CUBIC_BEZIER, {p1x, p2x, p3x, p4x}, {p1y, p2y, p3y, p4y}, {}, {inc}, {}));
+  instructions.push_back(multishape::full_instruction(instruction::DRAW_CUBIC_BEZIER, {p1x, p2x, p3x, p4x}, {p1y, p2y, p3y, p4y}, {}, {inc}, {}));
   drawCubicBezier(p1x, p1y, p2x, p2y, p3x, p3y, p4x, p4y, inc);
 }
 void multishape_2d::add_quadratic_bezier_points(float p1x, float p1y, float p2x, float p2y, float p3x, float p3y, float inc) {
-  instructions.push_back(shape::full_instruction(instruction::QUADRATIC_BEZIER_POINTS, {p1x, p2x, p3x}, {p1y, p2y, p3y}, {}, {inc}, {}));
+  instructions.push_back(multishape::full_instruction(instruction::QUADRATIC_BEZIER_POINTS, {p1x, p2x, p3x}, {p1y, p2y, p3y}, {}, {inc}, {}));
   quadraticBezierPoints(p1x, p1y, p2x, p2y, p3x, p3y, inc);
 }
 void multishape_2d::add_cubic_bezier_points(float p1x, float p1y, float p2x, float p2y, float p3x, float p3y, float p4x, float p4y, float inc) {
-  instructions.push_back(shape::full_instruction(instruction::CUBIC_BEZIER_POINTS, {p1x, p2x, p3x, p4x}, {p1y, p2y, p3y, p4y}, {}, {inc}, {}));
+  instructions.push_back(multishape::full_instruction(instruction::CUBIC_BEZIER_POINTS, {p1x, p2x, p3x, p4x}, {p1y, p2y, p3y, p4y}, {}, {inc}, {}));
   cubicBezierPoints(p1x, p1y, p2x, p2y, p3x, p3y, p4x, p4y, inc);
 }
 void multishape_2d::add_draw_cross_marker(float x, float y, float size) {
-  instructions.push_back(shape::full_instruction(instruction::DRAW_CROSS_MARKER, {x}, {y}, {}, {size}, {}));
+  instructions.push_back(multishape::full_instruction(instruction::DRAW_CROSS_MARKER, {x}, {y}, {}, {size}, {}));
   drawCrossMarker(x, y, size);
 }
 void multishape_2d::add_draw_markers(std::vector<glm::vec2> points, Marker marker, float markerSize) {
@@ -916,19 +916,19 @@ void multishape_2d::add_draw_markers(std::vector<glm::vec2> points, Marker marke
     x_coords.push_back(p.x);
     y_coords.push_back(p.y);
   }
-  instructions.push_back(shape::full_instruction(instruction::DRAW_MARKERS, x_coords, y_coords, {}, {markerSize}, {(uint32_t) points.size(), to_underlying(marker)}));
+  instructions.push_back(multishape::full_instruction(instruction::DRAW_MARKERS, x_coords, y_coords, {}, {markerSize}, {(uint32_t) points.size(), to_underlying(marker)}));
   drawMarkers(points, marker, markerSize);
 }
 void multishape_2d::add_draw_triangle_marker(float x, float y, float size) {
-  instructions.push_back(shape::full_instruction(instruction::DRAW_TRIANGLE_MARKER, {x}, {y}, {}, {size}, {}));
+  instructions.push_back(multishape::full_instruction(instruction::DRAW_TRIANGLE_MARKER, {x}, {y}, {}, {size}, {}));
   drawTriangleMarker(x, y, size);
 }
 void multishape_2d::add_draw_square_marker(float x, float y, float size) {
-  instructions.push_back(shape::full_instruction(instruction::DRAW_SQUARE_MARKER, {x}, {y}, {}, {size}, {}));
+  instructions.push_back(multishape::full_instruction(instruction::DRAW_SQUARE_MARKER, {x}, {y}, {}, {size}, {}));
   drawSquareMarker(x, y, size);
 }
 void multishape_2d::add_draw_hexagon_marker(float x, float y, float size) {
-  instructions.push_back(shape::full_instruction(instruction::DRAW_HEXAGON_MARKER, {x}, {y}, {}, {size}, {}));
+  instructions.push_back(multishape::full_instruction(instruction::DRAW_HEXAGON_MARKER, {x}, {y}, {}, {size}, {}));
   drawHexagonMarker(x, y, size);
 }
 

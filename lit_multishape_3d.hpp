@@ -109,7 +109,7 @@ class lit_multishape_3d : public multishape_3d {
           indices.push_back(material_index);
           indices.push_back(transform_index);
           indices.push_back(to_underlying<shader_id>(sid));
-          set_start_instr(shape::full_instruction(instruction::START_LIT_MULTISHAPE_3D, {}, {}, {}, {line_width}, indices));
+          set_start_instr(multishape::full_instruction(instruction::START_LIT_MULTISHAPE_3D, {}, {}, {}, {line_width}, indices));
           end_instr = instruction::END_LIT_MULTISHAPE_3D;
     }
     ~lit_multishape_3d();

@@ -2,6 +2,10 @@
 
 multishape::~multishape() {}
 
+void multishape::save(std::vector<instruction>& instructions, std::vector<uint32_t> uint32s, std::vector<float> floats, std::vector<float> x_coords, std::vector<float> y_coords, std::vector<float> z_coords) {
+  //TODO: save
+}
+
 void multishape::update() {
   if (vbo != 0) updatePoints();
   if (sbo != 0) updateSolidIndices();

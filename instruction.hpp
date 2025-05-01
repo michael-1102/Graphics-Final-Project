@@ -3,7 +3,7 @@
 enum class instruction {
   NO_INSTRUCTION, 
 
-  CREATE_VIEW,
+  CREATE_DRAWING,
 
   CREATE_MATERIAL, 
   CREATE_CAMERA, 

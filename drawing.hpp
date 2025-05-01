@@ -17,6 +17,7 @@ class drawing : public shape {
     void update() override;
     void render(drw_file& drw, view& view) override;
     void render(drw_file& drw);
+    void save(std::vector<instruction>& instructions, std::vector<uint32_t> uint32s, std::vector<float> floats, std::vector<float> x_coords, std::vector<float> y_coords, std::vector<float> z_coords);
 
     void add_shape(shape* shape);
     

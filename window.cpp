@@ -53,7 +53,7 @@ void create_window(drw_file& drw, const std::string& title) {
   drw.init();
 
   // Set background color
-  glm::vec3& bg_color = drw.get_bg_color();
+  glm::vec3 bg_color = drw.get_bg_color();
   glClearColor(bg_color.r, bg_color.g, bg_color.b, 1.f);
 
   // Clear the screen
@@ -116,9 +116,9 @@ int main(int argc, char* argv[]) {
   view vw = view(0, 0, 300, 100);
   main.set_view(vw);
   styled_multishape_2d shapes = styled_multishape_2d(drw, 1, 0);
-  //shapes.add_fill_circle(50, 50, 40, 20, drw.get_color_index("black"), 1.f);
-  //shapes.add_fill_circle(150, 50, 40, 20, drw.get_color_index("black"), 1.f);
-  //shapes.add_fill_circle(250, 50, 40, 20, drw.get_color_index("black"), 1.f);
+  shapes.add_fill_circle(50, 50, 40, 20, drw.get_color_index("black"), 1.f);
+  shapes.add_fill_circle(150, 50, 40, 20, drw.get_color_index("black"), 1.f);
+  shapes.add_fill_circle(250, 50, 40, 20, drw.get_color_index("black"), 1.f);
   multishape_3d wireframes = multishape_3d(1, drw.get_color_index("blue"), 1, 0);
   wireframes.add_draw_sphere(50, 50, 0, 40, 32, 18);
   wireframes.add_draw_rect_prism(0, 0, 0, 400, 100, 400);

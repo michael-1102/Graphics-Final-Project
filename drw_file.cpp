@@ -1,4 +1,14 @@
 #include "drw_file.hpp"
+#include "block_loader.hpp"
+
+template<typename T>
+std::vector<T> delta_encode(std::vector<T> vec) {
+  if (vec.size() == 0) return vec;
+  for (uint32_t i = vec.size() - 1; i > 0; i--) {
+    vec[i] -= vec[i - 1];
+  }
+  return vec;
+}
 
 std::vector<std::string> resplit(const std::string &s, const std::regex &sep_regex = std::regex{"\\s+"}) {
   std::sregex_token_iterator iter(s.begin(), s.end(), sep_regex, -1);
@@ -388,4 +398,204 @@ void drw_file::add_rect(XMLParser::ElementContext* element, group_attributes att
 uint32_t drw_file::string_to_transform_index(std::string str) {
   //TODO: parse transform and return transform index
   return 0;
+}
+
+void drw_file::save(const char filename[]) const {
+  std::ofstream f(filename, std::ios::out | std::ios::binary);
+  std::vector<uint16_t> instructions;
+  std::vector<uint32_t> uint32s; // any values that are stored as a uint32_t
+  std::vector<float> floats;  // any values that are stored as a float besides x, y, z coords
+
+  std::vector<float> x_coords;
+  std::vector<float> y_coords;
+  std::vector<float> z_coords;
+
+  // save cameras
+  for (auto c : cameras) {
+    instructions.push_back(to_underlying(instruction::CREATE_CAMERA));
+    floats.push_back(c.get_width_to_height());
+    glm::vec3 pos = c.get_pos();
+    x_coords.push_back(pos.x);
+    y_coords.push_back(pos.y);
+    z_coords.push_back(pos.z);
+    glm::vec3 look_at = c.get_look_at();
+    x_coords.push_back(look_at.x);
+    y_coords.push_back(look_at.y);
+    z_coords.push_back(look_at.z);
+    glm::vec3 up = c.get_up();
+    floats.push_back(up.x);
+    floats.push_back(up.y);
+    floats.push_back(up.z);
+    floats.push_back(c.get_fov());
+    floats.push_back(c.get_z_near());
+    floats.push_back(c.get_z_far());
+  }
+
+  // save materials
+  for (auto m : materials) {
+    instructions.push_back(to_underlying(instruction::CREATE_MATERIAL));
+    glm::vec3 ambient = m.ambient;
+    floats.push_back(ambient.x);
+    floats.push_back(ambient.y);
+    floats.push_back(ambient.z);
+    glm::vec3 diffuse = m.diffuse;
+    floats.push_back(diffuse.x);
+    floats.push_back(diffuse.y);
+    floats.push_back(diffuse.z);
+    glm::vec3 specular = m.specular;
+    floats.push_back(specular.x);
+    floats.push_back(specular.y);
+    floats.push_back(specular.z);
+
+    floats.push_back(m.shininess);
+  }
+
+  
+  // save point lights
+  for (auto pl: point_lights) {
+    instructions.push_back(to_underlying(instruction::CREATE_POINT_LIGHT));
+
+    glm::vec3 position = pl.position;
+    floats.push_back(position.x);
+    floats.push_back(position.y);
+    floats.push_back(position.z);
+
+    floats.push_back(pl.constant);
+    floats.push_back(pl.linear);
+    floats.push_back(pl.quadratic);
+
+    glm::vec3 ambient = pl.ambient;
+    floats.push_back(ambient.x);
+    floats.push_back(ambient.y);
+    floats.push_back(ambient.z);
+    glm::vec3 diffuse = pl.diffuse;
+    floats.push_back(diffuse.x);
+    floats.push_back(diffuse.y);
+    floats.push_back(diffuse.z);
+    glm::vec3 specular = pl.specular;
+    floats.push_back(specular.x);
+    floats.push_back(specular.y);
+    floats.push_back(specular.z);
+
+  }
+
+  // save spot lights
+  for (auto sl: spot_lights) {
+    instructions.push_back(to_underlying(instruction::CREATE_SPOT_LIGHT));
+    glm::vec3 position = sl.position;
+    floats.push_back(position.x);
+    floats.push_back(position.y);
+    floats.push_back(position.z);
+
+    glm::vec3 direction = sl.direction;
+    floats.push_back(direction.x);
+    floats.push_back(direction.y);
+    floats.push_back(direction.z);
+
+    floats.push_back(sl.cutOff);
+    floats.push_back(sl.outerCutOff);
+    floats.push_back(sl.constant);
+    floats.push_back(sl.linear);
+    floats.push_back(sl.quadratic);
+
+    glm::vec3 ambient = sl.ambient;
+    floats.push_back(ambient.x);
+    floats.push_back(ambient.y);
+    floats.push_back(ambient.z);
+    glm::vec3 diffuse = sl.diffuse;
+    floats.push_back(diffuse.x);
+    floats.push_back(diffuse.y);
+    floats.push_back(diffuse.z);
+    glm::vec3 specular = sl.specular;
+    floats.push_back(specular.x);
+    floats.push_back(specular.y);
+    floats.push_back(specular.z);
+  }
+
+  // save dir lights
+  for (auto dl : dir_lights) {
+    instructions.push_back(to_underlying(instruction::CREATE_DIR_LIGHT));
+
+    glm::vec3 direction = dl.direction;
+    floats.push_back(direction.x);
+    floats.push_back(direction.y);
+    floats.push_back(direction.z);
+
+    glm::vec3 ambient = dl.ambient;
+    floats.push_back(ambient.x);
+    floats.push_back(ambient.y);
+    floats.push_back(ambient.z);
+    glm::vec3 diffuse = dl.diffuse;
+    floats.push_back(diffuse.x);
+    floats.push_back(diffuse.y);
+    floats.push_back(diffuse.z);
+    glm::vec3 specular = dl.specular;
+    floats.push_back(specular.x);
+    floats.push_back(specular.y);
+    floats.push_back(specular.z);
+  }
+
+  //TODO: save main drawing
+  //main_drawing.save(instructions, uint32s, floats, x_coords, y_coords, z_coords);
+
+  std::vector<float> reds;
+  std::vector<float> greens;
+  std::vector<float> blues;
+  for (uint32_t i = clrs.get_start(); i < clrs.get_num_colors(); i++) {
+    glm::vec3 c = clrs.get_color(i);
+    reds.push_back(c.r);
+    greens.push_back(c.g);
+    blues.push_back(c.b);
+  }
+
+  uint32_t num_instructions = instructions.size();
+  uint32_t num_x_coords = x_coords.size();
+  uint32_t num_y_coords = y_coords.size();
+  uint32_t num_z_coords = z_coords.size();
+  uint32_t num_uint32s = uint32s.size();
+  uint32_t num_floats = floats.size();
+  uint32_t num_colors = 0;
+  uint32_t num_transforms = transforms.size();
+
+  block_loader bl(1024, 1);
+  size_t total_size = sizeof(drw_header) + 
+                      num_instructions * sizeof(uint16_t) + 
+                      num_uint32s * sizeof(uint32_t) + 
+                      num_x_coords * sizeof(float) + 
+                      num_y_coords * sizeof(float) +
+                      num_z_coords * sizeof(float) + 
+                      num_floats * sizeof(float) +  
+                      num_colors * sizeof(glm::vec3) + 
+                      num_transforms * sizeof(glm::mat4); 
+
+  bl.grow(total_size);
+  drw_header* header = (drw_header*)bl.start_data();
+  header->width = width;
+  header->height = height;
+  header->bg_color_index = bg_color_index;
+  header->num_instructions = num_instructions;
+  header->num_uint32s = num_uint32s;
+  header->num_x_coords = num_x_coords;
+  header->num_y_coords = num_y_coords;
+  header->num_z_coords = num_z_coords;
+  header->num_floats = num_floats;
+  header->num_colors = num_colors;
+  header->num_transforms = num_transforms;
+  bl.increment_size(sizeof(drw_header));
+
+
+  bl.append(instructions.data(), num_instructions * sizeof(uint16_t));
+  bl.append(uint32s.data(), num_uint32s * sizeof(uint32_t));
+  bl.append(delta_encode(x_coords).data(), num_x_coords * sizeof(float));
+  bl.append(delta_encode(y_coords).data(), num_y_coords * sizeof(float));
+  bl.append(delta_encode(z_coords).data(), num_z_coords * sizeof(float));
+  bl.append(delta_encode(floats).data(), num_floats * sizeof(float));
+  bl.append(delta_encode(reds).data(), num_colors * sizeof(float));
+  bl.append(delta_encode(greens).data(), num_colors * sizeof(float));
+  bl.append(delta_encode(blues).data(), num_colors * sizeof(float));
+  bl.append(transforms.data(), num_transforms * sizeof(glm::mat4));
+
+  bl.save(filename);
+
+  f.close();
 }

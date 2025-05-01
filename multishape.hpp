@@ -2,7 +2,7 @@
 
 #include <vector>
 #include "shape.hpp"
-#include "parasitic_vector.hpp"
+#include "block_loader.hpp"
 #include <iostream>
 #include <functional>
 
@@ -30,6 +30,7 @@ class multishape : public shape {
     vertices.push_back(y);
   }
   void dump();
+  void save(std::vector<instruction>& instructions, std::vector<uint32_t> uint32s, std::vector<float> floats, std::vector<float> x_coords, std::vector<float> y_coords, std::vector<float> z_coords);
 
   struct dispatch_inputs {
     multishape* shape;
@@ -48,6 +49,30 @@ class multishape : public shape {
   
   virtual std::unordered_map<instruction, std::function<void(dispatch_inputs)>> get_dispatch_table() = 0;
 
+  struct full_instruction {
+    instruction instr;
+    std::vector<float> x_coords;
+    std::vector<float> y_coords;
+    std::vector<float> z_coords;
+    std::vector<float> misc_floats;
+    std::vector<uint32_t> misc_ints;
+
+    full_instruction() : instr(instruction::NO_INSTRUCTION) {}
+
+    full_instruction(instruction instr, std::vector<float> x_coords, std::vector<float> y_coords, std::vector<float> z_coords, std::vector<float> misc_floats, std::vector<uint32_t> misc_ints) 
+                  : instr(instr), x_coords(x_coords), y_coords(y_coords), z_coords(z_coords), misc_floats(misc_floats), misc_ints(misc_ints) {}
+  };
+
+  inline std::vector<full_instruction> get_full_instructions() const {
+    return instructions;
+  }
+
+  void set_start_instr(full_instruction start_instr) {
+    if (instructions.size() <= 0) instructions.push_back(start_instr);
+    else instructions[0] = start_instr;
+  }
+
+  inline instruction get_end_instr() const { return end_instr; }
 
   protected:
   std::vector<float> vertices;
@@ -59,6 +84,9 @@ class multishape : public shape {
   uint32_t transform_index;
   const uint32_t elemPerVert;
   float line_width;
+
+  std::vector<full_instruction> instructions;
+  instruction end_instr;
 
   void lAddIndices(uint32_t indexCount);
   void lAddClosedIndices(uint32_t indexCount);
