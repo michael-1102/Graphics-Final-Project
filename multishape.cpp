@@ -2,8 +2,19 @@
 
 multishape::~multishape() {}
 
-void multishape::save(std::vector<instruction>& instructions, std::vector<uint32_t> uint32s, std::vector<float> floats, std::vector<float> x_coords, std::vector<float> y_coords, std::vector<float> z_coords) {
-  //TODO: save
+void multishape::save(std::vector<uint16_t>& instrs, std::vector<uint32_t>& uint32s, std::vector<float>& floats, std::vector<float>& x_coords, std::vector<float>& y_coords, std::vector<float>& z_coords) const {
+  for (auto instr : instructions) {
+    instrs.push_back(to_underlying(instr.instr));
+    x_coords.insert(std::end(x_coords), std::begin(instr.x_coords), std::end(instr.x_coords));
+    y_coords.insert(std::end(y_coords), std::begin(instr.y_coords), std::end(instr.y_coords));
+    z_coords.insert(std::end(z_coords), std::begin(instr.z_coords), std::end(instr.z_coords));
+    uint32s.insert(std::end(uint32s), std::begin(instr.misc_ints), std::end(instr.misc_ints));
+    floats.insert(std::end(floats), std::begin(instr.misc_floats), std::end(instr.misc_floats));
+  }
+
+  if (end_instr != instruction::NO_INSTRUCTION) {
+    instrs.push_back(to_underlying(end_instr));
+  }
 }
 
 void multishape::update() {
@@ -116,4 +127,21 @@ void multishape::dump() {
         solidsInFrontIndices[i + 2]);
     }
   }
+}
+
+void multishape::load(drw_file& drw, parasitic_vector<uint16_t> &instructions, parasitic_vector<float>& x_coords, parasitic_vector<float>& y_coords, parasitic_vector<float>& z_coords,
+  parasitic_vector<float>& floats, parasitic_vector<uint32_t>& uint32s, uint32_t& instr_index, uint32_t& current_uint32, uint32_t& current_x_coord,
+  uint32_t& current_y_coord, uint32_t& current_z_coord, uint32_t& current_float) {
+
+  instr_index++;
+  instruction current_instr = static_cast<instruction>(instructions[instr_index]);
+  while (current_instr != end_instr) {
+      get_dispatch_table()[current_instr](multishape::dispatch_inputs{this, instructions, x_coords, y_coords, z_coords,
+                                                                      floats, uint32s, current_uint32,
+                                                                      current_x_coord, current_y_coord,
+                                                                      current_z_coord, current_float});
+      instr_index++;
+      current_instr = static_cast<instruction>(instructions[instr_index]);
+    }
+
 }

@@ -16,6 +16,11 @@ std::vector<std::string> resplit(const std::string &s, const std::regex &sep_reg
   return {iter, end};
 }
 
+drawing& drw_file::create_main_drawing() {
+  main_drawing = drawing();
+  return main_drawing;
+}
+
 void drw_file::apply_svg_attributes(XMLParser::ElementContext* svg) {
   std::vector<XMLParser::AttributeContext *> attributes = svg->attribute();
   bool has_viewbox = false, has_width = false, has_height = false;
@@ -187,7 +192,6 @@ void drw_file::add_poly(XMLParser::ElementContext* element, group_attributes att
   }
 
   styled_multishape_2d* shape = main_drawing.create_styled_multishape_2d(*this, attribs.stroke_width, attribs.transform_index);
-  main_drawing.add_shape(shape);
   if (connect_ends) {
     if (attribs.has_fill) shape->add_fill_polygon(points, attribs.fill_color_index, attribs.fill_opacity);
     if (attribs.has_stroke) shape->add_draw_polygon(points, attribs.stroke_color_index, attribs.stroke_opacity);
@@ -230,7 +234,6 @@ void drw_file::add_line(XMLParser::ElementContext* element, group_attributes att
   }
   if (!attribs.has_stroke) return;
   styled_multishape_2d* shape = main_drawing.create_styled_multishape_2d(*this, attribs.stroke_width, attribs.transform_index);
-  main_drawing.add_shape(shape);
   shape->add_draw_line(x1, y1, x2, y2, attribs.stroke_color_index, attribs.stroke_opacity);
 }
 
@@ -276,7 +279,6 @@ void drw_file::add_ellipse(XMLParser::ElementContext* element, group_attributes 
   }
 
   styled_multishape_2d* shape = main_drawing.create_styled_multishape_2d(*this, attribs.stroke_width, attribs.transform_index);
-  main_drawing.add_shape(shape);
   if (attribs.has_fill) shape->add_fill_ellipse(cx, cy, rx, ry, NUM_SECTORS, attribs.fill_color_index, attribs.fill_opacity);
   if (attribs.has_stroke) shape->add_draw_ellipse(cx, cy, rx, ry, NUM_SECTORS, attribs.stroke_color_index, attribs.stroke_opacity);
 }
@@ -321,7 +323,6 @@ void drw_file::add_circle(XMLParser::ElementContext* element, group_attributes a
   }
 
   styled_multishape_2d* shape = main_drawing.create_styled_multishape_2d(*this, attribs.stroke_width, attribs.transform_index);
-  main_drawing.add_shape(shape);
   if (attribs.has_fill) shape->add_fill_circle(cx, cy, r, NUM_SECTORS, attribs.fill_color_index, attribs.fill_opacity);
   if (attribs.has_stroke) shape->add_draw_circle(cx, cy, r, NUM_SECTORS, attribs.stroke_color_index, attribs.stroke_opacity);
 }
@@ -376,7 +377,6 @@ void drw_file::add_rect(XMLParser::ElementContext* element, group_attributes att
   }
 
   styled_multishape_2d* shape = main_drawing.create_styled_multishape_2d(*this, attribs.stroke_width, attribs.transform_index);
-  main_drawing.add_shape(shape);
   if (!(rounded_x && rounded_y)) {
     if (width == height && width > 0) {
       if (attribs.has_fill) shape->add_fill_square(x, y, width, attribs.fill_color_index, attribs.fill_opacity);
@@ -412,23 +412,45 @@ void drw_file::save(const char filename[]) const {
 
   // save cameras
   for (auto c : cameras) {
-    instructions.push_back(to_underlying(instruction::CREATE_CAMERA));
-    floats.push_back(c.get_width_to_height());
-    glm::vec3 pos = c.get_pos();
-    x_coords.push_back(pos.x);
-    y_coords.push_back(pos.y);
-    z_coords.push_back(pos.z);
-    glm::vec3 look_at = c.get_look_at();
-    x_coords.push_back(look_at.x);
-    y_coords.push_back(look_at.y);
-    z_coords.push_back(look_at.z);
-    glm::vec3 up = c.get_up();
-    floats.push_back(up.x);
-    floats.push_back(up.y);
-    floats.push_back(up.z);
-    floats.push_back(c.get_fov());
-    floats.push_back(c.get_z_near());
-    floats.push_back(c.get_z_far());
+    if (c.has_perspective()) {
+      instructions.push_back(to_underlying(instruction::CREATE_PERSPECTIVE_CAMERA));
+      floats.push_back(c.get_width_to_height());
+      glm::vec3 pos = c.get_pos();
+      x_coords.push_back(pos.x);
+      y_coords.push_back(pos.y);
+      z_coords.push_back(pos.z);
+      glm::vec3 look_at = c.get_look_at();
+      x_coords.push_back(look_at.x);
+      y_coords.push_back(look_at.y);
+      z_coords.push_back(look_at.z);
+      glm::vec3 up = c.get_up();
+      floats.push_back(up.x);
+      floats.push_back(up.y);
+      floats.push_back(up.z);
+      floats.push_back(c.get_fov());
+      floats.push_back(c.get_z_near());
+      floats.push_back(c.get_z_far());
+    } else {
+      instructions.push_back(to_underlying(instruction::CREATE_ORTHO_CAMERA));
+      floats.push_back(c.get_x());
+      floats.push_back(c.get_y());
+      floats.push_back(c.get_width());
+      floats.push_back(c.get_height());
+      glm::vec3 pos = c.get_pos();
+      x_coords.push_back(pos.x);
+      y_coords.push_back(pos.y);
+      z_coords.push_back(pos.z);
+      glm::vec3 look_at = c.get_look_at();
+      x_coords.push_back(look_at.x);
+      y_coords.push_back(look_at.y);
+      z_coords.push_back(look_at.z);
+      glm::vec3 up = c.get_up();
+      floats.push_back(up.x);
+      floats.push_back(up.y);
+      floats.push_back(up.z);
+      floats.push_back(c.get_z_near());
+      floats.push_back(c.get_z_far());
+    }
   }
 
   // save materials
@@ -535,8 +557,7 @@ void drw_file::save(const char filename[]) const {
     floats.push_back(specular.z);
   }
 
-  //TODO: save main drawing
-  //main_drawing.save(instructions, uint32s, floats, x_coords, y_coords, z_coords);
+  main_drawing.save(instructions, uint32s, floats, x_coords, y_coords, z_coords);
 
   std::vector<float> reds;
   std::vector<float> greens;
@@ -554,7 +575,7 @@ void drw_file::save(const char filename[]) const {
   uint32_t num_z_coords = z_coords.size();
   uint32_t num_uint32s = uint32s.size();
   uint32_t num_floats = floats.size();
-  uint32_t num_colors = 0;
+  uint32_t num_colors = reds.size();
   uint32_t num_transforms = transforms.size();
 
   block_loader bl(1024, 1);
@@ -589,7 +610,7 @@ void drw_file::save(const char filename[]) const {
   bl.append(delta_encode(x_coords).data(), num_x_coords * sizeof(float));
   bl.append(delta_encode(y_coords).data(), num_y_coords * sizeof(float));
   bl.append(delta_encode(z_coords).data(), num_z_coords * sizeof(float));
-  bl.append(delta_encode(floats).data(), num_floats * sizeof(float));
+  bl.append(floats.data(), num_floats * sizeof(float));
   bl.append(delta_encode(reds).data(), num_colors * sizeof(float));
   bl.append(delta_encode(greens).data(), num_colors * sizeof(float));
   bl.append(delta_encode(blues).data(), num_colors * sizeof(float));
@@ -598,4 +619,118 @@ void drw_file::save(const char filename[]) const {
   bl.save(filename);
 
   f.close();
+}
+
+void drw_file::load(const char filename[]) {
+  block_loader bl(filename);
+  bl.check_header(1);
+  drw_header* mh = (drw_header*)bl.start_data();
+  char* p = (char*)(mh + 1);
+
+  width = mh->width;
+  height = mh->height;
+  scale = glm::scale(glm::mat4(1.f), glm::vec3(1.f, width/height, 1.f));
+  bg_color_index = mh->bg_color_index;
+
+  parasitic_vector<uint16_t> instructions = parasitic_vector<uint16_t>(p, mh->num_instructions);
+  parasitic_vector<uint32_t> uint32s = parasitic_vector<uint32_t>(p, mh->num_uint32s);
+  parasitic_vector<float> x_coords = parasitic_vector<float>(p, mh->num_x_coords);
+  x_coords.delta_decode();
+  parasitic_vector<float> y_coords = parasitic_vector<float>(p, mh->num_y_coords);
+  y_coords.delta_decode();
+  parasitic_vector<float> z_coords = parasitic_vector<float>(p, mh->num_z_coords);
+  z_coords.delta_decode();
+  parasitic_vector<float> floats = parasitic_vector<float>(p, mh->num_floats);
+  parasitic_vector<float> reds = parasitic_vector<float>(p, mh->num_colors);
+  reds.delta_decode();
+  parasitic_vector<float> greens = parasitic_vector<float>(p, mh->num_colors);
+  greens.delta_decode();
+  parasitic_vector<float> blues = parasitic_vector<float>(p, mh->num_colors);
+  blues.delta_decode();
+  parasitic_vector<glm::mat4> parasitic_transforms = parasitic_vector<glm::mat4>(p, mh->num_transforms);
+
+  for (uint32_t i = 0; i < mh->num_colors; i++) {
+    add_color(glm::vec3(reds[i], greens[i], blues[i]));
+  }
+  for (uint32_t i = 0; i < mh->num_transforms; i++) {
+    add_transform(parasitic_transforms[i]);
+  }
+
+  uint32_t current_uint32 = 0;
+  uint32_t current_uint16 = 0;
+  uint32_t current_x_coord = 0;
+  uint32_t current_y_coord = 0;
+  uint32_t current_z_coord = 0;
+  uint32_t current_float = 0;
+  uint32_t current_font_path_offset = 0;
+  uint32_t current_textures_text_offset = 0;
+  uint32_t current_boxes_text_offset = 0;
+  uint32_t current_webp_data_offset = 0;
+  for (uint32_t i = 0; i < instructions.size(); i++) {
+    switch(static_cast<instruction>(instructions[i])) {
+      case (instruction::CREATE_PERSPECTIVE_CAMERA):
+        create_camera(floats[current_float], glm::vec3(x_coords[current_x_coord], y_coords[current_y_coord], z_coords[current_z_coord]), 
+                      glm::vec3(x_coords[current_x_coord + 1], y_coords[current_y_coord + 1], z_coords[current_z_coord + 1]),
+                      glm::vec3(floats[current_float + 1], floats[current_float + 2], floats[current_float + 3]),
+                      floats[current_float + 4], floats[current_float + 5], floats[current_float + 6]);
+        current_float += 7;
+        current_x_coord += 2;
+        current_y_coord += 2;
+        current_z_coord += 2;
+        break;
+      case (instruction::CREATE_ORTHO_CAMERA):
+        create_camera(floats[current_float], floats[current_float + 1], floats[current_float + 2], floats[current_float + 3], glm::vec3(x_coords[current_x_coord], y_coords[current_y_coord], z_coords[current_z_coord]), 
+                      glm::vec3(x_coords[current_x_coord + 1], y_coords[current_y_coord + 1], z_coords[current_z_coord + 1]),
+                      glm::vec3(floats[current_float + 4], floats[current_float + 5], floats[current_float + 6]),
+                      floats[current_float + 7], floats[current_float + 8]);
+        current_float += 9;
+        current_x_coord += 2;
+        current_y_coord += 2;
+        current_z_coord += 2;
+        break;
+      case (instruction::CREATE_MATERIAL):
+        create_material(glm::vec3(floats[current_float], floats[current_float + 1], floats[current_float + 2]),
+                        glm::vec3(floats[current_float + 3], floats[current_float + 4], floats[current_float + 5]),
+                        glm::vec3(floats[current_float + 6], floats[current_float + 7], floats[current_float + 8]),
+                        floats[current_float + 9]);
+        current_float += 10;
+        break;
+      case (instruction::CREATE_DIR_LIGHT):
+        create_dir_light(glm::vec3(floats[current_float], floats[current_float + 1], floats[current_float + 2]),
+                     glm::vec3(floats[current_float + 3], floats[current_float + 4], floats[current_float + 5]),
+                     glm::vec3(floats[current_float + 6], floats[current_float + 7], floats[current_float + 8]),
+                     glm::vec3(floats[current_float + 9], floats[current_float + 10], floats[current_float + 11]));
+        current_float += 12;
+        break;
+      case (instruction::CREATE_SPOT_LIGHT):
+        create_spot_light(glm::vec3(floats[current_float], floats[current_float + 1], floats[current_float + 2]),
+                          glm::vec3(floats[current_float + 3], floats[current_float + 4], floats[current_float + 5]),
+                          floats[current_float + 6], floats[current_float + 7], floats[current_float + 8], 
+                          floats[current_float + 9], floats[current_float + 10],
+                          glm::vec3(floats[current_float + 11], floats[current_float + 12], floats[current_float + 13]),
+                          glm::vec3(floats[current_float + 14], floats[current_float + 15], floats[current_float + 16]),
+                          glm::vec3(floats[current_float + 17], floats[current_float + 18], floats[current_float + 19]));
+        current_float += 20;
+        break;
+      case (instruction::CREATE_POINT_LIGHT):
+        create_point_light(glm::vec3(floats[current_float], floats[current_float + 1], floats[current_float + 2]),
+                           floats[current_float + 3], floats[current_float + 4], floats[current_float + 5],
+                           glm::vec3(floats[current_float + 6], floats[current_float + 7], floats[current_float + 8]),
+                           glm::vec3(floats[current_float + 9], floats[current_float + 10], floats[current_float + 11]),
+                           glm::vec3(floats[current_float + 12], floats[current_float + 13], floats[current_float + 14]));
+        current_float += 15;
+        break;
+      case (instruction::START_DRAWING):
+        {
+        view v = view(floats[current_float], floats[current_float + 1], floats[current_float + 2], floats[current_float + 3]);
+        current_float += 4;
+        main_drawing.set_view(v);
+        main_drawing.load(*this, instructions, x_coords, y_coords, z_coords,floats, uint32s, i, current_uint32, current_x_coord,
+                          current_y_coord, current_z_coord, current_float);
+        }
+        break;
+      default:
+        break;
+    }
+  }
 }

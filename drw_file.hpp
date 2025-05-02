@@ -52,7 +52,7 @@ class drw_file {
     std::vector<point_light> point_lights; // a list of point lights
     std::vector<camera> cameras; // a list of cameras
 
-    std::vector<glm::mat4> transforms = {glm::mat4(1.f)}; // a list of transform matrices
+    std::vector<glm::mat4> transforms; // a list of transform matrices
 
     uint32_t bg_color_index = clrs.get_color_index("white"); // index of colors for background color
 
@@ -130,6 +130,7 @@ class drw_file {
     drw_file(const char filename[]);
 
     void save(const char filename[]) const;
+    void load(const char filename[]);
 
     void init() { 
       main_drawing.init(); 
@@ -138,7 +139,7 @@ class drw_file {
       }
     }
 
-    inline void set_main_drawing(drawing& drawing) { main_drawing = drawing; }
+    drawing& create_main_drawing();
 
     inline void render() { main_drawing.render(*this); }
 
@@ -166,20 +167,44 @@ class drw_file {
       materials.push_back(material);
     }
 
+    void create_material(glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular, float shininess) {
+      materials.push_back(material(ambient, diffuse, specular, shininess));
+    }
+
     inline void add_spot_light(spot_light& spot_light) {
       spot_lights.push_back(spot_light);
+    }
+
+    void create_spot_light(glm::vec3 position, glm::vec3 direction, float cut_off, float couter_cut_off, float constant, float linear, float quadratic, glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular) {
+      spot_lights.push_back(spot_light(position, direction, cut_off, couter_cut_off, constant, linear, quadratic, ambient, diffuse, specular));
     }
 
     inline void add_dir_light(dir_light& dir_light) {
       dir_lights.push_back(dir_light);
     }
 
+    void create_dir_light(glm::vec3 direction, glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular) {
+      dir_lights.push_back(dir_light(direction, ambient, diffuse, specular));
+    }
+
     inline void add_point_light(point_light& point_light) {
       point_lights.push_back(point_light);
     }
 
+    void create_point_light(glm::vec3 position, float constant, float linear, float quadratic, glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular) {
+      point_lights.push_back(point_light(position, constant, linear, quadratic, ambient, diffuse, specular));
+    }
+
     inline void add_camera(camera& camera) {
       cameras.push_back(camera);
+    }
+
+    void create_camera(float width_to_height, glm::vec3 pos, glm::vec3 look_at, glm::vec3 up, float fov, float z_near, float z_far) {
+      cameras.push_back(camera(width_to_height, pos, look_at, up, fov, z_near, z_far));
+    }
+
+    void create_camera(float x, float y, float width, float height, glm::vec3 pos, glm::vec3 look_at, glm::vec3 up, float z_near, float z_far) {
+      cameras.push_back(camera(x, y, width, height, pos, look_at, up, z_near, z_far));
     }
 
     inline void add_transform(glm::mat4 transform) {

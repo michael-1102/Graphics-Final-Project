@@ -158,7 +158,7 @@ class colors {
       start_new_colors = name_list.size();
     }
 
-    inline glm::vec3 get_color(uint32_t i) const { 
+    inline glm::vec3 get_color(uint32_t i) const {
       if (i >= rgb_list.size()) throw "Color index out of bounds";
       return rgb_list[i]; 
     }

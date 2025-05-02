@@ -3,8 +3,6 @@
 #include <GLES3/gl3.h>
 #include <GL/glew.h>
 #include "drawing.hpp"
-#include "styled_multishape_2d.hpp"
-#include "lit_multishape_3d.hpp"
 #include "drw_file.hpp"
 
 void create_window(drw_file& drw, const std::string& title) {
@@ -82,15 +80,13 @@ void create_window(drw_file& drw, const std::string& title) {
 }
 
 int main(int argc, char* argv[]) {
-  drw_file drw_svg(0, 0);
-  try {
-    drw_svg = drw_file("svg/circles.svg");
-  } catch (char const* ex) {
-    std::cerr << ex << std::endl;
-    return 1;
-  }
+  drw_file drw_svg = drw_file("svg/circles.svg");
+  drw_svg.add_transform(glm::mat4(1.f));
 
+  drw_file drw2(0, 0);
+  drw2.add_transform(glm::mat4(1.f));
   drw_file drw(300, 100);
+  drw.add_transform(glm::mat4(1.f));
   drw.set_bg_color_index(drw.get_color_index("white"));
 
   camera cam = camera(1);
@@ -112,37 +108,36 @@ int main(int argc, char* argv[]) {
 
   drw.add_transform(glm::mat4(1.f));
   drw.add_transform(glm::rotate(glm::mat4(1.f), 0.3f, glm::vec3(1, 0, 0)));
-  drawing main = drawing();
+  drawing& main = drw.create_main_drawing();
   view vw = view(0, 0, 300, 100);
   main.set_view(vw);
-  styled_multishape_2d shapes = styled_multishape_2d(drw, 1, 0);
-  shapes.add_fill_circle(50, 50, 40, 20, drw.get_color_index("black"), 1.f);
-  shapes.add_fill_circle(150, 50, 40, 20, drw.get_color_index("black"), 1.f);
-  shapes.add_fill_circle(250, 50, 40, 20, drw.get_color_index("black"), 1.f);
-  multishape_3d wireframes = multishape_3d(1, drw.get_color_index("blue"), 1, 0);
-  wireframes.add_draw_sphere(50, 50, 0, 40, 32, 18);
-  wireframes.add_draw_rect_prism(0, 0, 0, 400, 100, 400);
-  lit_multishape_3d lit_shapes = lit_multishape_3d(1, 0, 0, {0}, {0}, {0}, 1);
-  lit_shapes.add_fill_torus(0, 0, 0, 0.3, 0.2, 32, 18);
+  styled_multishape_2d* shapes = main.create_styled_multishape_2d(drw, 1, 0);
+  shapes->add_fill_circle(50, 50, 40, 20, drw.get_color_index("black"), 1.f);
+  shapes->add_fill_circle(150, 50, 40, 20, drw.get_color_index("black"), 1.f);
+  shapes->add_fill_circle(250, 50, 40, 20, drw.get_color_index("black"), 1.f);
+  multishape_3d* wireframes = main.create_multishape_3d(1, drw.get_color_index("blue"), 1, 0);
+  wireframes->add_draw_sphere(50, 50, 0, 40, 32, 18);
+  wireframes->add_draw_rect_prism(0, 0, 0, 400, 100, 400);
+  lit_multishape_3d* lit_shapes = main.create_lit_multishape_3d(1, 0, 0, {0}, {0}, {0}, 1);
+  lit_shapes->add_fill_torus(0, 0, 0, 0.3, 0.2, 32, 18);
 
-  drawing child = drawing();
+  drawing* child = main.create_child_drawing();
   view vw2 = view(0, 0, 100, 200);
-  child.set_view(vw2);
-  //child.add_shape(&shapes);
+  child->set_view(vw2);
+  styled_multishape_2d* child_shapes = child->create_styled_multishape_2d(drw, 1, 0);
+  child_shapes->add_fill_circle(50, 50, 40, 20, drw.get_color_index("black"), 1.f);
+  child_shapes->add_fill_circle(150, 50, 40, 20, drw.get_color_index("black"), 1.f);
+  child_shapes->add_fill_circle(250, 50, 40, 20, drw.get_color_index("black"), 1.f);
 
-  main.add_shape(&shapes);
-  main.add_shape(&wireframes);
-  main.add_shape(&lit_shapes);
-  //main.add_shape(&child);
-  drw.set_main_drawing(main);
-
+  drw_svg.save("drw/test.drw");
+  drw2.load("drw/test.drw");
   try {
-    std::cerr << "Creating window..." << std::endl;
-    create_window(drw_svg, "Drawing");
+    std::cout << "Creating window..." << std::endl;
+    create_window(drw2, "Drawing");
   } catch (char const* ex) {
     std::cerr << ex << std::endl;
     return 1;
   }
-  std::cerr << "Application exited normally." << std::endl;
+  std::cout << "Application exited normally." << std::endl;
   return 0;
 }

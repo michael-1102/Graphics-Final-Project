@@ -22,4 +22,11 @@ struct view {
   view() : x(0), y(0), width(0), height(0) {
     matrix = glm::mat4(1.f);
   }
+
+  void save(std::vector<float>& floats) const {
+    floats.push_back(x);
+    floats.push_back(y);
+    floats.push_back(width);
+    floats.push_back(height);
+  }
 };

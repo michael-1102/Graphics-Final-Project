@@ -1,4 +1,3 @@
-#include "lit_multishape_3d.hpp"
 #include "drw_file.hpp"
 
 lit_multishape_3d::~lit_multishape_3d() {}
