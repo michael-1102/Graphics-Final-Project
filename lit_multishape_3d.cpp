@@ -1491,6 +1491,14 @@ const std::unordered_map<instruction, std::function<void(multishape::dispatch_in
     i.current_float+=2;
     i.current_uint32+=2;
   }},
+  {instruction::FILL_HELIX, [](dispatch_inputs i) {
+    ((lit_multishape_3d*) i.shape)->fillHelix(i.x_coords[i.current_x_coord], i.y_coords[i.current_y_coord], i.z_coords[i.current_z_coord], i.floats[i.current_float], i.floats[i.current_float + 1], i.floats[i.current_float + 2], i.floats[i.current_float + 3], i.uint32s[i.current_uint32], i.uint32s[i.current_uint32 + 1]);
+    i.current_x_coord++;
+    i.current_y_coord++;
+    i.current_z_coord++;
+    i.current_float+=4;
+    i.current_uint32+=2;
+  }},
   {instruction::FILL_ELLIPSOID, [](dispatch_inputs i) {
     ((lit_multishape_3d*) i.shape)->fillEllipsoid(i.x_coords[i.current_x_coord], i.y_coords[i.current_y_coord], i.z_coords[i.current_z_coord], i.floats[i.current_float], i.floats[i.current_float + 1], i.floats[i.current_float + 2], i.uint32s[i.current_uint32], i.uint32s[i.current_uint32 + 1]);
     i.current_x_coord++;
@@ -1645,6 +1653,14 @@ const std::unordered_map<instruction, std::function<void(multishape::dispatch_in
     i.current_y_coord++;
     i.current_z_coord++;
     i.current_float+=2;
+    i.current_uint32+=2;
+  }},
+  {instruction::DRAW_HELIX, [](dispatch_inputs i) {
+    ((lit_multishape_3d*) i.shape)->drawHelix(i.x_coords[i.current_x_coord], i.y_coords[i.current_y_coord], i.z_coords[i.current_z_coord], i.floats[i.current_float], i.floats[i.current_float + 1], i.floats[i.current_float + 2], i.floats[i.current_float + 3], i.uint32s[i.current_uint32], i.uint32s[i.current_uint32 + 1]);
+    i.current_x_coord++;
+    i.current_y_coord++;
+    i.current_z_coord++;
+    i.current_float+=4;
     i.current_uint32+=2;
   }},
   {instruction::DRAW_ELLIPSOID, [](dispatch_inputs i) {

@@ -29,6 +29,7 @@ class multishape_3d : public multishape {
   void sAddTriFaceIndices(uint32_t vertex1, uint32_t vertex2, uint32_t vertex3, uint32_t offset);
   void lAddLineIndices(uint32_t i1, uint32_t i2, uint32_t offset);
   void addTorusVertices(float x, float y, float z, float R, float r, uint32_t sectors, uint32_t stacks);
+  void addHelixVertices(float x, float y, float z, float R, float r, float ang, float height, uint32_t sectors, uint32_t stacks);
   uint32_t addCubicSplineVertices(std::vector<glm::vec3> points, float inc);
   uint32_t addLinearExtrusionVertices(shape_2d shape, float x, float y, float z, float height, uint32_t stacks);
   uint32_t addSplineExtrusionVertices(shape_2d shape, std::vector<glm::vec3> points, float inc);
@@ -55,6 +56,7 @@ class multishape_3d : public multishape {
   void fillObliqueCylinder(float x0, float y0, float z0, float x1, float y1, float z1, float rad, uint32_t sectors, uint32_t stacks);
   void fillObliqueCone(float xBottom, float yBottom, float zBottom, float rad, float xTop, float yTop, float zTop, uint32_t sectors, uint32_t stacks);
   void fillTorus(float x, float y, float z, float R, float r, uint32_t sectors, uint32_t stacks);
+  void fillHelix(float x, float y, float z, float R, float r, float ang, float height, uint32_t sectors, uint32_t stacks);
   void fillEllipsoid(float x, float y, float z, float a, float b, float c, uint32_t sectors, uint32_t stacks); 
   void fillSphere(float x, float y, float z, float rad, uint32_t sectors, uint32_t stacks);
   void fillLinearExtrusion(shape_2d shape, float x, float y, float z, float height, uint32_t stacks);
@@ -76,6 +78,7 @@ class multishape_3d : public multishape {
   void drawObliqueCylinder(float x0, float y0, float z0, float x1, float y1, float z1, float rad, uint32_t sectors, uint32_t stacks);
   void drawObliqueCone(float xBottom, float yBottom, float zBottom, float rad, float xTop, float yTop, float zTop, uint32_t sectors, uint32_t stacks);
   void drawTorus(float x, float y, float z, float R, float r, uint32_t sectors, uint32_t stacks);
+  void drawHelix(float x, float y, float z, float R, float r, float ang, float height, uint32_t sectors, uint32_t stacks);
   void drawLinearExtrusion(shape_2d shape, float x, float y, float z, float height, uint32_t stacks);
   void drawSplineExtrusion(shape_2d shape, std::vector<glm::vec3> points, float inc);
   void drawCubicSpline(std::vector<glm::vec3> points, float inc);
@@ -98,6 +101,7 @@ class multishape_3d : public multishape {
   void add_fill_oblique_cylinder(float x0, float y0, float z0, float x1, float y1, float z1, float rad, uint32_t sectors, uint32_t stacks);
   void add_fill_oblique_cone(float xBottom, float yBottom, float zBottom, float rad, float xTop, float yTop, float zTop, uint32_t sectors, uint32_t stacks);
   void add_fill_torus(float x, float y, float z, float R, float r, uint32_t sectors, uint32_t stacks);
+  void add_fill_helix(float x, float y, float z, float R, float r, float ang, float height, uint32_t sectors, uint32_t stacks);
   void add_fill_ellipsoid(float x, float y, float z, float a, float b, float c, uint32_t sectors, uint32_t stacks); 
   void add_fill_sphere(float x, float y, float z, float rad, uint32_t sectors, uint32_t stacks);
   void add_fill_linear_extrusion(shape_2d shape, float x, float y, float z, float height, uint32_t stacks);
@@ -117,6 +121,7 @@ class multishape_3d : public multishape {
   void add_draw_oblique_cylinder(float x0, float y0, float z0, float x1, float y1, float z1, float rad, uint32_t sectors, uint32_t stacks);
   void add_draw_oblique_cone(float xBottom, float yBottom, float zBottom, float rad, float xTop, float yTop, float zTop, uint32_t sectors, uint32_t stacks);
   void add_draw_torus(float x, float y, float z, float R, float r, uint32_t sectors, uint32_t stacks);
+  void add_draw_helix(float x, float y, float z, float R, float r, float ang, float height, uint32_t sectors, uint32_t stacks);
   void add_draw_linear_extrusion(shape_2d shape, float x, float y, float z, float height, uint32_t stacks);
   void add_draw_spline_extrusion(shape_2d shape, std::vector<glm::vec3> points, float inc);
   void add_draw_cubic_spline(std::vector<glm::vec3> points, float inc);
