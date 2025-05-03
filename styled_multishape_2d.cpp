@@ -352,9 +352,9 @@ void styled_multishape_2d::fillCircleMarker(float x, float y, float size, uint32
 
 void styled_multishape_2d::fillTriangleMarker(float x, float y, float size, uint32_t color_index, float alpha) {
   const glm::vec4& c = glm::vec4(drw.get_color(color_index), alpha);
-  float y1 = y - (size * 0.5);
+  float y1 = y + (size * 0.5);
   float xOffset = size * 0.5 * sqrt(3);
-  fillInFrontTriangle(x, y + size, x - xOffset, y1, x + xOffset, y1, c);
+  fillInFrontTriangle(x, y - size, x - xOffset, y1, x + xOffset, y1, c);
 }
 
 void styled_multishape_2d::fillSquareMarker(float x, float y, float size, uint32_t color_index, float alpha) {

@@ -377,9 +377,9 @@ void multishape_2d::fillCircleMarker(float x, float y, float size) {
 }
 
 void multishape_2d::fillTriangleMarker(float x, float y, float size) {
-  float y1 = y - (size * 0.5);
+  float y1 = y + (size * 0.5);
   float xOffset = size * 0.5 * sqrt(3);
-  fillTriangle(x, y + size, x - xOffset, y1, x + xOffset, y1);
+  fillTriangle(x, y - size, x - xOffset, y1, x + xOffset, y1);
 }
 
 void multishape_2d::fillSquareMarker(float x, float y, float size) {

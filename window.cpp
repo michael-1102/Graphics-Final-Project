@@ -120,6 +120,7 @@ int main(int argc, char* argv[]) {
   shapes->add_fill_circle(50, 50, 40, 20, drw.get_color_index("black"), 1.f);
   //shapes->add_fill_circle(150, 50, 40, 20, drw.get_color_index("lime"), 1.f);
   shapes->add_fill_circle(250, 50, 40, 20, drw.get_color_index("black"), 1.f);
+  shapes->add_fill_triangle_marker(250, 50, 40, drw.get_color_index("orange"), 1.f);
   multishape_3d* wireframes = main.create_multishape_3d(1, drw.get_color_index("blue"), 1, 0);
   wireframes->add_draw_sphere(50, 50, 0, 40, 32, 18);
   wireframes->add_draw_rect_pyramid(200, 50, -20, 40, 40, 40);
@@ -141,7 +142,7 @@ int main(int argc, char* argv[]) {
   drw2.load("drw/test.drw");
   try {
     std::cout << "Creating window..." << std::endl;
-    create_window(drw, "Drawing");
+    create_window(drw2, "Drawing");
   } catch (char const* ex) {
     std::cerr << ex << std::endl;
     return 1;
