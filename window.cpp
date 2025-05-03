@@ -87,7 +87,6 @@ void create_window(drw_file& drw, const std::string& title) {
 
 int main(int argc, char* argv[]) {
   drw_file drw_svg = drw_file("svg/circles.svg");
-  drw_svg.add_transform(glm::mat4(1.f));
 
   drw_file drw2(0, 0);
   drw_file drw(1000, 1000);
@@ -138,7 +137,7 @@ int main(int argc, char* argv[]) {
   //child_shapes->add_fill_circle(150, 50, 40, 20, drw.get_color_index("black"), 1.f);
   //child_shapes->add_fill_circle(250, 50, 40, 20, drw.get_color_index("black"), 1.f);
 
-  drw.save("drw/test.drw");
+  drw_svg.save("drw/test.drw");
   drw2.load("drw/test.drw");
   try {
     std::cout << "Creating window..." << std::endl;

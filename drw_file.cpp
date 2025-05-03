@@ -88,6 +88,7 @@ drw_file::drw_file(const char filename[]) {
 
   XMLParser::ContentContext* content = svg->content();
   std::vector<XMLParser::ElementContext*> elements = content->element();
+  add_transform(glm::mat4(1.f));
   add_svg_elements(elements, group_attributes());
 
   stream.close();
