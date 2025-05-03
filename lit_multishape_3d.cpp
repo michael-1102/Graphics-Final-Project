@@ -680,13 +680,14 @@ void lit_multishape_3d::fillTorus(float x, float y, float z, float R, float r, u
 }
 
 void lit_multishape_3d::fillHelix(float x, float y, float z, float R, float r, float ang, float height, uint32_t sectors, uint32_t stacks) {
+  height /= sectors;
   sectors *= ang / (2 * M_PI);
   uint32_t startIndex = getPointIndex(); // Store starting index for correct indexing
   float h = y;
   float cosTheta;
   float sinTheta;
   // Loop to generate the vertices for the torus
-  for (uint32_t i = 0; i < sectors; ++i) {
+  for (uint32_t i = 0; i <= sectors; ++i) {
       float theta = (float)i / sectors * ang; // Angle for the big circle (around the central axis)
       cosTheta = cos(theta);
       sinTheta = sin(theta);
@@ -704,17 +705,15 @@ void lit_multishape_3d::fillHelix(float x, float y, float z, float R, float r, f
       float cy = h;
       float cz = z + R *sinTheta;
 
-      glm::vec3 normal = glm::vec3(x_pos - cx, y_pos - cy, z_pos - cz); // TODO: fix normal
-      normal = glm::normalize(normal);
-
       // Add vertex and its normal to the model
-      add3DPoint(x_pos, y_pos, z_pos, normal.x, normal.y, normal.z);
+      add3DPoint(x_pos, y_pos, z_pos);
     }
     h += height;
   }
 
+  float numSurfaces = 0;
   // Loop to generate faces (indices)
-  for (uint32_t i = 0; i < sectors - 1; ++i) {
+  for (uint32_t i = 0; i < sectors; ++i) {
     for (uint32_t j = 0; j < stacks; ++j) {
       uint32_t nextI = (i+1);
       uint32_t nextJ = (j+1) % stacks;
@@ -727,19 +726,23 @@ void lit_multishape_3d::fillHelix(float x, float y, float z, float R, float r, f
       
       // Triangle 1
       solidIndices.push_back(first);
-      solidIndices.push_back(second);
       solidIndices.push_back(third);
+      solidIndices.push_back(second);
 
       //Triangle 2
       solidIndices.push_back(second);
-      solidIndices.push_back(fourth);
       solidIndices.push_back(third);
-      
+      solidIndices.push_back(fourth);
+
+      numSurfaces++;
     }
   }
 
+  addRectNormals(numSurfaces);
+  normalize(numSurfaces * 6);
+
   uint32_t firstEndCenterIndex = getPointIndex();
-  add3DPoint(x + R, y, z, 0, 0, 0); // TODO: fix normal
+  add3DPoint(x + R, y, z, 0, 0, -1);
   for (uint32_t j = 0; j < stacks; ++j) {
     float phi = (float)j / stacks * 2.0f * M_PI; // Angle for the small circle (the cross-section)
 
@@ -748,25 +751,25 @@ void lit_multishape_3d::fillHelix(float x, float y, float z, float R, float r, f
     float y_pos = y + r * sin(phi);
     
     // Add vertex and its normal to the model
-    add3DPoint(x_pos, y_pos, z, 0, 0, 0); // TODO: fix normal
+    add3DPoint(x_pos, y_pos, z, 0, 0, -1);
   }
   sAddClosedSectorIndices(firstEndCenterIndex, stacks);
 
+  addTriNormals(1);
+  normalize(3);
+
   uint32_t secondEndCenterIndex = getPointIndex();
-  add3DPoint(x + R * cosTheta, h - height, z + R * sinTheta, sinTheta, 0, cosTheta); // TODO: fix normal
+  add3DPoint(x + R * cosTheta, h - height, z + R * sinTheta, sinTheta, 0, cosTheta);
   for (uint32_t j = 0; j < stacks; ++j) {
     float phi = (float)j / stacks * 2.0f * M_PI; // Angle for the small circle (the cross-section)
 
     // Position of the point on the torus
     float x_pos = x + (R + r * cos(phi)) * cosTheta;
-    float y_pos = h + r * sin(phi);
+    float y_pos = h - height + r * sin(phi);
     float z_pos = z + (R + r * cos(phi)) * sinTheta;
 
-    glm::vec3 normal = glm::vec3(sinTheta, 0, cosTheta); // TODO: fix normal
-    normal = glm::normalize(normal);
-
     // Add vertex and its normal to the model
-    add3DPoint(x_pos, y_pos, z_pos, normal.x, normal.y, normal.z);
+    add3DPoint(x_pos, y_pos, z_pos, sinTheta, 0, cosTheta);
   }
   sAddClosedSectorIndices(secondEndCenterIndex, stacks);
 

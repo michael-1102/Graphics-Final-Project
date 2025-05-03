@@ -12,9 +12,9 @@ void create_window(drw_file& drw, const std::string& title) {
   if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER) < 0) {
     throw "Failed to initialize SDL";
   }
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 5);
-  //SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
 
   SDL_DisplayMode DM;
   if (SDL_GetDesktopDisplayMode(0, &DM) != 0)
@@ -42,6 +42,8 @@ void create_window(drw_file& drw, const std::string& title) {
     SDL_Quit();
     throw err;
   }
+
+  //glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
 
   glewInit();
   //TODO: this blend function does not behave like svg's default blending but it's closer 
@@ -72,10 +74,10 @@ void create_window(drw_file& drw, const std::string& title) {
           break;
       }
     }
-    glClearColor(bg_color.r, bg_color.g, bg_color.b, 1.f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    drw.render();
-    SDL_GL_SwapWindow(window);
+    //glClearColor(bg_color.r, bg_color.g, bg_color.b, 1.f);
+    //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    //drw.render();
+    //SDL_GL_SwapWindow(window);
   }
 
     // Clean-up code
@@ -109,23 +111,23 @@ int main(int argc, char* argv[]) {
   drw.add_point_light(point);
 
   drw.add_transform(glm::mat4(1.f));
-  drw.add_transform(glm::rotate(glm::mat4(1.f), (float)M_PI/2.f, glm::vec3(0, 1, 0)));
+  drw.add_transform(glm::rotate(glm::mat4(1.f), (float)M_PI*0.8f, glm::vec3(0, 1, 0)));
+
   drawing& main = drw.create_main_drawing();
   view vw = view(0, 0, 300, 100);
   main.set_view(vw);
   styled_multishape_2d* shapes = main.create_styled_multishape_2d(drw, 1, 0);
   shapes->add_fill_circle(50, 50, 40, 20, drw.get_color_index("black"), 1.f);
-  shapes->add_fill_circle(150, 50, 40, 20, drw.get_color_index("lime"), 1.f);
+  //shapes->add_fill_circle(150, 50, 40, 20, drw.get_color_index("lime"), 1.f);
   shapes->add_fill_circle(250, 50, 40, 20, drw.get_color_index("black"), 1.f);
   multishape_3d* wireframes = main.create_multishape_3d(1, drw.get_color_index("blue"), 1, 0);
   wireframes->add_draw_sphere(50, 50, 0, 40, 32, 18);
   wireframes->add_draw_rect_pyramid(200, 50, -20, 40, 40, 40);
   wireframes->add_draw_rect_prism(200, 50, 0, 400, 100, 400);
-  wireframes->add_draw_helix(150, 50, -20, 10, 5, 2*M_PI, 2, 32, 18);
+  //wireframes->add_fill_helix(200, 50, -60, 20, 10, 10*M_PI, 2, 10, 18);
   lit_multishape_3d* lit_shapes = main.create_lit_multishape_3d(1, 0, 0, {0}, {0}, {0}, 1);
-  //lit_shapes->add_fill_torus(0, 0, 0, 0.3, 0.2, 32, 18);
-  lit_shapes->add_fill_helix(0, 0, 0, 0.2, 0.05, 4.3*M_PI, 0.01, 32, 18);
-  lit_shapes->drawNormals();
+  lit_shapes->add_fill_helix(0, -0.5, 0, 0.3, 0.05, 6*M_PI, 0.2, 32, 18);
+  //lit_shapes->add_fill_torus(0, 0.5, 0, 0.3, 0.2, 4, 18);
 
   drawing* child = main.create_child_drawing();
   view vw2 = view(0, 0, 100, 200);

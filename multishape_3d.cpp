@@ -186,7 +186,7 @@ void multishape_3d::addTorusVertices(float x, float y, float z, float bigRadius,
 void multishape_3d::addHelixVertices(float x, float y, float z, float bigRadius, float smallRadius, float ang, float height, uint32_t sectors, uint32_t stacks) {
   add3DPoint(x + bigRadius, y, z);
   float cosTheta, sinTheta;
-  for (uint32_t i = 0; i < sectors; ++i) {
+  for (uint32_t i = 0; i <= sectors; ++i) {
     float theta = (float)i / sectors * ang;  // Angle around the main axis
 
     cosTheta = cos(theta);
@@ -465,16 +465,17 @@ void multishape_3d::drawTorus(float x, float y, float z, float R, float r, uint3
 }
 
 void multishape_3d::drawHelix(float x, float y, float z, float R, float r, float ang, float height, uint32_t sectors, uint32_t stacks) {
+  height /= sectors;
   sectors *= ang / (2 * M_PI);
   addHelixVertices(x, y, z, R, r, ang, height, sectors, stacks);
-  const uint32_t numVertices = sectors * stacks + 2;
+  const uint32_t numVertices = sectors * stacks + stacks + 2;
 
-  for (uint32_t i =  1; i <= sectors; i++) {
+  for (uint32_t i = 1; i <= stacks; i++) {
     lAddLineIndices(0, i, numVertices);
   }
 
   // sides of the helix 
-  for (uint32_t i = 0; i < sectors - 1; ++i) {
+  for (uint32_t i = 0; i < sectors; ++i) {
     for (uint32_t j = 0; j < stacks; ++j) {
       uint32_t current = i * stacks + j + 1;
       uint32_t nextI = (i + 1);
@@ -490,15 +491,15 @@ void multishape_3d::drawHelix(float x, float y, float z, float R, float r, float
   }
 
   for (uint32_t j = 0; j < stacks; ++j) {
-    uint32_t current = (sectors - 1) * stacks + j + 1;
+    uint32_t current = sectors * stacks + j + 1;
     uint32_t nextJ = (j + 1) % stacks; 
-    uint32_t right = (sectors - 1) * stacks + nextJ + 1;
+    uint32_t right = sectors * stacks + nextJ + 1;
 
     // Horizontal lines (theta direction)
     lAddLineIndices(current, right, numVertices);
   }  
 
-  for (uint32_t i = numVertices - sectors; i < numVertices; i++) {
+  for (uint32_t i = numVertices - stacks - 1; i < numVertices; i++) {
     lAddLineIndices(i, numVertices - 1, numVertices);
   }
 }
@@ -700,18 +701,19 @@ void multishape_3d::fillTorus(float x, float y, float z, float R, float r, uint3
 }
 
 void multishape_3d::fillHelix(float x, float y, float z, float R, float r, float ang, float height, uint32_t sectors, uint32_t stacks) {
+  height /= sectors;
   sectors *= ang / (2 * M_PI);
   const uint32_t start = getPointIndex();
   addHelixVertices(x, y, z, R, r, ang, height, sectors, stacks);
 
-  const uint32_t numVertices = sectors * stacks + 2;
+  const uint32_t numVertices = sectors * stacks + stacks + 2;
 
-  for (uint32_t i = 1; i < sectors; i++) {
+  for (uint32_t i = 1; i < stacks; i++) {
     sAddTriFaceIndices(0, i, i + 1, numVertices);
   }
-  sAddTriFaceIndices(0, 1, sectors, numVertices);
+  sAddTriFaceIndices(0, 1, stacks, numVertices);
 
-  for (uint32_t i = 0; i < sectors - 1; ++i) {
+  for (uint32_t i = 0; i < sectors; ++i) {
       for (uint32_t j = 0; j < stacks; ++j) {
           uint32_t current = i * stacks + j + 1;
 
@@ -730,10 +732,10 @@ void multishape_3d::fillHelix(float x, float y, float z, float R, float r, float
       }
   }
 
-  for (uint32_t i = numVertices - sectors - 1; i < numVertices - 1; i++) {
+  for (uint32_t i = numVertices - stacks - 1; i < numVertices - 1; i++) {
     sAddTriFaceIndices(numVertices - 1, i, i + 1, numVertices);
   }
-  sAddTriFaceIndices(numVertices - 1, numVertices - 2, numVertices - sectors - 1, numVertices);
+  sAddTriFaceIndices(numVertices - 1, numVertices - 2, numVertices - stacks - 1, numVertices);
 }
 
 
