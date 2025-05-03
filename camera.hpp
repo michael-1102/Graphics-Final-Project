@@ -34,7 +34,7 @@ class camera {
     const glm::vec3& up = glm::vec3(0.f, 1.f, 0.f), float zNear = 0.1f, float zFar = 100.f) : x(x), y(y), width(width), height(height), 
       pos(pos), lookAt(lookAt), up(up), fov(0), zNear(zNear), zFar(zFar) {
         view = glm::lookAt(pos, lookAt, up);
-        projection = glm::scale(glm::mat4(1.f), glm::vec3(1.f, height/width, 1.f)) * glm::ortho(x, x + width, y + height, y, zNear, zFar);
+        projection = glm::scale(glm::mat4(1.f), glm::vec3(1.f, height/width, 1.f)) * glm::ortho(x, x + width, y, y + height, zNear, zFar);
         perspective = false;
     }
 

@@ -74,6 +74,7 @@ class lit_multishape_3d : public multishape_3d {
   void fillEllipsoid(float x, float y, float z, float a, float b, float c, uint32_t sectors, uint32_t stacks);
   void fillSphere(float x, float y, float z, float rad, uint32_t sectors, uint32_t stacks);
   void fillTorus(float x, float y, float z, float R, float r, uint32_t sectors, uint32_t stacks);
+  void fillHelix(float x, float y, float z, float R, float r, float ang, float height, uint32_t sectors, uint32_t stacks);
   void fillFrustum(float x, float y, float z, float bottomRad, float topRad, float height, uint32_t sectors, uint32_t stacks);
   void fillObliqueFrustum(float x0, float y0, float z0, float rad0, float x1, float y1, float z1, float rad1, uint32_t sectors, uint32_t stacks);
   void fillObliqueCylinder(float x0, float y0, float z0, float x1, float y1, float z1, float rad, uint32_t sectors, uint32_t stacks);
@@ -134,6 +135,7 @@ class lit_multishape_3d : public multishape_3d {
   void add_fill_oblique_cylinder(float x0, float y0, float z0, float x1, float y1, float z1, float rad, uint32_t sectors, uint32_t stacks);
   void add_fill_oblique_cone(float xBottom, float yBottom, float zBottom, float rad, float xTop, float yTop, float zTop, uint32_t sectors, uint32_t stacks);
   void add_fill_torus(float x, float y, float z, float R, float r, uint32_t sectors, uint32_t stacks);
+  void add_fill_helix(float x, float y, float z, float R, float r, float ang, float height, uint32_t sectors, uint32_t stacks);
   void add_fill_ellipsoid(float x, float y, float z, float a, float b, float c, uint32_t sectors, uint32_t stacks); 
   void add_fill_sphere(float x, float y, float z, float rad, uint32_t sectors, uint32_t stacks);
   void add_fill_linear_extrusion(shape_2d shape, float x, float y, float z, float height, uint32_t stacks);

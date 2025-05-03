@@ -679,6 +679,99 @@ void lit_multishape_3d::fillTorus(float x, float y, float z, float R, float r, u
   }
 }
 
+void lit_multishape_3d::fillHelix(float x, float y, float z, float R, float r, float ang, float height, uint32_t sectors, uint32_t stacks) {
+  sectors *= ang / (2 * M_PI);
+  uint32_t startIndex = getPointIndex(); // Store starting index for correct indexing
+  float h = y;
+  float cosTheta;
+  float sinTheta;
+  // Loop to generate the vertices for the torus
+  for (uint32_t i = 0; i < sectors; ++i) {
+      float theta = (float)i / sectors * ang; // Angle for the big circle (around the central axis)
+      cosTheta = cos(theta);
+      sinTheta = sin(theta);
+
+    for (uint32_t j = 0; j < stacks; ++j) {
+      float phi = (float)j / stacks * 2.0f * M_PI; // Angle for the small circle (the cross-section)
+
+      // Position of the point on the torus
+      float x_pos = x + (R + r * cos(phi)) * cosTheta;
+      float y_pos = h + r * sin(phi);
+      float z_pos = z + (R + r * cos(phi)) * sinTheta;
+      
+      //torus center
+      float cx = x + R *cosTheta;
+      float cy = h;
+      float cz = z + R *sinTheta;
+
+      glm::vec3 normal = glm::vec3(x_pos - cx, y_pos - cy, z_pos - cz); // TODO: fix normal
+      normal = glm::normalize(normal);
+
+      // Add vertex and its normal to the model
+      add3DPoint(x_pos, y_pos, z_pos, normal.x, normal.y, normal.z);
+    }
+    h += height;
+  }
+
+  // Loop to generate faces (indices)
+  for (uint32_t i = 0; i < sectors - 1; ++i) {
+    for (uint32_t j = 0; j < stacks; ++j) {
+      uint32_t nextI = (i+1);
+      uint32_t nextJ = (j+1) % stacks;
+
+      uint32_t first = startIndex + i * stacks + j;
+      uint32_t second = startIndex + nextI * stacks + j;;
+      uint32_t third = startIndex + i * stacks + nextJ;
+      uint32_t fourth = startIndex + nextI * stacks + nextJ;
+
+      
+      // Triangle 1
+      solidIndices.push_back(first);
+      solidIndices.push_back(second);
+      solidIndices.push_back(third);
+
+      //Triangle 2
+      solidIndices.push_back(second);
+      solidIndices.push_back(fourth);
+      solidIndices.push_back(third);
+      
+    }
+  }
+
+  uint32_t firstEndCenterIndex = getPointIndex();
+  add3DPoint(x + R, y, z, 0, 0, 0); // TODO: fix normal
+  for (uint32_t j = 0; j < stacks; ++j) {
+    float phi = (float)j / stacks * 2.0f * M_PI; // Angle for the small circle (the cross-section)
+
+    // Position of the point on the torus
+    float x_pos = x + (R + r * cos(phi));
+    float y_pos = y + r * sin(phi);
+    
+    // Add vertex and its normal to the model
+    add3DPoint(x_pos, y_pos, z, 0, 0, 0); // TODO: fix normal
+  }
+  sAddClosedSectorIndices(firstEndCenterIndex, stacks);
+
+  uint32_t secondEndCenterIndex = getPointIndex();
+  add3DPoint(x + R * cosTheta, h - height, z + R * sinTheta, sinTheta, 0, cosTheta); // TODO: fix normal
+  for (uint32_t j = 0; j < stacks; ++j) {
+    float phi = (float)j / stacks * 2.0f * M_PI; // Angle for the small circle (the cross-section)
+
+    // Position of the point on the torus
+    float x_pos = x + (R + r * cos(phi)) * cosTheta;
+    float y_pos = h + r * sin(phi);
+    float z_pos = z + (R + r * cos(phi)) * sinTheta;
+
+    glm::vec3 normal = glm::vec3(sinTheta, 0, cosTheta); // TODO: fix normal
+    normal = glm::normalize(normal);
+
+    // Add vertex and its normal to the model
+    add3DPoint(x_pos, y_pos, z_pos, normal.x, normal.y, normal.z);
+  }
+  sAddClosedSectorIndices(secondEndCenterIndex, stacks);
+
+}
+
 uint32_t lit_multishape_3d::addSector(float xc, float yc, float zc, float xn, float yn, float zn, float rad, float fromAngle, float toAngle, float angleInc) {
   uint32_t points_added = 0;
   float i;
@@ -1318,6 +1411,10 @@ void lit_multishape_3d::add_fill_oblique_cone(float xBottom, float yBottom, floa
 void lit_multishape_3d::add_fill_torus(float x, float y, float z, float R, float r, uint32_t sectors, uint32_t stacks) {
   instructions.push_back(multishape::full_instruction(instruction::FILL_TORUS, {x}, {y}, {z}, {R, r}, {sectors, stacks}));
   fillTorus(x, y, z, R, r, sectors, stacks);
+}
+void lit_multishape_3d::add_fill_helix(float x, float y, float z, float R, float r, float ang, float height, uint32_t sectors, uint32_t stacks) {
+  instructions.push_back(multishape::full_instruction(instruction::FILL_HELIX, {x}, {y}, {z}, {R, r, ang, height}, {sectors, stacks}));
+  fillHelix(x, y, z, R, r, ang, height, sectors, stacks);
 }
 void lit_multishape_3d::add_fill_ellipsoid(float x, float y, float z, float a, float b, float c, uint32_t sectors, uint32_t stacks) {
   instructions.push_back(multishape::full_instruction(instruction::FILL_ELLIPSOID, {x}, {y}, {z}, {a, b, c}, {sectors, stacks}));

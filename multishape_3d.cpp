@@ -185,7 +185,6 @@ void multishape_3d::addTorusVertices(float x, float y, float z, float bigRadius,
 
 void multishape_3d::addHelixVertices(float x, float y, float z, float bigRadius, float smallRadius, float ang, float height, uint32_t sectors, uint32_t stacks) {
   add3DPoint(x + bigRadius, y, z);
-  float h = y;
   float cosTheta, sinTheta;
   for (uint32_t i = 0; i < sectors; ++i) {
     float theta = (float)i / sectors * ang;  // Angle around the main axis
@@ -201,14 +200,14 @@ void multishape_3d::addHelixVertices(float x, float y, float z, float bigRadius,
 
       // Position of the point on the helix
       float x_pos = x + (bigRadius + smallRadius * cosPhi) * cosTheta;
-      float y_pos = h + smallRadius * sinPhi;
+      float y_pos = y + smallRadius * sinPhi;
       float z_pos = z + (bigRadius + smallRadius * cosPhi) * sinTheta;
 
       add3DPoint(x_pos, y_pos, z_pos);
     }
-    h += height;
+    y += height;
   }
-  add3DPoint(x + bigRadius * cosTheta, h - height, z + bigRadius * sinTheta);
+  add3DPoint(x + bigRadius * cosTheta, y - height, z + bigRadius * sinTheta);
 }
 
 
