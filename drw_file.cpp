@@ -345,11 +345,51 @@ void drw_file::parse_path_points(styled_multishape_2d* shape, std::string d, gro
       i += 4;
       prev_command = "s";
     } else if (tokens[i] == "Q") {
+      shape->add_draw_quadratic_bezier(cursor.x, cursor.y, string_to_float(tokens[i + 1]), string_to_float(tokens[i + 2]), string_to_float(tokens[i + 3]), string_to_float(tokens[i + 4]), CURVE_INC, attribs.stroke_color_index, attribs.stroke_opacity);
+      cursor.x = string_to_float(tokens[i + 3]);
+      cursor.y = string_to_float(tokens[i + 4]);
+      quadratic_control.x = 2 * cursor.x - string_to_float(tokens[i + 1]);
+      quadratic_control.y = 2 * cursor.y - string_to_float(tokens[i + 2]);
+      i += 4;
+      prev_command = "Q";
     } else if (tokens[i] == "q") {
+      float new_quadratic_control_x = cursor.x + string_to_float(tokens[i + 1]);
+      float new_quadratic_control_y = cursor.y + string_to_float(tokens[i + 2]);
+      shape->add_draw_quadratic_bezier(cursor.x, cursor.y, new_quadratic_control_x, new_quadratic_control_y, cursor.x + string_to_float(tokens[i + 3]), cursor.y + string_to_float(tokens[i + 4]), CURVE_INC, attribs.stroke_color_index, attribs.stroke_opacity);
+      cursor.x += string_to_float(tokens[i + 3]);
+      cursor.y += string_to_float(tokens[i + 4]);
+      quadratic_control.x = 2 * cursor.x - new_quadratic_control_x;
+      quadratic_control.y = 2 * cursor.y - new_quadratic_control_y;
+      i += 4;
+      prev_command = "q";
     } else if (tokens[i] == "T") {
+      if (prev_command == "Q" || prev_command == "q" || prev_command == "T" || prev_command == "t") {
+        shape->add_draw_quadratic_bezier(cursor.x, cursor.y, quadratic_control.x, quadratic_control.y, string_to_float(tokens[i + 1]), string_to_float(tokens[i + 2]), CURVE_INC, attribs.stroke_color_index, attribs.stroke_opacity);
+      } else {
+        shape->add_draw_quadratic_bezier(cursor.x, cursor.y, cursor.x, cursor.y, string_to_float(tokens[i + 1]), string_to_float(tokens[i + 2]), CURVE_INC, attribs.stroke_color_index, attribs.stroke_opacity);
+      }
+      cursor.x = string_to_float(tokens[i + 1]);
+      cursor.y = string_to_float(tokens[i + 2]);
+      i += 2;
+      prev_command = "T";
     } else if (tokens[i] == "t") {
+      if (prev_command == "Q" || prev_command == "q" || prev_command == "T" || prev_command == "t") {
+        shape->add_draw_quadratic_bezier(cursor.x, cursor.y, quadratic_control.x, quadratic_control.y, cursor.x + string_to_float(tokens[i + 1]), cursor.y + string_to_float(tokens[i + 2]), CURVE_INC, attribs.stroke_color_index, attribs.stroke_opacity);
+      } else {
+        shape->add_draw_quadratic_bezier(cursor.x, cursor.y, cursor.x, cursor.y, cursor.x + string_to_float(tokens[i + 1]), cursor.y + string_to_float(tokens[i + 2]), CURVE_INC, attribs.stroke_color_index, attribs.stroke_opacity);
+      }
+      cursor.x = cursor.x + string_to_float(tokens[i + 1]);
+      cursor.y = cursor.y + string_to_float(tokens[i + 2]);
+      i += 2;
+      prev_command = "t";
     } else if (tokens[i] == "A") {
+      std::cout << "Arcs not currenty supported" << std::endl;
+      i += 7;
+      prev_command = "A";
     } else if (tokens[i] == "a") {
+      std::cout << "Arcs not currenty supported" << std::endl;
+      i += 7;
+      prev_command = "a";
     } else {
       std::cout << "Error while parsing path" << std::endl;
       return;
