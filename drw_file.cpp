@@ -267,10 +267,12 @@ void drw_file::parse_path_points(styled_multishape_2d* shape, std::string d, gro
     if (tokens[i] == "M") {
       cursor.x = string_to_float(tokens[++i]);
       cursor.y = string_to_float(tokens[++i]);
+      start = cursor;
       prev_command = "M";
     } else if (tokens[i] == "m") {
       cursor.x += string_to_float(tokens[++i]);
       cursor.y += string_to_float(tokens[++i]);
+      start = cursor;
       prev_command = "m";
     } else if (tokens[i] == "L") {
       shape->add_draw_line(cursor.x, cursor.y, string_to_float(tokens[i + 1]), string_to_float(tokens[i + 2]), attribs.stroke_color_index, attribs.stroke_opacity);
