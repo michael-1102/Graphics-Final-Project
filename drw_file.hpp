@@ -16,6 +16,7 @@
 #define DEFAULT_TRANSFORM_INDEX 0
 
 #define NUM_SECTORS 100
+#define CURVE_INC 0.001
 
 using namespace antlr4;
 

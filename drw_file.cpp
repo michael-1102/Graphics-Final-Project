@@ -248,7 +248,6 @@ void drw_file::parse_path_points(styled_multishape_2d* shape, std::string d, gro
   d = add_spaces(d);
   glm::vec2 start;
   glm::vec2 cursor;
-  std::string prev_control = " ";
   std::vector<std::string> tokens = resplit(d, std::regex{"[ ,]+"});
   if (tokens[0] == "M") {
     cursor.x = string_to_float(tokens[1]);
@@ -260,41 +259,91 @@ void drw_file::parse_path_points(styled_multishape_2d* shape, std::string d, gro
     std::cout << "Error: path must start with move to command" << std::endl;
     return;
   }
+  std::string prev_command = "M";
+  glm::vec2 cubic_control;
+  glm::vec2 quadratic_control;
   start = cursor;
   for (uint32_t i = 3; i < tokens.size(); i++) {
     if (tokens[i] == "M") {
       cursor.x = string_to_float(tokens[++i]);
       cursor.y = string_to_float(tokens[++i]);
+      prev_command = "M";
     } else if (tokens[i] == "m") {
       cursor.x += string_to_float(tokens[++i]);
       cursor.y += string_to_float(tokens[++i]);
+      prev_command = "m";
     } else if (tokens[i] == "L") {
       shape->add_draw_line(cursor.x, cursor.y, string_to_float(tokens[i + 1]), string_to_float(tokens[i + 2]), attribs.stroke_color_index, attribs.stroke_opacity);
       cursor.x = string_to_float(tokens[++i]);
       cursor.y = string_to_float(tokens[++i]);
+      prev_command = "L";
     } else if (tokens[i] == "l") {
       shape->add_draw_line(cursor.x, cursor.y, cursor.x + string_to_float(tokens[i + 1]), cursor.y + string_to_float(tokens[i + 2]), attribs.stroke_color_index, attribs.stroke_opacity);
       cursor.x += string_to_float(tokens[++i]);
       cursor.y += string_to_float(tokens[++i]);
+      prev_command = "l";
     } else if (tokens[i] == "H") {
       shape->add_draw_line(cursor.x, cursor.y, string_to_float(tokens[i + 1]), cursor.y, attribs.stroke_color_index, attribs.stroke_opacity);
       cursor.x = string_to_float(tokens[++i]);
+      prev_command = "H";
     } else if (tokens[i] == "h") {
       shape->add_draw_line(cursor.x, cursor.y, cursor.x + string_to_float(tokens[i + 1]), cursor.y, attribs.stroke_color_index, attribs.stroke_opacity);
       cursor.x += string_to_float(tokens[++i]);
+      prev_command = "h";
     } else if (tokens[i] == "V") {
       shape->add_draw_line(cursor.x, cursor.y, cursor.x, string_to_float(tokens[i + 1]), attribs.stroke_color_index, attribs.stroke_opacity);
       cursor.y = string_to_float(tokens[++i]);
+      prev_command = "V";
     } else if (tokens[i] == "v") {
       shape->add_draw_line(cursor.x, cursor.y, cursor.x, cursor.y + string_to_float(tokens[i + 1]), attribs.stroke_color_index, attribs.stroke_opacity);
       cursor.y += string_to_float(tokens[++i]);
+      prev_command = "v";
     } else if (tokens[i] == "Z" || tokens[i] == "z") {
       shape->add_draw_line(cursor.x, cursor.y, start.x, start.y, attribs.stroke_color_index, attribs.stroke_opacity);
       cursor = start;
+      prev_command = "Z";
     } else if (tokens[i] == "C") {
+      shape->add_draw_cubic_bezier(cursor.x, cursor.y, string_to_float(tokens[i + 1]), string_to_float(tokens[i + 2]), string_to_float(tokens[i + 3]), string_to_float(tokens[i + 4]), string_to_float(tokens[i + 5]), string_to_float(tokens[i + 6]), CURVE_INC, attribs.stroke_color_index, attribs.stroke_opacity);
+      cursor.x = string_to_float(tokens[i + 5]);
+      cursor.y = string_to_float(tokens[i + 6]);
+      cubic_control.x = 2 * cursor.x - string_to_float(tokens[i + 3]);
+      cubic_control.y = 2 * cursor.y - string_to_float(tokens[i + 4]);
+      i += 6;
+      prev_command = "C";
     } else if (tokens[i] == "c") {
+      float new_cubic_control_x = cursor.x + string_to_float(tokens[i + 3]);
+      float new_cubic_control_y = cursor.y + string_to_float(tokens[i + 4]);
+      shape->add_draw_cubic_bezier(cursor.x, cursor.y, cursor.x + string_to_float(tokens[i + 1]), cursor.y + string_to_float(tokens[i + 2]), new_cubic_control_x, new_cubic_control_y, cursor.x + string_to_float(tokens[i + 5]), cursor.y + string_to_float(tokens[i + 6]), CURVE_INC, attribs.stroke_color_index, attribs.stroke_opacity);
+      cursor.x += string_to_float(tokens[i + 5]);
+      cursor.y += string_to_float(tokens[i + 6]);
+      cubic_control.x = 2 * cursor.x - new_cubic_control_x;
+      cubic_control.y = 2 * cursor.y - new_cubic_control_y;
+      i += 6;
+      prev_command = "c";
     } else if (tokens[i] == "S") {
+      if (!(prev_command == "C" || prev_command == "c" || prev_command == "S" || prev_command == "s")) {
+        cubic_control = cursor;
+      }
+      shape->add_draw_cubic_bezier(cursor.x, cursor.y, cubic_control.x, cubic_control.y, string_to_float(tokens[i + 1]), string_to_float(tokens[i + 2]), string_to_float(tokens[i + 3]), string_to_float(tokens[i + 4]), CURVE_INC, attribs.stroke_color_index, attribs.stroke_opacity);
+      cursor.x = string_to_float(tokens[i + 3]);
+      cursor.y = string_to_float(tokens[i + 4]);
+      cubic_control.x = 2 * cursor.x - string_to_float(tokens[i + 1]);
+      cubic_control.y = 2 * cursor.y - string_to_float(tokens[i + 2]);
+      i += 4;
+      prev_command = "S";
     } else if (tokens[i] == "s") {
+      if (!(prev_command == "C" || prev_command == "c" || prev_command == "S" || prev_command == "s")) {
+        cubic_control = cursor;
+      }
+      float new_cubic_control_x = cursor.x + string_to_float(tokens[i + 1]);
+      float new_cubic_control_y = cursor.y + string_to_float(tokens[i + 2]);
+      shape->add_draw_cubic_bezier(cursor.x, cursor.y, cubic_control.x, cubic_control.y, new_cubic_control_x, new_cubic_control_y, cursor.x + string_to_float(tokens[i + 3]), cursor.y + string_to_float(tokens[i+4]), CURVE_INC, attribs.stroke_color_index, attribs.stroke_opacity);
+      cursor.x = cursor.x + string_to_float(tokens[i + 3]);
+      cursor.y = cursor.y + string_to_float(tokens[i + 4]);
+      cubic_control.x = 2 * cursor.x - new_cubic_control_x;
+      cubic_control.y = 2 * cursor.y - new_cubic_control_y;
+      i += 4;
+      prev_command = "s";
     } else if (tokens[i] == "Q") {
     } else if (tokens[i] == "q") {
     } else if (tokens[i] == "T") {
@@ -305,7 +354,6 @@ void drw_file::parse_path_points(styled_multishape_2d* shape, std::string d, gro
       std::cout << "Error while parsing path" << std::endl;
       return;
     }
-    prev_control = tokens[i];
   }
   if (attribs.has_fill) {
     //TODO: support path with fill
