@@ -30,7 +30,7 @@ void drw_file::apply_svg_attributes(XMLParser::ElementContext* svg) {
     std::string attrib_value = std::regex_replace(attrib->STRING()[0].getText(), std::regex(R"(\"|\')"), ""); // remove quotation marks
     if (attrib_name == "viewBox") {
       has_viewbox = true;
-      std::vector<std::string> values = resplit(attrib_value, std::regex{"[ ,]+"});
+      std::vector<std::string> values = resplit(attrib_value, std::regex{"[ ,\n]+"});
       uint32_t x = string_to_float(values[0]);
       uint32_t y = string_to_float(values[1]);
       uint32_t w = string_to_float(values[2]);
@@ -161,7 +161,7 @@ void drw_file::add_poly(XMLParser::ElementContext* element, group_attributes att
     std::string attrib_name = attrib->Name()[0].getText();
     std::string attrib_value = std::regex_replace(attrib->STRING()[0].getText(), std::regex(R"(\"|\')"), ""); // remove quotation marks
     if (attrib_name == "points") {
-      std::vector<std::string> values = resplit(attrib_value, std::regex{"[ ,]+"});
+      std::vector<std::string> values = resplit(attrib_value, std::regex{"[ ,\n]+"});
       for (uint32_t i = 0; i < values.size(); i+=2) {
         points.push_back(glm::vec2(string_to_float(values[i]), string_to_float(values[i + 1])));
       }
@@ -248,7 +248,7 @@ void drw_file::string_to_path(styled_multishape_2d* shape, std::string d, group_
   d = add_spaces(d);
   glm::vec2 start;
   glm::vec2 cursor;
-  std::vector<std::string> tokens = resplit(d, std::regex{"[ ,]+"});
+  std::vector<std::string> tokens = resplit(d, std::regex{"[ ,\n]+"});
   if (tokens[0] == "M") {
     cursor.x = string_to_float(tokens[1]);
     cursor.y = string_to_float(tokens[2]);
@@ -615,7 +615,7 @@ uint32_t drw_file::string_to_transform_index(std::string str) {
   try {
     str = std::regex_replace(str, std::regex(R"(\()"), "( ");
     str = std::regex_replace(str, std::regex(R"(\))"), " )");
-    std::vector<std::string> tokens = resplit(str, std::regex{"[ ,]+"});
+    std::vector<std::string> tokens = resplit(str, std::regex{"[ ,\n]+"});
     glm::mat4 transform = glm::mat4(1.f);
     for (uint32_t i = 0; i < tokens.size(); i++) {
       if (tokens[i].starts_with("matrix")) {
@@ -625,21 +625,21 @@ uint32_t drw_file::string_to_transform_index(std::string str) {
         float d = stof(tokens[i + 4]);
         float e = stof(tokens[i + 5]);
         float f = stof(tokens[i + 6]);
-        transform = glm::mat4(glm::vec4(a, b, 0, 0), glm::vec4(c, d, 0 , 0), glm::vec4(0, 0, 1, 0), glm::vec4(e, f, 0, 1)) * transform;
+        transform *= glm::mat4(glm::vec4(a, b, 0, 0), glm::vec4(c, d, 0 , 0), glm::vec4(0, 0, 1, 0), glm::vec4(e, f, 0, 1));
         i += 7;
       } else if (tokens[i].starts_with("translate")) {
         float x = stof(tokens[i + 1]);
         float y = 0;
-        if (tokens[i + 2] != ")") {
-          i++;
+        if (!tokens[i + 2].starts_with(")")) {
           y = stof(tokens[i + 2]);
+          i++;
         }
         transform = glm::translate(transform, glm::vec3(x, y, 0));
         i+=2;
       } else if (tokens[i].starts_with("scale")) {
         float x = stof(tokens[i + 1]);
         float y;
-        if (tokens[i + 2] == ")") {
+        if (tokens[i + 2].starts_with(")")) {
           y = x;
         } else {
           y = stof(tokens[i + 2]);
@@ -650,7 +650,7 @@ uint32_t drw_file::string_to_transform_index(std::string str) {
       } else if (tokens[i].starts_with("rotate")) {
         float a = glm::radians(stof(tokens[i + 1]));
         float x, y;
-        if (tokens[i + 2] == ")") {
+        if (tokens[i + 2].starts_with(")")) {
           x = 0;
           y = 0;
         } else {
@@ -664,11 +664,11 @@ uint32_t drw_file::string_to_transform_index(std::string str) {
         i += 2;
       } else if (tokens[i].starts_with("skewX")) {
         float a = glm::radians(stof(tokens[i + 1]));
-        //TODO: skewX transform
+        transform *= glm::mat4(glm::vec4(1, 0, 0, 0), glm::vec4(a, 1, 0 , 0), glm::vec4(0, 0, 1, 0), glm::vec4(0, 0, 0, 1));
         i += 2;
       } else if (tokens[i].starts_with("skewY")) {
         float a = glm::radians(stof(tokens[i + 1]));
-        //TODO: skewY transform
+        transform *= glm::mat4(glm::vec4(1, a, 0, 0), glm::vec4(0, 1, 0 , 0), glm::vec4(0, 0, 1, 0), glm::vec4(0, 0, 0, 1));
         i += 2;
       } else {
         std::cout << "Error: unrecognized transform" << std::endl;
