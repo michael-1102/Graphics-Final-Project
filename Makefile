@@ -22,7 +22,7 @@ drawing: $(OBJ)
 	$(CXX) -o drawing $(OBJ) $(LIBS) -no-pie -fno-PIE -fno-pic
 
 # Compile object files
-window.o: window.cpp drw_file.cpp drw_file.hpp drawing.cpp drawing.hpp view.hpp camera.hpp colors.hpp
+window.o: window.cpp drw_file.cpp drw_file.hpp drawing.cpp drawing.hpp view.hpp camera.hpp colors.hpp test_drw.cpp
 	$(COMP) $<
 
 drw_file.o: drw_file.cpp drw_file.hpp drawing.cpp drawing.hpp libs/XMLLexer.cpp libs/XMLLexer.h libs/XMLParser.cpp libs/XMLParser.h

@@ -18,6 +18,9 @@
 #define NUM_SECTORS 100
 #define CURVE_INC 0.001
 
+#define DEFAULT_WIDTH 300
+#define DEFAULT_HEIGHT 150
+
 using namespace antlr4;
 
 
@@ -40,9 +43,9 @@ class drw_file {
                        transform_index(transform_index), stroke_width(stroke_width), fill_opacity(fill_opacity), stroke_opacity(stroke_opacity), fill_color_index(fill_color_index), stroke_color_index(stroke_color_index) {}
     };
 
-    float width = 300;
-    float height = 100;
-    glm::mat4 scale;
+    float width = DEFAULT_WIDTH;
+    float height = DEFAULT_HEIGHT;
+    glm::mat4 scale = glm::scale(glm::mat4(1.f), glm::vec3(1.f, DEFAULT_WIDTH/DEFAULT_HEIGHT, 1.f));
 
     drawing main_drawing; // parent drawing of all shapes
 
@@ -69,11 +72,12 @@ class drw_file {
     void add_line(XMLParser::ElementContext* element, group_attributes attribs);
 
     void add_path(XMLParser::ElementContext* element, group_attributes attribs);
-    void parse_path_points(styled_multishape_2d* shape, std::string d, group_attributes attribs);
+    void string_to_path(styled_multishape_2d* shape, std::string d, group_attributes attribs);
     std::string add_spaces(const std::string& str);
 
     void add_poly(XMLParser::ElementContext* element, group_attributes attribs, bool connect);
 
+    std::string substr_after(const std::string& str, char delimiter);
 
     uint32_t string_to_color_index(std::string str) {
       //TODO: support hsl(h, s, l) and rgb(r, g, b)
@@ -133,10 +137,22 @@ class drw_file {
       scale = glm::scale(glm::mat4(1.f), glm::vec3(1.f, width/height, 1.f));
     }
 
+    drw_file() {}
+
     drw_file(const char filename[]);
 
     void save(const char filename[]) const;
     void load(const char filename[]);
+
+    void set_width(float w) {
+      width = w;
+      scale = glm::scale(glm::mat4(1.f), glm::vec3(1.f, width/height, 1.f));
+    }
+
+    void set_height(float h) {
+      height = h;
+      scale = glm::scale(glm::mat4(1.f), glm::vec3(1.f, width/height, 1.f));
+    }
 
     void init() { 
       main_drawing.init(); 

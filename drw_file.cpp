@@ -241,10 +241,10 @@ void drw_file::add_path(XMLParser::ElementContext* element, group_attributes att
     attribs.stroke_opacity = 0.f;
   }
   styled_multishape_2d* shape = main_drawing.create_styled_multishape_2d(*this, attribs.stroke_width, attribs.transform_index);
-  parse_path_points(shape, d, attribs);
+  string_to_path(shape, d, attribs);
 }
 
-void drw_file::parse_path_points(styled_multishape_2d* shape, std::string d, group_attributes attribs) {
+void drw_file::string_to_path(styled_multishape_2d* shape, std::string d, group_attributes attribs) {
   d = add_spaces(d);
   glm::vec2 start;
   glm::vec2 cursor;
@@ -613,7 +613,41 @@ void drw_file::add_rect(XMLParser::ElementContext* element, group_attributes att
 
 uint32_t drw_file::string_to_transform_index(std::string str) {
   //TODO: parse transform and return transform index
-  return 0;
+  std::vector<std::string> tokens = resplit(str, std::regex{"[ ,]+"});
+  glm::mat4 transform = glm::mat4(1.f);
+  for (uint32_t i = 0; i < tokens.size(); i++) {
+    if (tokens[i].starts_with("matrix")) {
+      tokens[i] = substr_after(tokens[i], '(');
+    } else if (tokens[i].starts_with("rotate")) {
+
+    } else if (tokens[i].starts_with("scale")) {
+
+    } else if (tokens[i].starts_with("rotate")) {
+
+    } else if (tokens[i].starts_with("skewX")) {
+
+    } else if (tokens[i].starts_with("skewY")) {
+
+    } else {
+      //std::cout << "Error: unrecognized transform" << std::endl;
+      //return 0;
+    }
+  }
+  add_transform(transform);
+  return transforms.size() - 1;
+}
+
+std::string drw_file::substr_after(const std::string& str, char delimiter) {
+  std::string substr;
+  auto npos = str.find(delimiter);
+
+  if (npos != std::string::npos)
+    substr = str.substr(npos + 1);
+
+  if (!substr.empty()) 
+    return substr;
+  else
+    throw "Failed to find delimiter in substr_after";
 }
 
 void drw_file::save(const char filename[]) const {
