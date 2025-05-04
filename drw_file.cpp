@@ -250,6 +250,9 @@ void drw_file::parse_path_points(styled_multishape_2d* shape, std::string d, gro
   glm::vec2 cursor;
   std::string prev_control = " ";
   std::vector<std::string> tokens = resplit(d, std::regex{"[ ,]+"});
+  for (auto t : tokens) {
+    std::cerr << t << std::endl;
+  }
   if (tokens[0] == "M") {
     cursor.x = string_to_float(tokens[1]);
     cursor.y = string_to_float(tokens[2]);
@@ -315,12 +318,16 @@ void drw_file::parse_path_points(styled_multishape_2d* shape, std::string d, gro
 
 std::string drw_file::add_spaces(const std::string& str) {
   std::string out;
-  for (char ch : str) { 
-    out += ch;
-    if (isalpha(ch)) {
-      out += ' ';
-    }
+  out += str[0];
+  for (uint32_t i = 1; i < str.size() - 1; i++) {
+    if (isalpha(str[i])) {
+      if (str[i-1] != ' ') out += ' ';
+      out += str[i];
+      if (str[i+1] != ' ') out += ' ';
+    } else
+      out += str[i];
   }
+  out += str.back();
   return out;
 }
 
