@@ -250,9 +250,6 @@ void drw_file::parse_path_points(styled_multishape_2d* shape, std::string d, gro
   glm::vec2 cursor;
   std::string prev_control = " ";
   std::vector<std::string> tokens = resplit(d, std::regex{"[ ,]+"});
-  for (auto t : tokens) {
-    std::cerr << t << std::endl;
-  }
   if (tokens[0] == "M") {
     cursor.x = string_to_float(tokens[1]);
     cursor.y = string_to_float(tokens[2]);
