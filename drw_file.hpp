@@ -66,6 +66,11 @@ class drw_file {
     void add_circle(XMLParser::ElementContext* element, group_attributes attribs);
     void add_rect(XMLParser::ElementContext* element, group_attributes attribs);
     void add_line(XMLParser::ElementContext* element, group_attributes attribs);
+
+    void add_path(XMLParser::ElementContext* element, group_attributes attribs);
+    void parse_path_points(styled_multishape_2d* shape, std::string d, group_attributes attribs);
+    std::string add_spaces(const std::string& str);
+
     void add_poly(XMLParser::ElementContext* element, group_attributes attribs, bool connect);
 
 

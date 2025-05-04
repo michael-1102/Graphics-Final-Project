@@ -86,7 +86,7 @@ void create_window(drw_file& drw, const std::string& title) {
 }
 
 int main(int argc, char* argv[]) {
-  drw_file drw_svg = drw_file("svg/circles.svg");
+  drw_file drw_svg = drw_file("svg/usa_counties.svg");
 
   drw_file drw2(0, 0);
   drw_file drw(1000, 1000);

@@ -30,7 +30,7 @@ void drw_file::apply_svg_attributes(XMLParser::ElementContext* svg) {
     std::string attrib_value = std::regex_replace(attrib->STRING()[0].getText(), std::regex(R"(\"|\')"), ""); // remove quotation marks
     if (attrib_name == "viewBox") {
       has_viewbox = true;
-      std::vector<std::string> values = resplit(attrib_value, std::regex{"[ ,]"});
+      std::vector<std::string> values = resplit(attrib_value, std::regex{"[ ,]+"});
       uint32_t x = string_to_float(values[0]);
       uint32_t y = string_to_float(values[1]);
       uint32_t w = string_to_float(values[2]);
@@ -110,7 +110,7 @@ void drw_file::add_svg_elements(std::vector<XMLParser::ElementContext*> elements
     } else if (elem_name == "polygon") {
       add_poly(elem, attribs, true);
     } else if (elem_name == "path") {
-      //TODO: path support
+      add_path(elem, attribs);
     } else if (elem_name == "g") {
       group_attributes group_attribs = apply_group_attributes(elem, attribs);
       add_svg_elements(elem->content()->element(), group_attribs);
@@ -161,7 +161,7 @@ void drw_file::add_poly(XMLParser::ElementContext* element, group_attributes att
     std::string attrib_name = attrib->Name()[0].getText();
     std::string attrib_value = std::regex_replace(attrib->STRING()[0].getText(), std::regex(R"(\"|\')"), ""); // remove quotation marks
     if (attrib_name == "points") {
-      std::vector<std::string> values = resplit(attrib_value, std::regex{"[ ,]"});
+      std::vector<std::string> values = resplit(attrib_value, std::regex{"[ ,]+"});
       for (uint32_t i = 0; i < values.size(); i+=2) {
         points.push_back(glm::vec2(string_to_float(values[i]), string_to_float(values[i + 1])));
       }
@@ -202,6 +202,128 @@ void drw_file::add_poly(XMLParser::ElementContext* element, group_attributes att
   }
 }
 
+void drw_file::add_path(XMLParser::ElementContext* element, group_attributes attribs) {
+  std::vector<XMLParser::AttributeContext*> attributes = element->attribute();
+  std::string d;
+  for (auto attrib : attributes) {
+    std::string attrib_name = attrib->Name()[0].getText();
+    std::string attrib_value = std::regex_replace(attrib->STRING()[0].getText(), std::regex(R"(\"|\')"), ""); // remove quotation marks  
+    if (attrib_name == "d") {
+      d = attrib_value;
+    } else if (attrib_name == "stroke") {
+      if (!(attrib_value == "transparent" || attrib_value == "none")) {
+        attribs.stroke_color_index = string_to_color_index(attrib_value);
+        attribs.has_stroke = true;
+      } else {
+        attribs.has_stroke = false;
+      }
+    } else if (attrib_name == "fill") {
+      if (attrib_value == "transparent" || attrib_value == "none") {
+        attribs.has_fill = false;
+      } else {
+        attribs.has_fill = true;
+        attribs.fill_color_index = string_to_color_index(attrib_value);
+    }
+    } else if (attrib_name == "stroke-opacity") {
+      attribs.stroke_opacity = string_to_float(attrib_value);
+    } else if (attrib_name == "fill-opacity") {
+      attribs.stroke_opacity = string_to_float(attrib_value);
+    } else if (attrib_name == "stroke-width") {
+      attribs.stroke_width = string_to_float(attrib_value);
+    } else if (attrib_name == "transform") {
+      attribs.transform_index = string_to_transform_index(attrib_value);
+    } else {
+      std::cout << "Unsupported path attribute: " << attrib_name << std::endl;
+    }
+  }
+
+  if (!attribs.has_stroke) {
+    attribs.stroke_opacity = 0.f;
+  }
+  styled_multishape_2d* shape = main_drawing.create_styled_multishape_2d(*this, attribs.stroke_width, attribs.transform_index);
+  parse_path_points(shape, d, attribs);
+}
+
+void drw_file::parse_path_points(styled_multishape_2d* shape, std::string d, group_attributes attribs) {
+  d = add_spaces(d);
+  glm::vec2 start;
+  glm::vec2 cursor;
+  std::string prev_control = " ";
+  std::vector<std::string> tokens = resplit(d, std::regex{"[ ,]+"});
+  if (tokens[0] == "M") {
+    cursor.x = string_to_float(tokens[1]);
+    cursor.y = string_to_float(tokens[2]);
+  } else if (tokens[0] == "m") {
+    cursor.x += string_to_float(tokens[1]);
+      cursor.y += string_to_float(tokens[2]);
+  } else {
+    std::cout << "Error: path must start with move to command" << std::endl;
+    return;
+  }
+  start = cursor;
+  for (uint32_t i = 3; i < tokens.size(); i++) {
+    if (tokens[i] == "M") {
+      cursor.x = string_to_float(tokens[++i]);
+      cursor.y = string_to_float(tokens[++i]);
+    } else if (tokens[i] == "m") {
+      cursor.x += string_to_float(tokens[++i]);
+      cursor.y += string_to_float(tokens[++i]);
+    } else if (tokens[i] == "L") {
+      shape->add_draw_line(cursor.x, cursor.y, string_to_float(tokens[i + 1]), string_to_float(tokens[i + 2]), attribs.stroke_color_index, attribs.stroke_opacity);
+      cursor.x = string_to_float(tokens[++i]);
+      cursor.y = string_to_float(tokens[++i]);
+    } else if (tokens[i] == "l") {
+      shape->add_draw_line(cursor.x, cursor.y, cursor.x + string_to_float(tokens[i + 1]), cursor.y + string_to_float(tokens[i + 2]), attribs.stroke_color_index, attribs.stroke_opacity);
+      cursor.x += string_to_float(tokens[++i]);
+      cursor.y += string_to_float(tokens[++i]);
+    } else if (tokens[i] == "H") {
+      shape->add_draw_line(cursor.x, cursor.y, string_to_float(tokens[i + 1]), cursor.y, attribs.stroke_color_index, attribs.stroke_opacity);
+      cursor.x = string_to_float(tokens[++i]);
+    } else if (tokens[i] == "h") {
+      shape->add_draw_line(cursor.x, cursor.y, cursor.x + string_to_float(tokens[i + 1]), cursor.y, attribs.stroke_color_index, attribs.stroke_opacity);
+      cursor.x += string_to_float(tokens[++i]);
+    } else if (tokens[i] == "V") {
+      shape->add_draw_line(cursor.x, cursor.y, cursor.x, string_to_float(tokens[i + 1]), attribs.stroke_color_index, attribs.stroke_opacity);
+      cursor.y = string_to_float(tokens[++i]);
+    } else if (tokens[i] == "v") {
+      shape->add_draw_line(cursor.x, cursor.y, cursor.x, cursor.y + string_to_float(tokens[i + 1]), attribs.stroke_color_index, attribs.stroke_opacity);
+      cursor.y += string_to_float(tokens[++i]);
+    } else if (tokens[i] == "Z" || tokens[i] == "z") {
+      shape->add_draw_line(cursor.x, cursor.y, start.x, start.y, attribs.stroke_color_index, attribs.stroke_opacity);
+      cursor = start;
+    } else if (tokens[i] == "C") {
+    } else if (tokens[i] == "c") {
+    } else if (tokens[i] == "S") {
+    } else if (tokens[i] == "s") {
+    } else if (tokens[i] == "Q") {
+    } else if (tokens[i] == "q") {
+    } else if (tokens[i] == "T") {
+    } else if (tokens[i] == "t") {
+    } else if (tokens[i] == "A") {
+    } else if (tokens[i] == "a") {
+    } else {
+      std::cout << "Error while parsing path" << std::endl;
+      return;
+    }
+    prev_control = tokens[i];
+  }
+  if (attribs.has_fill) {
+    //TODO: support path with fill
+    std::cout << "Filled path not currently supported" << std::endl;
+  }
+}
+
+std::string drw_file::add_spaces(const std::string& str) {
+  std::string out;
+  for (char ch : str) { 
+    out += ch;
+    if (isalpha(ch)) {
+      out += ' ';
+    }
+  }
+  return out;
+}
+
 void drw_file::add_line(XMLParser::ElementContext* element, group_attributes attribs) {
   std::vector<XMLParser::AttributeContext*> attributes = element->attribute();
   float x1 = 0, y1 = 0, x2 = 0, y2 = 0;
@@ -234,8 +356,8 @@ void drw_file::add_line(XMLParser::ElementContext* element, group_attributes att
     }
   }
   if (!attribs.has_stroke) return;
-  styled_multishape_2d* shape = main_drawing.create_styled_multishape_2d(*this, attribs.stroke_width, attribs.transform_index);
-  shape->add_draw_line(x1, y1, x2, y2, attribs.stroke_color_index, attribs.stroke_opacity);
+  multishape_2d* shape = main_drawing.create_multishape_2d(attribs.stroke_width, attribs.stroke_color_index, attribs.transform_index, attribs.stroke_opacity);
+  shape->add_draw_line(x1, y1, x2, y2);
 }
 
 void drw_file::add_ellipse(XMLParser::ElementContext* element, group_attributes attribs) {
@@ -278,7 +400,6 @@ void drw_file::add_ellipse(XMLParser::ElementContext* element, group_attributes 
       std::cout << "Unsupported ellipse attribute: " << attrib_name << std::endl;
     }
   }
-
   styled_multishape_2d* shape = main_drawing.create_styled_multishape_2d(*this, attribs.stroke_width, attribs.transform_index);
   if (attribs.has_fill) shape->add_fill_ellipse(cx, cy, rx, ry, NUM_SECTORS, attribs.fill_color_index, attribs.fill_opacity);
   if (attribs.has_stroke) shape->add_draw_ellipse(cx, cy, rx, ry, NUM_SECTORS, attribs.stroke_color_index, attribs.stroke_opacity);

@@ -109,6 +109,15 @@ class multishape_2d : public multishape {
   }
   ~multishape_2d();
 
+  void inline set_line_width(float w) { line_width = w; }
+
+  void inline set_transform_index(uint32_t i) { transform_index = i; }
+
+  void inline set_color_index(uint32_t i) { color_index = i; }
+
+  void inline set_alpha(float a) { alpha = a; }
+
+
   std::unordered_map<instruction, std::function<void(dispatch_inputs)>> get_dispatch_table() override {
     return dispatch_table;
   };
