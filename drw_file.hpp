@@ -139,7 +139,7 @@ class drw_file {
 
     drw_file() {}
 
-    drw_file(const char filename[]);
+    void load_svg(const char filename[]);
 
     void save(const char filename[]) const;
     void load(const char filename[]);

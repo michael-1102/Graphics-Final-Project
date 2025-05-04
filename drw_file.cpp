@@ -66,7 +66,7 @@ void drw_file::apply_svg_attributes(XMLParser::ElementContext* svg) {
 }
 
 // parse svg
-drw_file::drw_file(const char filename[]) {
+void drw_file::load_svg(const char filename[]) {
   std::ifstream stream;
   stream.open(filename);
   if (!stream.is_open()) throw "Failed to open file";
@@ -883,6 +883,7 @@ void drw_file::load(const char filename[]) {
   bg_color_index = mh->bg_color_index;
 
   parasitic_vector<uint16_t> instructions = parasitic_vector<uint16_t>(p, mh->num_instructions);
+  std::cerr << mh->num_instructions << std::endl;
   parasitic_vector<uint32_t> uint32s = parasitic_vector<uint32_t>(p, mh->num_uint32s);
   parasitic_vector<float> x_coords = parasitic_vector<float>(p, mh->num_x_coords);
   x_coords.delta_decode();

@@ -114,15 +114,22 @@ int main(int argc, char* argv[]) {
     if (argc > 1) {
       if (std::regex_match(argv[1], std::regex(".*.drw$"))) {
         drw.load(argv[1]);
+      } else if (std::regex_match(argv[1], std::regex(".*.svg$"))) {
+        std::cout << "Converting svg to drawing..." << std::endl;
+        drw.load_svg(argv[1]);
+        std::string path(argv[1]);
+        path = "drw/" + path.substr(path.find_last_of("/") + 1, path.find_last_of('.') - path.find_last_of("/") - 1) + ".drw";
+        std::cerr << path << std::endl;
+        drw.save(path.c_str());
       } else {
         switch (atoi(argv[1])) {
           case 1:
-            std::cerr << "Creating test drawing..." << std::endl;
+            std::cout << "Creating test drawing..." << std::endl;
             test1(&drw);
             break;
           case 0:
           default:
-            std::cerr << "Opening empty drawing..." << std::endl;
+            std::cout << "Opening empty drawing..." << std::endl;
             break;
         }
       }
