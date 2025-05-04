@@ -612,29 +612,74 @@ void drw_file::add_rect(XMLParser::ElementContext* element, group_attributes att
 }
 
 uint32_t drw_file::string_to_transform_index(std::string str) {
-  //TODO: parse transform and return transform index
-  std::vector<std::string> tokens = resplit(str, std::regex{"[ ,]+"});
-  glm::mat4 transform = glm::mat4(1.f);
-  for (uint32_t i = 0; i < tokens.size(); i++) {
-    if (tokens[i].starts_with("matrix")) {
-      tokens[i] = substr_after(tokens[i], '(');
-    } else if (tokens[i].starts_with("rotate")) {
-
-    } else if (tokens[i].starts_with("scale")) {
-
-    } else if (tokens[i].starts_with("rotate")) {
-
-    } else if (tokens[i].starts_with("skewX")) {
-
-    } else if (tokens[i].starts_with("skewY")) {
-
-    } else {
-      //std::cout << "Error: unrecognized transform" << std::endl;
-      //return 0;
+  try {
+    str = std::regex_replace(str, std::regex(R"(\()"), "( ");
+    str = std::regex_replace(str, std::regex(R"(\))"), " )");
+    std::vector<std::string> tokens = resplit(str, std::regex{"[ ,]+"});
+    glm::mat4 transform = glm::mat4(1.f);
+    for (uint32_t i = 0; i < tokens.size(); i++) {
+      if (tokens[i].starts_with("matrix")) {
+        float a = stof(tokens[i + 1]);
+        float b = stof(tokens[i + 2]);
+        float c = stof(tokens[i + 3]);
+        float d = stof(tokens[i + 4]);
+        float e = stof(tokens[i + 5]);
+        float f = stof(tokens[i + 6]);
+        transform = glm::mat4(glm::vec4(a, b, 0, 0), glm::vec4(c, d, 0 , 0), glm::vec4(0, 0, 1, 0), glm::vec4(e, f, 0, 1)) * transform;
+        i += 7;
+      } else if (tokens[i].starts_with("translate")) {
+        float x = stof(tokens[i + 1]);
+        float y = 0;
+        if (tokens[i + 2] != ")") {
+          i++;
+          y = stof(tokens[i + 2]);
+        }
+        transform = glm::translate(transform, glm::vec3(x, y, 0));
+        i+=2;
+      } else if (tokens[i].starts_with("scale")) {
+        float x = stof(tokens[i + 1]);
+        float y;
+        if (tokens[i + 2] == ")") {
+          y = x;
+        } else {
+          y = stof(tokens[i + 2]);
+          i++;
+        }
+        transform = glm::scale(transform, glm::vec3(x, y, 0));
+        i+=2;
+      } else if (tokens[i].starts_with("rotate")) {
+        float a = glm::radians(stof(tokens[i + 1]));
+        float x, y;
+        if (tokens[i + 2] == ")") {
+          x = 0;
+          y = 0;
+        } else {
+          x = stof(tokens[i + 2]);
+          y = stof(tokens[i + 3]);
+          i += 2;
+        }
+        transform = glm::translate(transform, glm::vec3(x, y, 0));
+        transform = glm::rotate(transform, a, glm::normalize(glm::vec3(0, 0, 1)));
+        transform = glm::translate(transform, glm::vec3(-x, -y, 0));
+        i += 2;
+      } else if (tokens[i].starts_with("skewX")) {
+        float a = glm::radians(stof(tokens[i + 1]));
+        //TODO: skewX transform
+        i += 2;
+      } else if (tokens[i].starts_with("skewY")) {
+        float a = glm::radians(stof(tokens[i + 1]));
+        //TODO: skewY transform
+        i += 2;
+      } else {
+        std::cout << "Error: unrecognized transform" << std::endl;
+        return 0;
+      }
     }
+    add_transform(transform);
+    return transforms.size() - 1;
+  } catch (...) {
+    return 0;
   }
-  add_transform(transform);
-  return transforms.size() - 1;
 }
 
 std::string drw_file::substr_after(const std::string& str, char delimiter) {
@@ -883,7 +928,6 @@ void drw_file::load(const char filename[]) {
   bg_color_index = mh->bg_color_index;
 
   parasitic_vector<uint16_t> instructions = parasitic_vector<uint16_t>(p, mh->num_instructions);
-  std::cerr << mh->num_instructions << std::endl;
   parasitic_vector<uint32_t> uint32s = parasitic_vector<uint32_t>(p, mh->num_uint32s);
   parasitic_vector<float> x_coords = parasitic_vector<float>(p, mh->num_x_coords);
   x_coords.delta_decode();

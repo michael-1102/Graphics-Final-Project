@@ -119,7 +119,6 @@ int main(int argc, char* argv[]) {
         drw.load_svg(argv[1]);
         std::string path(argv[1]);
         path = "drw/" + path.substr(path.find_last_of("/") + 1, path.find_last_of('.') - path.find_last_of("/") - 1) + ".drw";
-        std::cerr << path << std::endl;
         drw.save(path.c_str());
       } else {
         switch (atoi(argv[1])) {
