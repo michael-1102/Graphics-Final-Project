@@ -85,6 +85,34 @@ void create_window(drw_file& drw, const std::string& title) {
           if (event.window.event == SDL_WINDOWEVENT_EXPOSED)
             resized = true;
           break;
+          case SDL_KEYUP:
+          switch (event.key.keysym.scancode) {
+            case SDL_SCANCODE_LCTRL:
+              left_ctrl = false;
+              break;
+            case SDL_SCANCODE_RCTRL:
+              right_ctrl = false;
+              break;
+            default:
+              break;
+          }
+          break;
+        case SDL_KEYDOWN:
+          switch (event.key.keysym.scancode) {
+            case SDL_SCANCODE_LCTRL:
+              left_ctrl = true;
+              break;
+            case SDL_SCANCODE_RCTRL:
+              right_ctrl = true;
+              break;
+            case SDL_SCANCODE_W:
+              if (left_ctrl || right_ctrl) {
+                quit = true;
+                continue;
+              }
+              break;
+          }
+          break;
         default:
           break;
       }
