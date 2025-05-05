@@ -30,7 +30,7 @@ void drw_file::apply_svg_attributes(XMLParser::ElementContext* svg) {
     std::string attrib_value = std::regex_replace(attrib->STRING()[0].getText(), std::regex(R"(\"|\')"), ""); // remove quotation marks
     if (attrib_name == "viewBox") {
       has_viewbox = true;
-      std::vector<std::string> values = resplit(attrib_value, std::regex{"[ ,\n]+"});
+      std::vector<std::string> values = resplit(attrib_value, std::regex{"[ ,\n\t]+"});
       float x = string_to_float(values[0]);
       float y = string_to_float(values[1]);
       float w = string_to_float(values[2]);
@@ -161,7 +161,7 @@ void drw_file::add_poly(XMLParser::ElementContext* element, group_attributes att
     std::string attrib_name = attrib->Name()[0].getText();
     std::string attrib_value = std::regex_replace(attrib->STRING()[0].getText(), std::regex(R"(\"|\')"), ""); // remove quotation marks
     if (attrib_name == "points") {
-      std::vector<std::string> values = resplit(attrib_value, std::regex{"[ ,\n]+"});
+      std::vector<std::string> values = resplit(attrib_value, std::regex{"[ ,\n\t]+"});
       for (uint32_t i = 0; i < values.size(); i+=2) {
         points.push_back(glm::vec2(string_to_float(values[i]), string_to_float(values[i + 1])));
       }
@@ -248,7 +248,7 @@ void drw_file::string_to_path(styled_multishape_2d* shape, std::string d, group_
   d = add_spaces(d);
   glm::vec2 start;
   glm::vec2 cursor;
-  std::vector<std::string> tokens = resplit(d, std::regex{"[ ,\n]+"});
+  std::vector<std::string> tokens = resplit(d, std::regex{"[ ,\n\t]+"});
   if (tokens[0] == "M") {
     cursor.x = string_to_float(tokens[1]);
     cursor.y = string_to_float(tokens[2]);
@@ -392,8 +392,11 @@ void drw_file::string_to_path(styled_multishape_2d* shape, std::string d, group_
       std::cout << "Arcs not currenty supported" << std::endl;
       i += 7;
       prev_command = "a";
+
+    } else if (tokens[i] == " ") {
+      std::cerr << "wee woo wee woo" << std::endl;
     } else {
-      std::cout << "Error while parsing path" << std::endl;
+      std::cout << "Error while parsing path, unrecognized command: " << tokens[i] << std::endl;
       return;
     }
   }
@@ -406,14 +409,19 @@ void drw_file::string_to_path(styled_multishape_2d* shape, std::string d, group_
 std::string drw_file::add_spaces(const std::string& str) {
   std::string out;
   out += str[0];
+  if (isalpha(str[0]) && str[1] != ' ') out += ' ';
   for (uint32_t i = 1; i < str.size() - 1; i++) {
     if (isalpha(str[i])) {
       if (str[i-1] != ' ') out += ' ';
       out += str[i];
       if (str[i+1] != ' ') out += ' ';
-    } else
+    } else if (str[i] == '-' && str[i-1] != ' ') {
+      out += ' ';
+      out += str[i];
+    } else 
       out += str[i];
   }
+  if (isalpha(str.back()) && str.back() != ' ') out += ' ';
   out += str.back();
   return out;
 }
@@ -615,7 +623,7 @@ uint32_t drw_file::string_to_transform_index(std::string str) {
   try {
     str = std::regex_replace(str, std::regex(R"(\()"), "( ");
     str = std::regex_replace(str, std::regex(R"(\))"), " )");
-    std::vector<std::string> tokens = resplit(str, std::regex{"[ ,\n]+"});
+    std::vector<std::string> tokens = resplit(str, std::regex{"[ ,\n\t]+"});
     glm::mat4 transform = glm::mat4(1.f);
     for (uint32_t i = 0; i < tokens.size(); i++) {
       if (tokens[i].starts_with("matrix")) {
