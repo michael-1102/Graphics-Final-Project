@@ -1,7 +1,20 @@
-<svg viewBox="0 0 400 100" width="600" height="200"
+<svg viewBox="0 0  400 100" width="600" height="200"
       xmlns="http://www.w3.org/2000/svg">
 
+  <g stroke-width="1" stroke="orange">
   <circle cx="50" cy="50" r="20" fill="blue"/>
+  <circle cx="50" cy="50" r="40" fill="red" stroke="blue" fill-opacity="0.5" stroke-width="3"/>
+  </g>
+  <circle cx="150" cy="50" r="20" fill="blue"/>
+  <circle cx="150" cy="50" r="40" fill="green" stroke="brown" fill-opacity="0.5" stroke-width="5" />
 
+  <circle cx="250" cy="50" r="40" fill="orange" />
+
+  <ellipse cx="350" cy="50" rx="40" ry="30" fill="turquoise" />
+
+  <line x1="50" y1="50" x2="100" y2="100" stroke="navy"/>
+  <rect x="100" y="50" width="30" height="50" rx="3" ry="4" stroke="hotpink"/>
+
+  <polygon points="100,100 150,25 150,75 200,0" fill="none" stroke="black" />
 
 </svg>

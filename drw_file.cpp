@@ -31,10 +31,10 @@ void drw_file::apply_svg_attributes(XMLParser::ElementContext* svg) {
     if (attrib_name == "viewBox") {
       has_viewbox = true;
       std::vector<std::string> values = resplit(attrib_value, std::regex{"[ ,\n]+"});
-      uint32_t x = string_to_float(values[0]);
-      uint32_t y = string_to_float(values[1]);
-      uint32_t w = string_to_float(values[2]);
-      uint32_t h = string_to_float(values[3]);
+      float x = string_to_float(values[0]);
+      float y = string_to_float(values[1]);
+      float w = string_to_float(values[2]);
+      float h = string_to_float(values[3]);
       v = view(x, y, w, h);
       main_drawing.set_view(v);
     } else if (attrib_name == "width") {
