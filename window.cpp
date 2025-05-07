@@ -150,6 +150,14 @@ int main(int argc, char* argv[]) {
         drw.save(path.c_str());
       } else {
         switch (atoi(argv[1])) {
+          case 3:
+            std::cout << "Creating lighting drawing..." << std::endl;
+            lighting(&drw);
+            break;
+          case 2:
+            std::cout << "Creating wireframes drawing..." << std::endl;
+            wireframes(&drw);
+            break;
           case 1:
             std::cout << "Creating test drawing..." << std::endl;
             test1(&drw);

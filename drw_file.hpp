@@ -201,6 +201,10 @@ class drw_file {
       spot_lights.push_back(spot_light(position, direction, cut_off, couter_cut_off, constant, linear, quadratic, ambient, diffuse, specular));
     }
 
+    void create_spot_light() {
+      spot_lights.push_back(spot_light());
+    }
+
     inline void add_dir_light(dir_light& dir_light) {
       dir_lights.push_back(dir_light);
     }
@@ -209,12 +213,20 @@ class drw_file {
       dir_lights.push_back(dir_light(direction, ambient, diffuse, specular));
     }
 
+    void create_dir_light() {
+      dir_lights.push_back(dir_light());
+    }
+
     inline void add_point_light(point_light& point_light) {
       point_lights.push_back(point_light);
     }
 
     void create_point_light(glm::vec3 position, float constant, float linear, float quadratic, glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular) {
       point_lights.push_back(point_light(position, constant, linear, quadratic, ambient, diffuse, specular));
+    }
+
+    void create_point_light() {
+      point_lights.push_back(point_light());
     }
 
     inline void add_camera(camera& camera) {

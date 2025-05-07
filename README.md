@@ -20,3 +20,5 @@ To run a test case, run: ./drawing <test_number>
 | ---|--- |
 | 0 | empty drawing |
 | 1 | miscellaneous shapes |
+| 2 | wireframes |
+| 3 | lit 3D shapes |
