@@ -705,7 +705,7 @@ std::string drw_file::substr_after(const std::string& str, char delimiter) {
 
 void drw_file::save(const char filename[]) const {
   std::ofstream f(filename, std::ios::out | std::ios::binary);
-  std::vector<uint16_t> instructions;
+  std::vector<uint8_t> instructions;
   std::vector<uint32_t> uint32s; // any values that are stored as a uint32_t
   std::vector<float> floats;  // any values that are stored as a float besides x, y, z coords
 
@@ -883,7 +883,7 @@ void drw_file::save(const char filename[]) const {
 
   block_loader bl(1024, 1);
   size_t total_size = sizeof(drw_header) + 
-                      num_instructions * sizeof(uint16_t) + 
+                      num_instructions * sizeof(uint8_t) + 
                       num_uint32s * sizeof(uint32_t) + 
                       num_x_coords * sizeof(float) + 
                       num_y_coords * sizeof(float) +
@@ -908,7 +908,7 @@ void drw_file::save(const char filename[]) const {
   bl.increment_size(sizeof(drw_header));
 
 
-  bl.append(instructions.data(), num_instructions * sizeof(uint16_t));
+  bl.append(instructions.data(), num_instructions * sizeof(uint8_t));
   bl.append(uint32s.data(), num_uint32s * sizeof(uint32_t));
   bl.append(delta_encode(x_coords).data(), num_x_coords * sizeof(float));
   bl.append(delta_encode(y_coords).data(), num_y_coords * sizeof(float));
@@ -935,7 +935,7 @@ void drw_file::load(const char filename[]) {
   scale = glm::scale(glm::mat4(1.f), glm::vec3(1.f, width/height, 1.f));
   bg_color_index = mh->bg_color_index;
 
-  parasitic_vector<uint16_t> instructions = parasitic_vector<uint16_t>(p, mh->num_instructions);
+  parasitic_vector<uint8_t> instructions = parasitic_vector<uint8_t>(p, mh->num_instructions);
   parasitic_vector<uint32_t> uint32s = parasitic_vector<uint32_t>(p, mh->num_uint32s);
   parasitic_vector<float> x_coords = parasitic_vector<float>(p, mh->num_x_coords);
   x_coords.delta_decode();
@@ -960,7 +960,7 @@ void drw_file::load(const char filename[]) {
   }
 
   uint32_t current_uint32 = 0;
-  uint32_t current_uint16 = 0;
+  uint32_t current_uint8 = 0;
   uint32_t current_x_coord = 0;
   uint32_t current_y_coord = 0;
   uint32_t current_z_coord = 0;

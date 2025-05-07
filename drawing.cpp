@@ -12,7 +12,7 @@ void drawing::update() {
   }
 }
 
-void drawing::save(std::vector<uint16_t>& instructions, std::vector<uint32_t>& uint32s, std::vector<float>& floats, std::vector<float>& x_coords, std::vector<float>& y_coords, std::vector<float>& z_coords) const {
+void drawing::save(std::vector<uint8_t>& instructions, std::vector<uint32_t>& uint32s, std::vector<float>& floats, std::vector<float>& x_coords, std::vector<float>& y_coords, std::vector<float>& z_coords) const {
   instructions.push_back(to_underlying(instruction::START_DRAWING));
   my_view.save(floats);
   for (auto s : shapes) {
@@ -74,7 +74,7 @@ lit_multishape_3d* drawing::create_lit_multishape_3d(float line_width, uint32_t 
   return (lit_multishape_3d*)shapes.back();
 }
 
-void drawing::load(drw_file& drw, parasitic_vector<uint16_t>& instructions, parasitic_vector<float>& x_coords, parasitic_vector<float>& y_coords, parasitic_vector<float>& z_coords,
+void drawing::load(drw_file& drw, parasitic_vector<uint8_t>& instructions, parasitic_vector<float>& x_coords, parasitic_vector<float>& y_coords, parasitic_vector<float>& z_coords,
   parasitic_vector<float>& floats, parasitic_vector<uint32_t>& uint32s, uint32_t& instr_index, uint32_t& current_uint32, uint32_t& current_x_coord,
   uint32_t& current_y_coord, uint32_t& current_z_coord, uint32_t& current_float) {
     instr_index++;
