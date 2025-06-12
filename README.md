@@ -8,9 +8,9 @@ This program can save and load binary "DRW" files containing 2D and 3D graphics.
 Compile with: make
 <br>Run with: ./drawing <args>
 
-To load an existing DRW file, run: ./drawing <file name>.drw
+To load an existing DRW file, run: ./drawing [file name].drw
 
-To convert an SVG file to a DRW file, run: ./drawing <file name>.svg
+To convert an SVG file to a DRW file, run: ./drawing [file name].svg
 <br>The resulting DRW file will be stored in the drw folder in the main directory, with the same file name as the SVG file.
 
 To run a test case, run: ./drawing <test_number>
