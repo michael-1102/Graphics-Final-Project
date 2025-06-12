@@ -13,7 +13,7 @@ To load an existing DRW file, run: ./drawing [file name].drw
 To convert an SVG file to a DRW file, run: ./drawing [file name].svg
 <br>The resulting DRW file will be stored in the drw folder in the main directory, with the same file name as the SVG file.
 
-To run a test case, run: ./drawing <test_number>
+To run a test case, run: ./drawing [test_number]
 <br>Test cases create DRW files from scratch without an SVG file.
 <br>Current test cases include:
 | test_number | result |
